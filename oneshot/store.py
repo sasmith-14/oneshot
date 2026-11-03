@@ -86,6 +86,16 @@ CREATE TABLE IF NOT EXISTS events (
     message     TEXT NOT NULL
 );
 CREATE INDEX IF NOT EXISTS idx_events_action ON events(action_id);
+
+-- Liveness only (for operators and the web console). Correctness never depends
+-- on this table: leases, not heartbeats, decide who may write an action.
+CREATE TABLE IF NOT EXISTS workers (
+    id           TEXT PRIMARY KEY,
+    pid          INTEGER NOT NULL,
+    started_at   REAL NOT NULL,
+    last_seen_at REAL NOT NULL,
+    stopped_at   REAL
+);
 """
 
 
@@ -203,6 +213,30 @@ class ActionStore:
         with closing(self._connect()) as conn:
             rows = conn.execute("SELECT status, COUNT(*) AS n FROM actions GROUP BY status").fetchall()
         return {r["status"]: r["n"] for r in rows}
+
+    # ------------------------------------------------------------ heartbeats
+
+    def heartbeat(self, worker_id: str, pid: int) -> None:
+        """Record that a worker is alive. A killed worker simply stops beating;
+        ``stopped_at`` is only set on a clean shutdown."""
+        now = self.clock()
+        with self._tx() as conn:
+            conn.execute(
+                "INSERT INTO workers (id, pid, started_at, last_seen_at) VALUES (?, ?, ?, ?) "
+                "ON CONFLICT(id) DO UPDATE SET last_seen_at = excluded.last_seen_at, stopped_at = NULL",
+                (worker_id, pid, now, now),
+            )
+
+    def worker_stopped(self, worker_id: str) -> None:
+        now = self.clock()
+        with self._tx() as conn:
+            conn.execute("UPDATE workers SET stopped_at = ?, last_seen_at = ? WHERE id = ?", (now, now, worker_id))
+
+    def workers(self, limit: int = 20) -> list[dict[str, Any]]:
+        """Most recently seen workers first."""
+        with closing(self._connect()) as conn:
+            rows = conn.execute("SELECT * FROM workers ORDER BY last_seen_at DESC LIMIT ?", (limit,)).fetchall()
+        return [dict(r) for r in rows]
 
     # --------------------------------------------------------------- claiming
 

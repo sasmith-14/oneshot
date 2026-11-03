@@ -97,8 +97,18 @@ class ProviderClient:
             return LookupResult(ok=False, detail=f"lookup failed: {type(exc).__name__}")
         return LookupResult(ok=True, effect_ids=tuple(e["id"] for e in effects))
 
-    def ledger(self) -> list[dict[str, Any]]:
-        """Every effect the provider ever applied (used by reconciliation). Raises on failure."""
-        resp = self._http.get("/v1/effects")
+    def ledger(self, reference: str | None = None) -> list[dict[str, Any]]:
+        """Effects the provider applied: all of them (used by reconciliation), or
+        only those carrying ``reference``. Full records, not just ids. Raises on failure."""
+        params = {"reference": reference} if reference is not None else None
+        resp = self._http.get("/v1/effects", params=params)
         resp.raise_for_status()
         return resp.json()["effects"]
+
+    def healthy(self, timeout: float = 0.5) -> tuple[bool, str | None]:
+        """Is the provider process answering? (Liveness display only.)"""
+        try:
+            self._http.get("/healthz", timeout=timeout).raise_for_status()
+        except httpx.HTTPError as exc:
+            return False, type(exc).__name__
+        return True, None

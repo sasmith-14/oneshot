@@ -33,6 +33,9 @@ from oneshot.store import ActionStore, LeaseLost
 
 UNFINISHED = (ActionStatus.PENDING, ActionStatus.IN_FLIGHT, ActionStatus.VERIFYING)
 
+#: How often a running worker records a heartbeat (liveness display only).
+HEARTBEAT_INTERVAL_SECONDS = 2.0
+
 
 def default_worker_id() -> str:
     return f"worker-{os.getpid()}"
@@ -140,9 +143,14 @@ class Worker:
         """Process actions until stopped. With ``drain=True``, exit once every
         action is SUCCEEDED, FAILED or UNKNOWN (waiting out leases and backoffs)."""
         started = time.monotonic()
+        self.store.heartbeat(self.worker_id, os.getpid())
+        last_beat = time.monotonic()
         recovered = self.recover()
         self.log(f"started (recovered {recovered} abandoned in-flight action(s))")
         while not self._stopping:
+            if time.monotonic() - last_beat >= HEARTBEAT_INTERVAL_SECONDS:
+                self.store.heartbeat(self.worker_id, os.getpid())
+                last_beat = time.monotonic()
             if max_seconds is not None and time.monotonic() - started > max_seconds:
                 self.log("max run time reached; stopping")
                 break
@@ -152,4 +160,5 @@ class Worker:
                 self.log("drained: no unfinished actions left")
                 break
             time.sleep(self.settings.poll_interval_seconds)
+        self.store.worker_stopped(self.worker_id)
         self.log("stopped")
