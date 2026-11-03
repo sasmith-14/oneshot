@@ -141,3 +141,123 @@ export const api = {
       body: JSON.stringify({ status, note, actor: "operator (web console)" }),
     }),
 };
+
+// ---------------------------------------------------------------- v2 endpoints
+
+export type Severity = "ok" | "info" | "resolved" | "warning" | "critical";
+
+export interface Finding {
+  kind: string;
+  severity: Severity;
+  action_id: string | null;
+  effect_ids: string[];
+  message: string;
+}
+
+export interface ReconcileReport {
+  run_id: number;
+  actions_checked: number;
+  effects_checked: number;
+  applied: boolean;
+  summary: Record<string, number>;
+  findings: Finding[];
+}
+
+export interface ReconcileRun {
+  id: number;
+  at: number;
+  applied: boolean;
+  actions_checked: number;
+  effects_checked: number;
+  summary: Record<string, number>;
+  findings?: Finding[];
+}
+
+export interface Guarantee {
+  id: string;
+  statement: string;
+  condition: string;
+  status: "holds" | "violated" | "condition-broken" | "attention" | "unknown";
+  evidence: string;
+  action_ids: string[];
+}
+
+export interface GuaranteeReport {
+  checked_at: number;
+  provider_reachable: boolean;
+  actions: number;
+  guarantees: Guarantee[];
+  gaps: { kind: string; count: number; about: string; action_ids: string[] }[];
+}
+
+export interface FaultRule {
+  mode: string;
+  endpoint: string | null;
+  reference: string | null;
+  times: number;
+  delay_seconds: number | null;
+}
+
+export interface LabEvent {
+  at: number;
+  kind: "worker" | "provider" | "preset" | "fault";
+  message: string;
+}
+
+export interface LabState {
+  managed: boolean;
+  worker: { running: boolean; pid: number | null; failpoints: string[]; auto_restart: boolean; restarts: number };
+  provider: { running: boolean; url: string };
+  events: LabEvent[];
+  faults: FaultRule[] | null;
+}
+
+export interface Preset {
+  name: string;
+  group: string;
+  title: string;
+  what: string;
+  expect: string;
+  needs_managed: boolean;
+}
+
+export interface PresetCatalogue {
+  groups: { id: string; title: string; about: string }[];
+  presets: Preset[];
+}
+
+export interface PresetResult {
+  preset: Preset;
+  action_ids: string[];
+  note: string;
+}
+
+export interface DocInfo {
+  slug: string;
+  title: string;
+  words: number;
+}
+
+export const lab = {
+  state: () => request<LabState>("/lab/state"),
+  presets: () => request<PresetCatalogue>("/lab/presets"),
+  run: (name: string) => request<PresetResult>(`/lab/presets/${encodeURIComponent(name)}`, { method: "POST" }),
+  arm: (rule: { mode: string; endpoint?: string; times?: number; delay_seconds?: number }) =>
+    request<{ faults: FaultRule[] }>("/lab/faults", { method: "POST", body: JSON.stringify(rule) }),
+  clear: () => request<{ faults: FaultRule[] }>("/lab/faults", { method: "DELETE" }),
+  startWorker: () => request<{ pid: number }>("/lab/worker/start", { method: "POST" }),
+  killWorker: () => request<{ pid: number }>("/lab/worker/kill", { method: "POST" }),
+  crashWorker: (point: "before_send" | "after_response") =>
+    request<{ pid: number }>("/lab/worker/crash", { method: "POST", body: JSON.stringify({ point }) }),
+  restartProvider: () => request<{ ok: boolean }>("/lab/provider/restart", { method: "POST" }),
+};
+
+export const ops = {
+  reconcile: (apply: boolean) => request<ReconcileReport>(`/reconcile?apply=${apply}`, { method: "POST" }),
+  runs: () => request<ReconcileRun[]>("/reconcile/runs"),
+  run: (id: number) => request<ReconcileRun>(`/reconcile/runs/${id}`),
+  ledger: () => request<{ checked_at: number; effects: Effect[] }>("/provider/ledger"),
+  guarantees: () => request<GuaranteeReport>("/guarantees"),
+  docs: () => request<DocInfo[]>("/learn/docs"),
+  doc: (slug: string) => request<{ slug: string; title: string; markdown: string }>(`/learn/docs/${encodeURIComponent(slug)}`),
+};

@@ -71,30 +71,30 @@
 }
 
 :root {
-    --background: oklch(1 0 0);
-    --foreground: oklch(0.145 0 0);
-    --card: oklch(1 0 0);
-    --card-foreground: oklch(0.145 0 0);
-    --popover: oklch(1 0 0);
-    --popover-foreground: oklch(0.145 0 0);
-    --primary: oklch(0.205 0 0);
-    --primary-foreground: oklch(0.985 0 0);
-    --secondary: oklch(0.97 0 0);
-    --secondary-foreground: oklch(0.205 0 0);
-    --muted: oklch(0.97 0 0);
-    --muted-foreground: oklch(0.556 0 0);
-    --accent: oklch(0.97 0 0);
-    --accent-foreground: oklch(0.205 0 0);
+    --background: #F7F8FA;
+    --foreground: #15171C;
+    --card: #FFFFFF;
+    --card-foreground: #15171C;
+    --popover: #FFFFFF;
+    --popover-foreground: #15171C;
+    --primary: #15171C;
+    --primary-foreground: #F7F8FA;
+    --secondary: #EEF0F3;
+    --secondary-foreground: #15171C;
+    --muted: #EEF0F3;
+    --muted-foreground: #6A7180;
+    --accent: #EEF0F3;
+    --accent-foreground: #15171C;
     --destructive: oklch(0.577 0.245 27.325);
-    --border: oklch(0.922 0 0);
-    --input: oklch(0.922 0 0);
-    --ring: oklch(0.708 0 0);
+    --border: #E4E6EB;
+    --input: #DADDE3;
+    --ring: #9AA1AE;
     --chart-1: oklch(0.87 0 0);
     --chart-2: oklch(0.556 0 0);
     --chart-3: oklch(0.439 0 0);
     --chart-4: oklch(0.371 0 0);
     --chart-5: oklch(0.269 0 0);
-    --radius: 0.625rem;
+    --radius: 0.875rem;
     --sidebar: oklch(0.985 0 0);
     --sidebar-foreground: oklch(0.145 0 0);
     --sidebar-primary: oklch(0.205 0 0);
@@ -125,24 +125,24 @@
 }
 
 .dark {
-    --background: oklch(0.145 0 0);
-    --foreground: oklch(0.985 0 0);
-    --card: oklch(0.205 0 0);
-    --card-foreground: oklch(0.985 0 0);
-    --popover: oklch(0.205 0 0);
-    --popover-foreground: oklch(0.985 0 0);
-    --primary: oklch(0.922 0 0);
-    --primary-foreground: oklch(0.205 0 0);
-    --secondary: oklch(0.269 0 0);
-    --secondary-foreground: oklch(0.985 0 0);
-    --muted: oklch(0.269 0 0);
-    --muted-foreground: oklch(0.708 0 0);
-    --accent: oklch(0.269 0 0);
-    --accent-foreground: oklch(0.985 0 0);
+    --background: #101217;
+    --foreground: #E8EAEE;
+    --card: #161920;
+    --card-foreground: #E8EAEE;
+    --popover: #1A1E26;
+    --popover-foreground: #E8EAEE;
+    --primary: #E8EAEE;
+    --primary-foreground: #101217;
+    --secondary: #1F232C;
+    --secondary-foreground: #E8EAEE;
+    --muted: #1F232C;
+    --muted-foreground: #8B93A3;
+    --accent: #222731;
+    --accent-foreground: #E8EAEE;
     --destructive: oklch(0.704 0.191 22.216);
-    --border: oklch(1 0 0 / 10%);
-    --input: oklch(1 0 0 / 15%);
-    --ring: oklch(0.556 0 0);
+    --border: #262A33;
+    --input: #2E333E;
+    --ring: #5B6374;
     --chart-1: oklch(0.87 0 0);
     --chart-2: oklch(0.556 0 0);
     --chart-3: oklch(0.439 0 0);
@@ -191,32 +191,55 @@
     @apply font-sans;
     }
 }
+
 @layer base {
-  code, kbd, .font-mono {
-    font-feature-settings: "calt" 0;
+  html {
+    color-scheme: light;
+    -webkit-tap-highlight-color: transparent;
+    text-rendering: optimizeLegibility;
   }
+  html.dark { color-scheme: dark; }
+  @media (pointer: fine) { html { overscroll-behavior: none; } }
+  body { font-feature-settings: "cv11", "ss01"; }
+  h1, h2, h3 { text-wrap: balance; }
+  p { text-wrap: pretty; }
+  code, kbd, .font-mono { font-feature-settings: "calt" 0; }
+  :focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+  [id] { scroll-margin-top: 5rem; }
+  ::selection { background: color-mix(in oklab, var(--st-inflight) 30%, transparent); }
 }
 
-/* Subtle motion only, and none at all when the user asks for reduced motion. */
-@keyframes os-pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.35; }
-}
-@keyframes os-draw {
-  from { stroke-dashoffset: var(--os-len, 400); }
-  to { stroke-dashoffset: 0; }
-}
-@keyframes os-fade-in {
-  from { opacity: 0; transform: translateY(2px); }
-  to { opacity: 1; transform: none; }
-}
+/* Lenis (smooth scrolling) */
+html.lenis, html.lenis body { height: auto; }
+.lenis:not(.lenis-autoToggle).lenis-stopped { overflow: clip; }
+.lenis [data-lenis-prevent] { overscroll-behavior: contain; }
+.lenis.lenis-smooth iframe { pointer-events: none; }
+
+/* Small, non-Motion effects. Only transform/opacity, and none under reduced motion. */
+@keyframes os-pulse { 0%, 100% { opacity: 1; } 50% { opacity: .35; } }
+@keyframes os-ring { from { transform: scale(.6); opacity: .7; } to { transform: scale(2.2); opacity: 0; } }
 .os-pulse { animation: os-pulse 1.4s ease-in-out infinite; }
-.os-fade-in { animation: os-fade-in 260ms ease-out both; }
-.os-draw { stroke-dasharray: var(--os-len, 400); animation: os-draw 500ms ease-out both; }
-.os-transition { transition: fill 300ms ease, stroke 300ms ease, opacity 300ms ease; }
-
+.os-ring { animation: os-ring 1.6s cubic-bezier(.23,1,.32,1) infinite; }
 @media (prefers-reduced-motion: reduce) {
-  .os-pulse, .os-fade-in, .os-draw { animation: none; }
-  .os-draw { stroke-dasharray: none; }
-  .os-transition { transition: none; }
+  .os-pulse, .os-ring { animation: none; }
 }
+
+/* Rendered docs (Learn) */
+.prose-os { font-size: 15.5px; line-height: 1.7; max-width: 72ch; }
+.prose-os h1 { font-size: 2.25rem; line-height: 1.15; font-weight: 650; letter-spacing: -0.025em; margin: 0 0 1.25rem; }
+.prose-os h2 { font-size: 1.4rem; font-weight: 620; letter-spacing: -0.015em; margin: 2.6rem 0 .8rem; }
+.prose-os h3 { font-size: 1.1rem; font-weight: 600; margin: 1.8rem 0 .6rem; }
+.prose-os p, .prose-os ul, .prose-os ol { margin: .8rem 0; }
+.prose-os ul { list-style: disc; padding-left: 1.3rem; }
+.prose-os ol { list-style: decimal; padding-left: 1.3rem; }
+.prose-os li { margin: .3rem 0; }
+.prose-os a { text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--ring); }
+.prose-os strong { font-weight: 620; }
+.prose-os :not(pre) > code { font-family: var(--font-mono); font-size: .86em; background: var(--muted); padding: .1em .35em; border-radius: 5px; }
+.prose-os pre { font-family: var(--font-mono); font-size: 12.5px; line-height: 1.55; background: var(--muted); border: 1px solid var(--border); border-radius: 10px; padding: .9rem 1rem; overflow-x: auto; margin: 1rem 0; }
+.prose-os table { width: 100%; border-collapse: collapse; font-size: 13.5px; margin: 1.2rem 0; display: block; overflow-x: auto; }
+.prose-os th, .prose-os td { border-bottom: 1px solid var(--border); padding: .55rem .7rem; text-align: left; vertical-align: top; }
+.prose-os th { font-weight: 600; color: var(--muted-foreground); }
+.prose-os blockquote { border-left: 3px solid var(--border); padding: .2rem 0 .2rem 1rem; color: var(--muted-foreground); }
+.prose-os hr { border-color: var(--border); margin: 2rem 0; }
+.prose-os .mermaid-box svg { max-width: 100%; height: auto; }

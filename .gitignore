@@ -22,3 +22,6 @@ docs/build/
 .DS_Store
 .idea/
 .vscode/
+
+# Third-party agent skills (reinstall from skills-lock.json; see docs/FRONTEND_DESIGN.md)
+.claude/skills/

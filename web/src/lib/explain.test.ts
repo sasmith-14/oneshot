@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { explainEvent, explainOutcome } from "./explain";
 import { ev } from "@/test/fixtures";
-import { EDGES } from "@/components/detail/StateDiagram";
+import { EDGES } from "@/components/StateMachine";
 
 // Real reason strings from oneshot/policy.py, so these tests break if the
 // backend's wording changes in a way the explanations depend on.
