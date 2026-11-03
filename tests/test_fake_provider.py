@@ -138,3 +138,11 @@ def test_every_fault_mode_is_documented_as_applying_or_not():
     # Guards the extension point: a new FaultMode must declare whether it applies an effect.
     for mode in FaultMode:
         assert isinstance(mode.applies_effect, bool)
+
+
+def test_error_after_apply_returns_500_but_effect_exists(provider):
+    provider.add_faults({"mode": "error_after_apply"})
+    assert post(provider, "/v1/charges", CHARGE, key="k1").status_code == 500
+    assert len(provider.effects("act_test")) == 1
+    retry = post(provider, "/v1/charges", CHARGE, key="k1")
+    assert retry.status_code == 201 and retry.headers["Idempotent-Replayed"] == "true"

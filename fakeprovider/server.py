@@ -283,6 +283,12 @@ class ProviderHandler(BaseHTTPRequestHandler):
         if mode is FaultMode.CRASH_AFTER_APPLY:
             srv.log(f"{tag} -> APPLIED {effect.id}, then CRASHING (exit {CRASH_EXIT_CODE})")
             os._exit(CRASH_EXIT_CODE)
+        if mode is FaultMode.ERROR_AFTER_APPLY:
+            # The effect and its idempotency key are already committed, so a
+            # same-key retry will be answered with a replay of the 201.
+            srv.log(f"{tag} -> APPLIED {effect.id}, then answering 500 (bug after commit)")
+            self._send_json(500, {"error": "internal_error"})
+            return
 
         srv.log(f"{tag} -> APPLIED {effect.id}, responding 201")
         try:

@@ -50,9 +50,18 @@ class FaultMode(str, Enum):
     CRASH_AFTER_APPLY = "crash_after_apply"
     """Provider process exits right after committing the effect. Effect APPLIED. Caller sees a disconnect."""
 
+    ERROR_AFTER_APPLY = "error_after_apply"
+    """Effect APPLIED, then a bug in the provider returns HTTP 500. Caller sees a server error."""
+
     @property
     def applies_effect(self) -> bool:
-        return self in {FaultMode.SUCCESS, FaultMode.LOST_RESPONSE, FaultMode.SLOW_SUCCESS, FaultMode.CRASH_AFTER_APPLY}
+        return self in {
+            FaultMode.SUCCESS,
+            FaultMode.LOST_RESPONSE,
+            FaultMode.SLOW_SUCCESS,
+            FaultMode.CRASH_AFTER_APPLY,
+            FaultMode.ERROR_AFTER_APPLY,
+        }
 
 
 @dataclass

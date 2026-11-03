@@ -347,3 +347,25 @@ def test_reconciliation_fails_loudly_when_provider_is_down(store, client, cfg, p
 def test_settings_reject_lease_shorter_than_timeout():
     with pytest.raises(ValueError):
         replace(Settings(), provider_timeout_seconds=5, lease_seconds=6)
+
+
+# ------------------------------------------- worked example: a new failure mode
+# (docs/src/07-how-to-extend.md walks through adding ERROR_AFTER_APPLY)
+
+
+def test_error_after_apply_charge_is_retried_and_replayed_once(store, client, cfg, provider):
+    provider.add_faults({"mode": "error_after_apply"})
+    a = submit(store)
+    drain(store, client, cfg)
+    assert store.get(a.id).status is S.SUCCEEDED
+    assert outcomes(store, a.id) == [Outcome.AMBIGUOUS, Outcome.APPLIED]
+    assert len(provider.effects(a.id)) == 1
+
+
+def test_error_after_apply_message_is_verified_not_resent(store, client, cfg, provider):
+    provider.add_faults({"mode": "error_after_apply", "endpoint": "/v1/messages"})
+    a = submit(store, "message.send", MESSAGE)
+    drain(store, client, cfg)
+    assert store.get(a.id).status is S.SUCCEEDED
+    assert outcomes(store, a.id) == [Outcome.AMBIGUOUS, Outcome.FOUND]
+    assert len(provider.effects(a.id)) == 1

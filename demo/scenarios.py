@@ -186,6 +186,20 @@ def provider_crash_unknown(ctx: DemoContext) -> None:
 
 
 @scenario(
+    "server-error-after-apply",
+    "Provider applies the charge, then a bug returns HTTP 500",
+    "A 5xx does NOT mean 'nothing happened': the server may have committed before failing. OneShot "
+    "classifies it as AMBIGUOUS, and the same-key retry is answered with a replay of the original success.",
+)
+def server_error_after_apply(ctx: DemoContext) -> None:
+    ctx.arm({"mode": "error_after_apply", "endpoint": "/v1/charges"})
+    a = ctx.submit("payment.charge", charge(), "agent-order-1008")
+    ctx.run_worker()
+    ctx.show(a)
+    ctx.expect_status(a, S.SUCCEEDED, 1)
+
+
+@scenario(
     "slow-provider-duplicate",
     "HONEST GAP: provider is slower than OneShot's settle assumption",
     "Verify-then-retry assumes the provider finishes within the settle window (1.5s here). This one takes "
