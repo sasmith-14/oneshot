@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+*.egg-info/
+build/
+dist/
+
+# Runtime state (SQLite databases, logs) — never committed
+var/
+*.db
+*.db-wal
+*.db-shm
+*.log
+
+# Docs tooling
+docs/tooling/node_modules/
+docs/build/
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
