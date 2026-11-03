@@ -19,7 +19,6 @@ from __future__ import annotations
 
 import os
 import random
-import socket
 import sys
 import time
 from typing import Callable
@@ -36,7 +35,7 @@ UNFINISHED = (ActionStatus.PENDING, ActionStatus.IN_FLIGHT, ActionStatus.VERIFYI
 
 
 def default_worker_id() -> str:
-    return f"w-{socket.gethostname().split('.')[0]}-{os.getpid()}"
+    return f"worker-{os.getpid()}"
 
 
 def _stderr_log(message: str) -> None:

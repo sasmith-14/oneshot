@@ -284,7 +284,7 @@ class ProviderHandler(BaseHTTPRequestHandler):
             srv.log(f"{tag} -> APPLIED {effect.id}, then CRASHING (exit {CRASH_EXIT_CODE})")
             os._exit(CRASH_EXIT_CODE)
 
-        srv.log(f"{tag} -> APPLIED {effect.id}, 201 sent")
+        srv.log(f"{tag} -> APPLIED {effect.id}, responding 201")
         try:
             self._send_json(201, response)
         except (BrokenPipeError, ConnectionResetError):
