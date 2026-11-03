@@ -1,6 +1,6 @@
 # OneShot web console: agreed plan
 
-> Status: **agreed 2026-11-03, in progress.** This file is the shared spec for the frontend. What is built so far is tracked in HANDOFF.md; anything not listed here stays in ROADMAP.md.
+> Status: **agreed 2026-11-03. M1 built and tested; M2 next.** This file is the shared spec for the frontend. What is built so far is tracked in HANDOFF.md; anything not listed here stays in ROADMAP.md.
 
 ## Purpose
 
@@ -23,7 +23,7 @@ An interactive **lab console** that makes the invisible visible. Watch actions m
 | Responsive | desktop-first, still usable on a tablet |
 | Lab safety | chaos and process-control routes exist only when `ONESHOT_LAB=1`; otherwise 404, and the UI hides those controls with an explanation. Everything binds to 127.0.0.1 |
 | Serving | `make dev` runs the Vite dev server (hot reload); `make web-build` produces static files that FastAPI serves at `http://127.0.0.1:8700/ui/`, so a normal run needs no Node |
-| Testing | Vitest for logic and components; end-to-end browser tests with Playwright against the real stack |
+| Testing | Vitest for logic and components; end-to-end browser tests with Playwright against the real stack, written in pytest (`tests/test_web_e2e.py`) so they reuse the Chromium already installed for the docs build instead of downloading a second browser |
 | Delivery | four milestones, each tested, committed and demoable |
 
 ## Pages
@@ -88,7 +88,7 @@ oneshot/lab.py            lab-only routes and presets (mounted only when ONESHOT
    - Backend: worker heartbeats, `GET /system/status`, `GET /actions/{id}/provider-record`, the static `/ui` mount.
    - Web: scaffold, theme, navigation, the Actions board and Action detail with all four visuals.
    - Tests.
-2. **M2:** lab routes and supervisor, the Chaos page with all presets, worker kill and restart, and the resolve dialog's "check provider now".
+2. **M2:** lab routes and supervisor, the Chaos page with all presets, and worker kill and restart. (The resolve dialog, including "check provider now", was finished early in M1.)
 3. **M3:** reconciliation run history (table and endpoints), the Reconcile page with findings, diff, explanation cards and history.
 4. **M4:** the Provider ledger, Guarantees and Learn pages; a doc 08 on the UI; README screenshots; HANDOFF.
 

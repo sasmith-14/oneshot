@@ -45,6 +45,7 @@ flowchart LR
 | `oneshot/api.py`, `cli.py` | HTTP API and operator CLI |
 | `fakeprovider/` | the simulated external service and its ledger |
 | `demo/` | self-checking failure scenarios |
+| `web/` | React web console (talks to the JSON API only) |
 | `docs/` | learning docs (Markdown + Mermaid sources, rendered PDFs) |
 
 ## Quick start (from a clean checkout)
@@ -80,6 +81,18 @@ uv run oneshot reconcile --all
 ```
 
 More hands-on experiments, each with the exact commands and expected output: **[EXPERIMENTS.md](EXPERIMENTS.md)**.
+
+### Web console (in progress)
+
+A React lab console that shows what is going on: live status counts, worker and provider health, and for every action a lifecycle diagram, a message-flow diagram built from the recorded timestamps, a timeline with a plain-English "why" for each decision, and OneShot's record side by side with the provider's ledger. UNKNOWN actions can be resolved from an evidence-first dialog.
+
+```bash
+make web-install   # once; needs Node >= 20 (npm)
+make dev           # also starts the console's dev server: http://127.0.0.1:5173/ui/
+make web-build     # or build it once; `oneshot serve` then serves it at http://127.0.0.1:8700/ui/
+```
+
+Milestone M1 (Actions board and Action detail) is built. Chaos, Reconcile, Provider ledger, Guarantees and Learn are planned; see [docs/FRONTEND_PLAN.md](docs/FRONTEND_PLAN.md). The console only uses the JSON API, and the backend works without Node.
 
 | Command | Purpose |
 |---|---|
