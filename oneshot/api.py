@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import os
 import time
+from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import Any, Literal
 
@@ -20,8 +21,10 @@ from fastapi.responses import FileResponse, HTMLResponse, RedirectResponse
 from pydantic import BaseModel, Field
 
 from oneshot.action_types import REGISTRY, InvalidPayload, get_action_type
+from oneshot import guarantees, learn
 from oneshot.config import Settings
 from oneshot.domain import ActionStatus
+from oneshot.lab import Supervisor, create_lab_router, lab_manage_from_env
 from oneshot.provider_client import ProviderClient
 from oneshot.reconciler import Reconciler, ReconciliationError
 from oneshot.store import ActionStore, IdempotencyConflict
@@ -50,18 +53,36 @@ def create_app(
     settings: Settings | None = None,
     *,
     lab: bool | None = None,
+    lab_manage: bool | None = None,
     web_dist: Path | None = None,
+    docs_root: Path | None = None,
 ) -> FastAPI:
     settings = settings or Settings.from_env()
     lab = lab_enabled_from_env() if lab is None else lab
+    lab_manage = lab and (lab_manage_from_env() if lab_manage is None else lab_manage)
     web_dist = web_dist or Path(os.environ.get("ONESHOT_WEB_DIST", DEFAULT_WEB_DIST))
+    docs_root = docs_root or learn.ROOT
     store = ActionStore(settings.db_path)
     provider = ProviderClient(settings)  # shared; httpx.Client is thread-safe
+    supervisor = Supervisor(settings, manage=lab_manage, var_dir=Path(settings.db_path).resolve().parent)
+
+    @asynccontextmanager
+    async def lifespan(_: FastAPI):
+        supervisor.start()  # no-op unless lab mode manages the processes
+        try:
+            yield
+        finally:
+            supervisor.shutdown()
+            provider.close()
+
     app = FastAPI(
         title="OneShot",
         version="0.1.0",
         description="Reliable action execution for AI agents (educational reference implementation).",
+        lifespan=lifespan,
     )
+    if lab:
+        app.include_router(create_lab_router(store, settings, supervisor))
 
     @app.get("/healthz")
     def healthz() -> dict[str, Any]:
@@ -167,10 +188,50 @@ def create_app(
 
     @app.post("/reconcile")
     def reconcile(apply: bool = True) -> dict[str, Any]:
+        """Compare every action with the provider's ledger. Each run is saved,
+        and the response includes its ``run_id``."""
         try:
-            return Reconciler(store, provider, settings).run(apply=apply).to_json()
+            report = Reconciler(store, provider, settings).run(apply=apply).to_json()
         except ReconciliationError as exc:
             raise HTTPException(status_code=503, detail=str(exc)) from exc
+        report["run_id"] = store.save_reconcile_run(report)
+        return report
+
+    @app.get("/reconcile/runs")
+    def reconcile_runs(limit: int = Query(default=50, ge=1, le=500)) -> list[dict[str, Any]]:
+        return store.reconcile_runs(limit)
+
+    @app.get("/reconcile/runs/{run_id}")
+    def reconcile_run(run_id: int) -> dict[str, Any]:
+        run = store.reconcile_run(run_id)
+        if run is None:
+            raise HTTPException(status_code=404, detail="no such reconciliation run")
+        return run
+
+    @app.get("/provider/ledger")
+    def provider_ledger() -> dict[str, Any]:
+        """Every effect in the provider's own ledger (what reconciliation reads)."""
+        try:
+            return {"checked_at": time.time(), "effects": provider.ledger()}
+        except Exception as exc:  # noqa: BLE001
+            raise HTTPException(status_code=503, detail=f"cannot reach the provider: {type(exc).__name__}") from exc
+
+    @app.get("/guarantees")
+    def guarantee_checks() -> dict[str, Any]:
+        """G1–G5 checked against current data (a dry run: changes nothing)."""
+        alive = any(w["stopped_at"] is None and time.time() - w["last_seen_at"] < 15 for w in store.workers())
+        return guarantees.check(store, provider, settings, worker_alive=alive)
+
+    @app.get("/learn/docs")
+    def learn_docs() -> list[dict[str, Any]]:
+        return learn.list_docs(docs_root)
+
+    @app.get("/learn/docs/{slug}")
+    def learn_doc(slug: str) -> dict[str, Any]:
+        doc = learn.render_doc(slug, docs_root)
+        if doc is None:
+            raise HTTPException(status_code=404, detail="no such document")
+        return doc
 
     _mount_web_console(app, web_dist)
     return app

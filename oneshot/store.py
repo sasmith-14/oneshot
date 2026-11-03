@@ -96,6 +96,17 @@ CREATE TABLE IF NOT EXISTS workers (
     last_seen_at REAL NOT NULL,
     stopped_at   REAL
 );
+
+-- Every reconciliation run and its findings, so past runs can be compared.
+CREATE TABLE IF NOT EXISTS reconcile_runs (
+    id              INTEGER PRIMARY KEY AUTOINCREMENT,
+    at              REAL NOT NULL,
+    applied         INTEGER NOT NULL,
+    actions_checked INTEGER NOT NULL,
+    effects_checked INTEGER NOT NULL,
+    summary_json    TEXT NOT NULL,
+    findings_json   TEXT NOT NULL
+);
 """
 
 
@@ -237,6 +248,36 @@ class ActionStore:
         with closing(self._connect()) as conn:
             rows = conn.execute("SELECT * FROM workers ORDER BY last_seen_at DESC LIMIT ?", (limit,)).fetchall()
         return [dict(r) for r in rows]
+
+    # ------------------------------------------------------ reconcile history
+
+    def save_reconcile_run(self, report: dict[str, Any]) -> int:
+        """Store a reconciliation report (``Report.to_json()``). Returns its run id."""
+        with self._tx() as conn:
+            cur = conn.execute(
+                "INSERT INTO reconcile_runs (at, applied, actions_checked, effects_checked, summary_json, findings_json) "
+                "VALUES (?, ?, ?, ?, ?, ?)",
+                (
+                    self.clock(),
+                    int(report["applied"]),
+                    report["actions_checked"],
+                    report["effects_checked"],
+                    json.dumps(report["summary"], sort_keys=True),
+                    json.dumps(report["findings"]),
+                ),
+            )
+            return int(cur.lastrowid)
+
+    def reconcile_runs(self, limit: int = 50) -> list[dict[str, Any]]:
+        """Newest first, without the findings (see :meth:`reconcile_run`)."""
+        with closing(self._connect()) as conn:
+            rows = conn.execute("SELECT * FROM reconcile_runs ORDER BY id DESC LIMIT ?", (limit,)).fetchall()
+        return [_run(r, findings=False) for r in rows]
+
+    def reconcile_run(self, run_id: int) -> dict[str, Any] | None:
+        with closing(self._connect()) as conn:
+            row = conn.execute("SELECT * FROM reconcile_runs WHERE id = ?", (run_id,)).fetchone()
+        return _run(row, findings=True) if row else None
 
     # --------------------------------------------------------------- claiming
 
@@ -429,6 +470,20 @@ def _action(row: sqlite3.Row) -> Action:
         created_at=row["created_at"],
         updated_at=row["updated_at"],
     )
+
+
+def _run(row: sqlite3.Row, *, findings: bool) -> dict[str, Any]:
+    out = {
+        "id": row["id"],
+        "at": row["at"],
+        "applied": bool(row["applied"]),
+        "actions_checked": row["actions_checked"],
+        "effects_checked": row["effects_checked"],
+        "summary": json.loads(row["summary_json"]),
+    }
+    if findings:
+        out["findings"] = json.loads(row["findings_json"])
+    return out
 
 
 def _attempt(row: sqlite3.Row) -> Attempt:
