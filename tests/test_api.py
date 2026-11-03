@@ -36,7 +36,7 @@ def test_key_reuse_with_different_payload_is_422(api):
 
 
 def test_idempotency_key_is_required(api):
-    assert api.post("/actions", json={"type": "payment.charge", "payload": CHARGE}).status_code == 422
+    assert api.post("/actions", json={"type": "payment.charge", "payload": CHARGE}).status_code == 400
 
 
 def test_invalid_payload_and_unknown_type_are_400(api):

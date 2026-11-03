@@ -195,7 +195,12 @@ def build_parser() -> argparse.ArgumentParser:
 
 def main(argv: list[str] | None = None) -> None:
     args = build_parser().parse_args(argv)
-    sys.exit(args.func(args, Settings.from_env()))
+    try:
+        settings = Settings.from_env()
+    except ValueError as exc:  # unsafe or malformed ONESHOT_* environment variables
+        console.print(f"[red]invalid configuration:[/] {exc}")
+        sys.exit(2)
+    sys.exit(args.func(args, settings))
 
 
 if __name__ == "__main__":

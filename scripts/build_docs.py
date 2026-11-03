@@ -84,7 +84,9 @@ def to_html(md_path: Path) -> tuple[str, str, int]:
 RENDER_DIAGRAMS = """
 async () => {
   mermaid.initialize({ startOnLoad: false, theme: 'neutral', securityLevel: 'strict',
-                       flowchart: { htmlLabels: false, curve: 'basis' }, fontFamily: 'Helvetica, Arial, sans-serif' });
+                       flowchart: { htmlLabels: false, curve: 'basis' }, fontFamily: 'Helvetica, Arial, sans-serif',
+                       sequence: { wrap: true, width: 170, actorMargin: 30, mirrorActors: false, boxMargin: 6,
+                                   messageFontSize: 15, noteFontSize: 14, actorFontSize: 15, messageMargin: 32 } });
   const nodes = Array.from(document.querySelectorAll('pre.mermaid-src'));
   const errors = [];
   for (const [i, node] of nodes.entries()) {
@@ -151,7 +153,7 @@ def main() -> int:
                 footer_template=(
                     '<div style="font-size:7.5pt;color:#8a8f98;width:100%;padding:0 16mm;'
                     'font-family:Helvetica,Arial,sans-serif;display:flex;justify-content:space-between">'
-                    f"<span>OneShot &middot; {html.escape(title)}</span>"
+                    f"<span>{html.escape(title if title.startswith('OneShot') else 'OneShot · ' + title)}</span>"
                     '<span><span class="pageNumber"></span> / <span class="totalPages"></span></span></div>'
                 ),
             )

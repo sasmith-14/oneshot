@@ -57,11 +57,14 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     def submit(
         body: SubmitRequest,
         response: Response,
-        idempotency_key: str = Header(
-            ..., alias="Idempotency-Key", min_length=1, max_length=200,
-            description="Unique per *intent*. Reuse it when retrying the same request.",
+        idempotency_key: str | None = Header(
+            None, alias="Idempotency-Key", max_length=200,
+            description="Required. Unique per *intent*. Reuse it when retrying the same request.",
         ),
     ) -> dict[str, Any]:  # fmt: skip
+        if not idempotency_key:
+            # IETF idempotency-key draft: a required key that is missing -> 400.
+            raise HTTPException(status_code=400, detail="Idempotency-Key header is required")
         try:
             action_type = get_action_type(body.type)
             payload = action_type.validate(body.payload)
