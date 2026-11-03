@@ -1,6 +1,6 @@
 # OneShot web console: agreed plan
 
-> Status: **agreed 2026-11-03. M1 built and tested; M2 next.** This file is the shared spec for the frontend. What is built so far is tracked in HANDOFF.md; anything not listed here stays in ROADMAP.md.
+> Status: **agreed 2026-11-03. Everything here (M1–M4) is built and tested; the visual system was redesigned in v2, see `FRONTEND_DESIGN.md`.** One planned item changed: the concept-doc PDF about the UI (doc 08) was not written; the Learn page and FRONTEND_DESIGN.md cover it. This file is the shared spec for the frontend. What is built so far is tracked in HANDOFF.md; anything not listed here stays in ROADMAP.md.
 
 ## Purpose
 

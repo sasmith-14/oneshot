@@ -45,6 +45,7 @@ flowchart LR
 | `oneshot/api.py`, `cli.py` | HTTP API and operator CLI |
 | `fakeprovider/` | the simulated external service and its ledger |
 | `demo/` | self-checking failure scenarios |
+| `oneshot/lab.py`, `guarantees.py`, `learn.py` | lab-only fault/process control and presets; live guarantee checks; docs for the console |
 | `web/` | React web console (talks to the JSON API only) |
 | `docs/` | learning docs (Markdown + Mermaid sources, rendered PDFs) |
 
@@ -82,17 +83,29 @@ uv run oneshot reconcile --all
 
 More hands-on experiments, each with the exact commands and expected output: **[EXPERIMENTS.md](EXPERIMENTS.md)**.
 
-### Web console (in progress)
+### Web console: OneShot Lab
 
-A React lab console that shows what is going on: live status counts, worker and provider health, and for every action a lifecycle diagram, a message-flow diagram built from the recorded timestamps, a timeline with a plain-English "why" for each decision, and OneShot's record side by side with the provider's ledger. UNKNOWN actions can be resolved from an evidence-first dialog.
+A React console that makes failures visible. It has six pages:
+
+| Page | What it shows |
+|---|---|
+| **Live** | *The wire*: every recent action is a token that glides between Accepted, On the wire, Checking the ledger, Settled and Needs a human as its real status changes. Also worker and provider health, activity, and a filterable list. |
+| **Action** | A lifecycle diagram that draws the path the action took, a message-flow diagram built from recorded timestamps (with **Replay**), a timeline that explains every decision in plain English, OneShot's record next to the provider's ledger, and an evidence-first dialog to resolve UNKNOWN. |
+| **Chaos** | 15 one-click failure presets: lost responses, timeouts, crashes, duplicates and `kill -9` mid-request. Also real process control for the provider and worker, a custom fault form, and a live lab log. |
+| **Reconcile** | Run or dry-run reconciliation, findings with what-it-means / how-it-happens / what-to-do, a live side-by-side diff, and run history. |
+| **Ledger** | The provider's own record, with duplicates and orphans highlighted. |
+| **Guarantees** | G1–G5, each with its condition and a live check against current data, plus the documented duplicate gaps. |
+| **Learn** | A scrollytelling walk through one action's life, and the concept docs rendered with their diagrams. |
+
+The console also has ⌘K to jump anywhere or run a preset, light and dark themes, and smooth scrolling. All motion respects the OS reduced-motion setting.
 
 ```bash
-make web-install   # once; needs Node >= 20 (npm)
-make dev           # also starts the console's dev server: http://127.0.0.1:5173/ui/
-make web-build     # or build it once; `oneshot serve` then serves it at http://127.0.0.1:8700/ui/
+make web-install   # once; needs Node >= 20
+make dev           # lab mode: the API supervises the provider + worker; console at http://127.0.0.1:5173/ui/
+make web-build     # or build once; `oneshot serve` then serves the console at http://127.0.0.1:8700/ui/
 ```
 
-Milestone M1 (Actions board and Action detail) is built. Chaos, Reconcile, Provider ledger, Guarantees and Learn are planned; see [docs/FRONTEND_PLAN.md](docs/FRONTEND_PLAN.md). The console only uses the JSON API, and the backend works without Node.
+Lab controls (faults, presets, killing processes) exist only with `ONESHOT_LAB=1`, which `make dev` sets, because a real backend never controls its provider's failures. The console talks to OneShot only through its JSON API. The design rationale and the research behind it are in [docs/FRONTEND_DESIGN.md](docs/FRONTEND_DESIGN.md).
 
 | Command | Purpose |
 |---|---|
