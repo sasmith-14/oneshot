@@ -36,6 +36,8 @@ packages = ["oneshot", "fakeprovider"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-ra"
+# Upstream Starlette deprecation in fastapi.testclient (not our code).
+filterwarnings = ["ignore:Using `httpx` with `starlette.testclient`"]
 markers = [
     "integration: starts real subprocesses (fake provider, worker) and talks over real sockets",
 ]

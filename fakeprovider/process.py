@@ -56,6 +56,8 @@ class ProviderProcess:
             "--timeout-hang", str(self.timeout_hang),
             "--slow-delay", str(self.slow_delay),
         ]  # fmt: skip
+        if self._log_file is not None:  # left open by a crashed previous run
+            self._log_file.close()
         if self.log_path:
             self._log_file = open(self.log_path, "ab")
             out = self._log_file
