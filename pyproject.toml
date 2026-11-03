@@ -40,4 +40,5 @@ addopts = "-ra"
 filterwarnings = ["ignore:Using `httpx` with `starlette.testclient`"]
 markers = [
     "integration: starts real subprocesses (fake provider, worker) and talks over real sockets",
+    "e2e: drives the built web console in headless Chromium (needs `make web-build`)",
 ]

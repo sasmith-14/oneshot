@@ -1,5 +1,5 @@
 # Convenience targets. Every target is a thin wrapper around a documented uv command.
-.PHONY: install test test-unit demo dev docs docs-capture clean
+.PHONY: install test test-unit demo dev docs docs-capture clean web-install web-build web-test
 
 install:        ## install all dependencies (including the docs extra)
 	uv sync --extra docs
@@ -21,6 +21,15 @@ docs:           ## regenerate every PDF in docs/pdf from docs/src + EXPERIMENTS.
 
 docs-capture:   ## re-run tests and demos and refresh docs/src/outputs (then run `make docs`)
 	uv run python scripts/capture_outputs.py
+
+web-install:    ## install the web console's npm dependencies (needs Node >= 20)
+	cd web && npm ci
+
+web-build:      ## build the web console; `oneshot serve` then serves it at /ui/
+	cd web && npm run build
+
+web-test:       ## web console unit tests (Vitest) + type check
+	cd web && npm run typecheck && npm test
 
 clean:          ## delete local runtime state
 	rm -rf var docs/build
