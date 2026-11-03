@@ -230,8 +230,14 @@ class LabContext:
         return action.id, created
 
 
-def _charge(ctx: LabContext, customer: str = "cus_lab", amount: int = 1500) -> dict[str, Any]:
-    return {"amount_cents": amount, "currency": "USD", "customer": customer}
+def _charge(ctx: LabContext, customer: str | None = None, amount: int | None = None) -> dict[str, Any]:
+    # Each run gets its own customer and amount, so two different presets never
+    # look like the same request (which reconciliation would rightly flag).
+    return {
+        "amount_cents": amount or 1000 + int(ctx.run_id, 16) % 9000,
+        "currency": "USD",
+        "customer": customer or f"cus_lab_{ctx.run_id}",
+    }
 
 
 def _message(ctx: LabContext, body: str = "Your order shipped") -> dict[str, Any]:

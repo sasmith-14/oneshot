@@ -93,6 +93,9 @@ def test_every_unmanaged_preset_matches_its_description(settings, tmp_path):
             n_effects = [len(provider.effects(reference=i)) for i in ids]
             assert (got, n_effects) == (statuses, effects), name
             api.delete("/lab/faults")
+        # Only the preset that is *meant* to look like a duplicate request does.
+        report = api.post("/reconcile?apply=false").json()
+        assert report["summary"].get("SUSPECTED_DUPLICATE_REQUEST") == 1
 
 
 @pytest.mark.integration
