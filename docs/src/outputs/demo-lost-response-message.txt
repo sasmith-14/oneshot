@@ -4,29 +4,29 @@ $ python -m oneshot demo lost-response-message
 ─────────────────────────────────────────── OneShot demo ───────────────────────────────────────────
 Each scenario uses a fresh provider process with its own ledger, a fresh OneShot database, and real 
 worker processes. Faults are injected at the provider (or as failpoints in the worker).
-Working directory: $TMPDIR/oneshot-demo-lfotl435
+Working directory: $TMPDIR/oneshot-demo-29ab7okk
 
 1/1  lost-response-message: Message sent, but the response is lost (NON-idempotent endpoint) ───────
   > fault armed at the provider: lost_response on /v1/messages
-  > agent POST /actions Idempotency-Key=agent-notify-2001 -> HTTP 201 act_105866f5ee26: message to 
+  > agent POST /actions Idempotency-Key=agent-notify-2001 -> HTTP 201 act_ee52ad63cf88: message to 
 +15550100: 'Your order has shipped'
   > start worker process
   > worker process finished: every action is SUCCEEDED, FAILED or UNKNOWN (exit 0)
   OneShot's record (event timeline):
-  act_105866f5ee26  message to +15550100: 'Your order has shipped'  SUCCEEDED
+  act_ee52ad63cf88  message to +15550100: 'Your order has shipped'  SUCCEEDED
     +  0.00s (new) -> PENDING  accepted and durably recorded
-    +  0.07s PENDING -> IN_FLIGHT  attempt 1: claimed by worker-87187, intent recorded before 
+    +  0.07s PENDING -> IN_FLIGHT  attempt 1: claimed by worker-88942, intent recorded before 
 sending
     +  0.07s IN_FLIGHT -> VERIFYING  connection dropped before a response arrived; outcome unknown 
 and provider does not deduplicate -> check provider's record at settle time (+1.50s) before deciding
-    +  1.62s VERIFYING -> SUCCEEDED  provider's record shows the effect was applied (eff_00001); not
+    +  1.58s VERIFYING -> SUCCEEDED  provider's record shows the effect was applied (eff_00001); not
 retrying.
   Provider's side of the story (its log):
-    POST /v1/messages ref=act_105866f5ee26 key=- mode=lost_response -> APPLIED eff_00001, response 
+    POST /v1/messages ref=act_ee52ad63cf88 key=- mode=lost_response -> APPLIED eff_00001, response 
 deliberately dropped
   Provider's independent ledger:
-    act_105866f5ee26: 1 effect(s) ['eff_00001']
-  [PASS] act_105866f5ee26 is SUCCEEDED and provider ledger has 1 effect(s) (observed: SUCCEEDED, 1)
+    act_ee52ad63cf88: 1 effect(s) ['eff_00001']
+  [PASS] act_ee52ad63cf88 is SUCCEEDED and provider ledger has 1 effect(s) (observed: SUCCEEDED, 1)
   [PASS] was sent only once
   Lesson: No idempotency => a blind retry could send the message twice. OneShot VERIFIES instead: it
 waits for the settle window, looks the reference up in the provider's record, finds it, and does not

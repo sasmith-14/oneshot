@@ -4,42 +4,42 @@ $ python -m oneshot demo slow-provider-duplicate
 ─────────────────────────────────────────── OneShot demo ───────────────────────────────────────────
 Each scenario uses a fresh provider process with its own ledger, a fresh OneShot database, and real 
 worker processes. Faults are injected at the provider (or as failpoints in the worker).
-Working directory: $TMPDIR/oneshot-demo-osurji3i
+Working directory: $TMPDIR/oneshot-demo-wnnmn752
 
 1/1  slow-provider-duplicate: HONEST GAP: provider is slower than OneShot's settle assumption ──────
   > fault armed at the provider: slow_success on /v1/messages
-  > agent POST /actions Idempotency-Key=agent-notify-2004 -> HTTP 201 act_fedb71df991d: message to 
+  > agent POST /actions Idempotency-Key=agent-notify-2004 -> HTTP 201 act_32f4ce8e68f4: message to 
 +15550100: 'Your refund is on its way'
   > start worker process
   > worker process finished: every action is SUCCEEDED, FAILED or UNKNOWN (exit 0)
   ...waiting for the slow original request to land at the provider
   OneShot's record (event timeline):
-  act_fedb71df991d  message to +15550100: 'Your refund is on its way'  SUCCEEDED
+  act_32f4ce8e68f4  message to +15550100: 'Your refund is on its way'  SUCCEEDED
     +  0.00s (new) -> PENDING  accepted and durably recorded
-    +  0.07s PENDING -> IN_FLIGHT  attempt 1: claimed by worker-87207, intent recorded before 
+    +  0.07s PENDING -> IN_FLIGHT  attempt 1: claimed by worker-88966, intent recorded before 
 sending
     +  1.07s IN_FLIGHT -> VERIFYING  timed out waiting for the response; outcome unknown and 
 provider does not deduplicate -> check provider's record at settle time (+0.50s) before deciding
-    +  1.62s VERIFYING -> PENDING  no record 1.5s after the last send -> treated as NOT applied 
+    +  1.60s VERIFYING -> PENDING  no record 1.5s after the last send -> treated as NOT applied 
 (assumes provider settles within that window) -> safe to retry
-    +  1.63s PENDING -> IN_FLIGHT  attempt 2: claimed by worker-87207, intent recorded before 
+    +  1.60s PENDING -> IN_FLIGHT  attempt 2: claimed by worker-88966, intent recorded before 
 sending
-    +  1.63s IN_FLIGHT -> SUCCEEDED  provider confirmed: applied as eff_00001
+    +  1.60s IN_FLIGHT -> SUCCEEDED  provider confirmed: applied as eff_00001
   Provider's side of the story (its log):
-    POST /v1/messages ref=act_fedb71df991d key=- mode=slow_success -> processing slowly (4s) before 
+    POST /v1/messages ref=act_32f4ce8e68f4 key=- mode=slow_success -> processing slowly (4s) before 
 applying
-    POST /v1/messages ref=act_fedb71df991d key=- mode=success -> APPLIED eff_00001, responding 201
-    POST /v1/messages ref=act_fedb71df991d key=- mode=slow_success -> APPLIED eff_00002, responding 
+    POST /v1/messages ref=act_32f4ce8e68f4 key=- mode=success -> APPLIED eff_00001, responding 201
+    POST /v1/messages ref=act_32f4ce8e68f4 key=- mode=slow_success -> APPLIED eff_00002, responding 
 201
   Provider's independent ledger:
-    act_fedb71df991d: 2 effect(s) ['eff_00001', 'eff_00002']
+    act_32f4ce8e68f4: 2 effect(s) ['eff_00001', 'eff_00002']
   [PASS] the duplicate really happened (2 effects)
   > run reconciliation against the provider's ledger
 Reconciliation (applied): 1 actions vs 2 provider effects                                           
 ┏━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
 ┃ finding          ┃ action           ┃ provider effects     ┃ details                             ┃
 ┡━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
-│ DUPLICATE_EFFECT │ act_fedb71df991d │ eff_00001, eff_00002 │ provider applied this action 2      │
+│ DUPLICATE_EFFECT │ act_32f4ce8e68f4 │ eff_00001, eff_00002 │ provider applied this action 2      │
 │                  │                  │                      │ times (eff_00001, eff_00002);       │
 │                  │                  │                      │ duplicate slipped past every layer  │
 │                  │                  │                      │ - compensate (e.g. refund) and      │
@@ -58,5 +58,5 @@ provider's real ledger)
 ┏━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━┳━━━━━━━━┓
 ┃ scenario                ┃ checks ┃ time ┃ result ┃
 ┡━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━╇━━━━━━╇━━━━━━━━┩
-│ slow-provider-duplicate │    2/2 │ 4.3s │ PASS   │
+│ slow-provider-duplicate │    2/2 │ 4.2s │ PASS   │
 └─────────────────────────┴────────┴──────┴────────┘

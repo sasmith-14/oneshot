@@ -19,4 +19,4 @@ tests/test_fake_provider.py::test_expired_idempotency_key_allows_a_duplicate PAS
 tests/test_fake_provider.py::test_every_fault_mode_is_documented_as_applying_or_not PASSED   [ 92%]
 tests/test_fake_provider.py::test_error_after_apply_returns_500_but_effect_exists PASSED     [100%]
 
-======================================== 14 passed in 5.11s ========================================
+======================================== 14 passed in 5.07s ========================================

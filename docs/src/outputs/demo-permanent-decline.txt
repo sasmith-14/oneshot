@@ -4,26 +4,26 @@ $ python -m oneshot demo permanent-decline
 ─────────────────────────────────────────── OneShot demo ───────────────────────────────────────────
 Each scenario uses a fresh provider process with its own ledger, a fresh OneShot database, and real 
 worker processes. Faults are injected at the provider (or as failpoints in the worker).
-Working directory: $TMPDIR/oneshot-demo-y11zv2c_
+Working directory: $TMPDIR/oneshot-demo-fc5i_b0l
 
 1/1  permanent-decline: Card is declined ───────────────────────────────────────────────────────────
-  > agent POST /actions Idempotency-Key=agent-order-1003 -> HTTP 201 act_6577af010139: charge 
+  > agent POST /actions Idempotency-Key=agent-order-1003 -> HTTP 201 act_19b7afe5e3a3: charge 
 cus_declined 42.00 USD
   > start worker process
   > worker process finished: every action is SUCCEEDED, FAILED or UNKNOWN (exit 0)
   OneShot's record (event timeline):
-  act_6577af010139  charge cus_declined 42.00 USD  FAILED
+  act_19b7afe5e3a3  charge cus_declined 42.00 USD  FAILED
     +  0.00s (new) -> PENDING  accepted and durably recorded
-    +  0.07s PENDING -> IN_FLIGHT  attempt 1: claimed by worker-87180, intent recorded before 
+    +  0.07s PENDING -> IN_FLIGHT  attempt 1: claimed by worker-88936, intent recorded before 
 sending
     +  0.07s IN_FLIGHT -> FAILED  provider rejected permanently (HTTP 402 declined); not applied, 
 not retrying
   Provider's side of the story (its log):
-    POST /v1/charges ref=act_6577af010139 key=act_6577af010139 mode=success -> 402 declined (not 
+    POST /v1/charges ref=act_19b7afe5e3a3 key=act_19b7afe5e3a3 mode=success -> 402 declined (not 
 applied)
   Provider's independent ledger:
-    act_6577af010139: 0 effect(s) []
-  [PASS] act_6577af010139 is FAILED and provider ledger has 0 effect(s) (observed: FAILED, 0)
+    act_19b7afe5e3a3: 0 effect(s) []
+  [PASS] act_19b7afe5e3a3 is FAILED and provider ledger has 0 effect(s) (observed: FAILED, 0)
   [PASS] was not retried
   Lesson: A permanent rejection is a definite answer: FAILED immediately, no retries, nothing 
 applied.
@@ -33,5 +33,5 @@ the provider's real ledger)
 ┏━━━━━━━━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━┳━━━━━━━━┓
 ┃ scenario          ┃ checks ┃ time ┃ result ┃
 ┡━━━━━━━━━━━━━━━━━━━╇━━━━━━━━╇━━━━━━╇━━━━━━━━┩
-│ permanent-decline │    2/2 │ 0.1s │ PASS   │
+│ permanent-decline │    2/2 │ 0.2s │ PASS   │
 └───────────────────┴────────┴──────┴────────┘

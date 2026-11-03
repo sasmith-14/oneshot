@@ -36,4 +36,4 @@ tests/test_invariants.py::test_guarantees_hold_under_random_fault_sequences[1] P
 tests/test_invariants.py::test_guarantees_hold_under_random_fault_sequences[2] PASSED        [ 96%]
 tests/test_invariants.py::test_guarantees_hold_under_random_fault_sequences[3] PASSED        [100%]
 
-======================================= 31 passed in 47.37s ========================================
+======================================= 31 passed in 46.84s ========================================

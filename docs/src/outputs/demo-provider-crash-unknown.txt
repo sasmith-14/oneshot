@@ -4,16 +4,16 @@ $ python -m oneshot demo provider-crash-unknown
 ─────────────────────────────────────────── OneShot demo ───────────────────────────────────────────
 Each scenario uses a fresh provider process with its own ledger, a fresh OneShot database, and real 
 worker processes. Faults are injected at the provider (or as failpoints in the worker).
-Working directory: $TMPDIR/oneshot-demo-fj82sh8h
+Working directory: $TMPDIR/oneshot-demo-u2tpqluc
 
 1/1  provider-crash-unknown: Provider crashes right after applying, and stays down ─────────────────
   > fault armed at the provider: crash_after_apply on /v1/messages
-  > agent POST /actions Idempotency-Key=agent-notify-2003 -> HTTP 201 act_a5e50870ea40: message to 
+  > agent POST /actions Idempotency-Key=agent-notify-2003 -> HTTP 201 act_eb4e6c32e96b: message to 
 +15550100: 'Your order has shipped'
   > start worker process
   > worker process finished: every action is SUCCEEDED, FAILED or UNKNOWN (exit 0)
   Provider's side of the story (its log):
-    POST /v1/messages ref=act_a5e50870ea40 key=- mode=crash_after_apply -> APPLIED eff_00001, then 
+    POST /v1/messages ref=act_eb4e6c32e96b key=- mode=crash_after_apply -> APPLIED eff_00001, then 
 CRASHING (exit 3)
   [PASS] action ended UNKNOWN while the provider was down
   > provider restarted (its ledger file survived the crash)
@@ -22,29 +22,29 @@ Reconciliation (applied): 1 actions vs 1 provider effects
 ┏━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
 ┃ finding            ┃ action           ┃ provider effects ┃ details                               ┃
 ┡━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
-│ RESOLVED_SUCCEEDED │ act_a5e50870ea40 │ eff_00001        │ UNKNOWN -> SUCCEEDED: provider has    │
+│ RESOLVED_SUCCEEDED │ act_eb4e6c32e96b │ eff_00001        │ UNKNOWN -> SUCCEEDED: provider has    │
 │                    │                  │                  │ eff_00001                             │
 └────────────────────┴──────────────────┴──────────────────┴───────────────────────────────────────┘
                     0 action(s) matched the provider exactly (hidden; use --all)                    
   OneShot's record (event timeline):
-  act_a5e50870ea40  message to +15550100: 'Your order has shipped'  SUCCEEDED
+  act_eb4e6c32e96b  message to +15550100: 'Your order has shipped'  SUCCEEDED
     +  0.00s (new) -> PENDING  accepted and durably recorded
-    +  0.07s PENDING -> IN_FLIGHT  attempt 1: claimed by worker-87200, intent recorded before 
+    +  0.07s PENDING -> IN_FLIGHT  attempt 1: claimed by worker-88959, intent recorded before 
 sending
     +  0.07s IN_FLIGHT -> VERIFYING  connection dropped before a response arrived; outcome unknown 
 and provider does not deduplicate -> check provider's record at settle time (+1.50s) before deciding
-    +  1.60s VERIFYING -> VERIFYING  could not check provider (lookup failed: ConnectError); will 
+    +  1.57s VERIFYING -> VERIFYING  could not check provider (lookup failed: ConnectError); will 
 try again in 0.30s (check 1/3)
-    +  1.90s VERIFYING -> VERIFYING  could not check provider (lookup failed: ConnectError); will 
+    +  1.92s VERIFYING -> VERIFYING  could not check provider (lookup failed: ConnectError); will 
 try again in 0.60s (check 2/3)
-    +  2.51s VERIFYING -> UNKNOWN  could not check provider after 3 tries (lookup failed: 
+    +  2.56s VERIFYING -> UNKNOWN  could not check provider after 3 tries (lookup failed: 
 ConnectError); outcome cannot be determined -> needs investigation / reconciliation
-    +  2.62s UNKNOWN -> SUCCEEDED  resolved by reconciler: provider ledger shows effect eff_00001
+    +  2.69s UNKNOWN -> SUCCEEDED  resolved by reconciler: provider ledger shows effect eff_00001
     resolution: reconciler: provider ledger shows effect eff_00001
   Provider's independent ledger:
-    act_a5e50870ea40: 1 effect(s) ['eff_00001']
+    act_eb4e6c32e96b: 1 effect(s) ['eff_00001']
   [PASS] reconciliation resolved it
-  [PASS] act_a5e50870ea40 is SUCCEEDED and provider ledger has 1 effect(s) (observed: SUCCEEDED, 1)
+  [PASS] act_eb4e6c32e96b is SUCCEEDED and provider ledger has 1 effect(s) (observed: SUCCEEDED, 1)
   Lesson: Ambiguous outcome + no way to check = UNKNOWN, an honest 'we do not know'. When the 
 provider is back, reconciliation reads its ledger and resolves UNKNOWN to SUCCEEDED.
 
@@ -53,5 +53,5 @@ provider's real ledger)
 ┏━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━┳━━━━━━━━┓
 ┃ scenario               ┃ checks ┃ time ┃ result ┃
 ┡━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━╇━━━━━━╇━━━━━━━━┩
-│ provider-crash-unknown │    3/3 │ 2.6s │ PASS   │
+│ provider-crash-unknown │    3/3 │ 2.7s │ PASS   │
 └────────────────────────┴────────┴──────┴────────┘

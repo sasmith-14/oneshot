@@ -30,4 +30,4 @@ tests/test_scenarios.py::test_settings_reject_lease_shorter_than_timeout PASSED 
 tests/test_scenarios.py::test_error_after_apply_charge_is_retried_and_replayed_once PASSED   [ 96%]
 tests/test_scenarios.py::test_error_after_apply_message_is_verified_not_resent PASSED        [100%]
 
-======================================= 25 passed in 28.37s ========================================
+======================================= 25 passed in 27.61s ========================================

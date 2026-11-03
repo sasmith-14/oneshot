@@ -90,8 +90,8 @@ def test_error_after_apply_charge_is_retried_and_replayed_once(store, client, cf
 
 ```text
 test_fault_mode_applies_effect_exactly_as_declared[error_after_apply]
-test_guarantees_hold_for_every_fault_mode_and_action_type[payment.charge-error_after_apply]
-test_guarantees_hold_for_every_fault_mode_and_action_type[message.send-error_after_apply]
+test_guarantees_hold_for_every_fault_mode_and_action_type[error_after_apply-payment.charge]
+test_guarantees_hold_for_every_fault_mode_and_action_type[error_after_apply-message.send]
 ```
 
 If you had declared `applies_effect` wrongly, or if the mode broke a guarantee for any action type, these would fail. The full, real output of the invariant suite:

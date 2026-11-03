@@ -27,4 +27,4 @@ tests/test_policy.py::test_retry_scheduled_past_retention_window_is_not_a_blind_
 tests/test_policy.py::test_pre_send_guard_cancels_a_late_retry PASSED                        [ 95%]
 tests/test_policy.py::test_in_progress_waits_at_least_the_settle_window PASSED               [100%]
 
-======================================== 22 passed in 0.01s ========================================
+======================================== 22 passed in 0.02s ========================================

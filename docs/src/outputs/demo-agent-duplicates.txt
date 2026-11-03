@@ -4,45 +4,45 @@ $ python -m oneshot demo agent-duplicates
 ─────────────────────────────────────────── OneShot demo ───────────────────────────────────────────
 Each scenario uses a fresh provider process with its own ledger, a fresh OneShot database, and real 
 worker processes. Faults are injected at the provider (or as failpoints in the worker).
-Working directory: $TMPDIR/oneshot-demo-v87oe3rq
+Working directory: $TMPDIR/oneshot-demo-4zje8sjf
 
 1/1  agent-duplicates: The agent submits the same request twice ────────────────────────────────────
-  > agent POST /actions Idempotency-Key=agent-order-1005 -> HTTP 201 act_096200983a97: charge 
+  > agent POST /actions Idempotency-Key=agent-order-1005 -> HTTP 201 act_e167a78e8227: charge 
 cus_ada 42.00 USD
-  > agent POST /actions Idempotency-Key=agent-order-1005 -> HTTP 200 act_096200983a97: charge 
+  > agent POST /actions Idempotency-Key=agent-order-1005 -> HTTP 200 act_e167a78e8227: charge 
 cus_ada 42.00 USD (replayed: same key, no new action)
   [PASS] same key returned the same action
-  > agent POST /actions Idempotency-Key=agent-order-1005-retry -> HTTP 201 act_e1e0de824cfe: charge 
+  > agent POST /actions Idempotency-Key=agent-order-1005-retry -> HTTP 201 act_661d4c560b53: charge 
 cus_ada 42.00 USD
   > start worker process
   > worker process finished: every action is SUCCEEDED, FAILED or UNKNOWN (exit 0)
   OneShot's record (event timeline):
-  act_096200983a97  charge cus_ada 42.00 USD  SUCCEEDED
+  act_e167a78e8227  charge cus_ada 42.00 USD  SUCCEEDED
     +  0.00s (new) -> PENDING  accepted and durably recorded
-    +  0.07s PENDING -> IN_FLIGHT  attempt 1: claimed by worker-87193, intent recorded before 
+    +  0.07s PENDING -> IN_FLIGHT  attempt 1: claimed by worker-88948, intent recorded before 
 sending
     +  0.07s IN_FLIGHT -> SUCCEEDED  provider confirmed: applied as eff_00001
-  act_e1e0de824cfe  charge cus_ada 42.00 USD  SUCCEEDED
+  act_661d4c560b53  charge cus_ada 42.00 USD  SUCCEEDED
     +  0.00s (new) -> PENDING  accepted and durably recorded
-    +  0.07s PENDING -> IN_FLIGHT  attempt 1: claimed by worker-87193, intent recorded before 
+    +  0.07s PENDING -> IN_FLIGHT  attempt 1: claimed by worker-88948, intent recorded before 
 sending
     +  0.07s IN_FLIGHT -> SUCCEEDED  provider confirmed: applied as eff_00002
   Provider's side of the story (its log):
-    POST /v1/charges ref=act_096200983a97 key=act_096200983a97 mode=success -> APPLIED eff_00001, 
+    POST /v1/charges ref=act_e167a78e8227 key=act_e167a78e8227 mode=success -> APPLIED eff_00001, 
 responding 201
-    POST /v1/charges ref=act_e1e0de824cfe key=act_e1e0de824cfe mode=success -> APPLIED eff_00002, 
+    POST /v1/charges ref=act_661d4c560b53 key=act_661d4c560b53 mode=success -> APPLIED eff_00002, 
 responding 201
   Provider's independent ledger:
-    act_096200983a97: 1 effect(s) ['eff_00001']
-    act_e1e0de824cfe: 1 effect(s) ['eff_00002']
+    act_e167a78e8227: 1 effect(s) ['eff_00001']
+    act_661d4c560b53: 1 effect(s) ['eff_00002']
   > run reconciliation against the provider's ledger
 Reconciliation (applied): 2 actions vs 2 provider effects                                           
 ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
 ┃ finding                     ┃ action           ┃ provider effects ┃ details                      ┃
 ┡━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
-│ SUSPECTED_DUPLICATE_REQUEST │ act_e1e0de824cfe │ -                │ act_e1e0de824cfe has the     │
+│ SUSPECTED_DUPLICATE_REQUEST │ act_661d4c560b53 │ -                │ act_661d4c560b53 has the     │
 │                             │                  │                  │ same type and payload as     │
-│                             │                  │                  │ act_096200983a97, submitted  │
+│                             │                  │                  │ act_e167a78e8227, submitted  │
 │                             │                  │                  │ 0.0s apart under different   │
 │                             │                  │                  │ Idempotency-Keys             │
 └─────────────────────────────┴──────────────────┴──────────────────┴──────────────────────────────┘
