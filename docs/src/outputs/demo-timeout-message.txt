@@ -1,0 +1,43 @@
+$ python -m oneshot demo timeout-message
+# captured 2026-11-03 by scripts/capture_outputs.py (exit code 0)
+
+─────────────────────────────────────────── OneShot demo ───────────────────────────────────────────
+Each scenario uses a fresh provider process with its own ledger, a fresh OneShot database, and real 
+worker processes. Faults are injected at the provider (or as failpoints in the worker).
+Working directory: $TMPDIR/oneshot-demo-4zfa6zjf
+
+1/1  timeout-message: Provider hangs and never applies the message ─────────────────────────────────
+  > fault armed at the provider: timeout on /v1/messages
+  > agent POST /actions Idempotency-Key=agent-notify-2002 -> HTTP 201 act_8fd5c87d709c: message to 
++15550100: 'Your order has shipped'
+  > start worker process
+  > worker process finished: every action is SUCCEEDED, FAILED or UNKNOWN (exit 0)
+  OneShot's record (event timeline):
+  act_8fd5c87d709c  message to +15550100: 'Your order has shipped'  SUCCEEDED
+    +  0.00s (new) -> PENDING  accepted and durably recorded
+    +  0.07s PENDING -> IN_FLIGHT  attempt 1: claimed by worker-87190, intent recorded before 
+sending
+    +  1.07s IN_FLIGHT -> VERIFYING  timed out waiting for the response; outcome unknown and 
+provider does not deduplicate -> check provider's record at settle time (+0.50s) before deciding
+    +  1.63s VERIFYING -> PENDING  no record 1.5s after the last send -> treated as NOT applied 
+(assumes provider settles within that window) -> safe to retry
+    +  1.63s PENDING -> IN_FLIGHT  attempt 2: claimed by worker-87190, intent recorded before 
+sending
+    +  1.64s IN_FLIGHT -> SUCCEEDED  provider confirmed: applied as eff_00001
+  Provider's side of the story (its log):
+    POST /v1/messages ref=act_8fd5c87d709c key=- mode=timeout -> hanging 1.2s, will NOT apply, then 
+drop connection
+    POST /v1/messages ref=act_8fd5c87d709c key=- mode=success -> APPLIED eff_00001, responding 201
+  Provider's independent ledger:
+    act_8fd5c87d709c: 1 effect(s) ['eff_00001']
+  [PASS] act_8fd5c87d709c is SUCCEEDED and provider ledger has 1 effect(s) (observed: SUCCEEDED, 1)
+  Lesson: From the outside this timeout looks IDENTICAL to the lost response above. Verification is 
+what tells them apart: here the record is absent after the settle window, so a resend is safe.
+
+Scorecard (every expectation checked against
+the provider's real ledger)                 
+┏━━━━━━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━┳━━━━━━━━┓
+┃ scenario        ┃ checks ┃ time ┃ result ┃
+┡━━━━━━━━━━━━━━━━━╇━━━━━━━━╇━━━━━━╇━━━━━━━━┩
+│ timeout-message │    1/1 │ 1.7s │ PASS   │
+└─────────────────┴────────┴──────┴────────┘

@@ -1,0 +1,18 @@
+$ python -m pytest -v tests/test_reconciler.py tests/test_api.py
+# captured 2026-11-03 by scripts/capture_outputs.py (exit code 0)
+
+======================================= test session starts ========================================
+collecting ... collected 10 items
+
+tests/test_reconciler.py::test_each_mismatch_is_classified PASSED                            [ 10%]
+tests/test_reconciler.py::test_unknown_is_only_resolved_failed_after_the_settle_window PASSED [ 20%]
+tests/test_reconciler.py::test_identical_requests_under_different_keys_are_only_a_warning PASSED [ 30%]
+tests/test_api.py::test_submit_then_replay_same_key PASSED                                   [ 40%]
+tests/test_api.py::test_key_reuse_with_different_payload_is_422 PASSED                       [ 50%]
+tests/test_api.py::test_idempotency_key_is_required PASSED                                   [ 60%]
+tests/test_api.py::test_invalid_payload_and_unknown_type_are_400 PASSED                      [ 70%]
+tests/test_api.py::test_payload_is_normalised_before_fingerprinting PASSED                   [ 80%]
+tests/test_api.py::test_get_action_has_timeline PASSED                                       [ 90%]
+tests/test_api.py::test_resolve_only_unknown PASSED                                          [100%]
+
+======================================== 10 passed in 0.20s ========================================

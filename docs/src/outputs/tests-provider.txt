@@ -1,0 +1,22 @@
+$ python -m pytest -v tests/test_fake_provider.py
+# captured 2026-11-03 by scripts/capture_outputs.py (exit code 0)
+
+======================================= test session starts ========================================
+collecting ... collected 14 items
+
+tests/test_fake_provider.py::test_success_records_effect_in_ledger PASSED                    [  7%]
+tests/test_fake_provider.py::test_same_idempotency_key_replays_without_new_effect PASSED     [ 14%]
+tests/test_fake_provider.py::test_key_reused_with_different_body_is_rejected PASSED          [ 21%]
+tests/test_fake_provider.py::test_messages_endpoint_ignores_idempotency_keys PASSED          [ 28%]
+tests/test_fake_provider.py::test_decline_and_unavailable_apply_nothing PASSED               [ 35%]
+tests/test_fake_provider.py::test_unavailable_releases_key_so_retry_can_succeed PASSED       [ 42%]
+tests/test_fake_provider.py::test_lost_response_applies_effect_but_client_sees_disconnect PASSED [ 50%]
+tests/test_fake_provider.py::test_timeout_applies_nothing_but_client_cannot_tell PASSED      [ 57%]
+tests/test_fake_provider.py::test_slow_success_applies_after_client_gave_up PASSED           [ 64%]
+tests/test_fake_provider.py::test_crash_after_apply_keeps_evidence_across_restart PASSED     [ 71%]
+tests/test_fake_provider.py::test_crash_before_apply_leaves_no_effect_and_frees_key PASSED   [ 78%]
+tests/test_fake_provider.py::test_expired_idempotency_key_allows_a_duplicate PASSED          [ 85%]
+tests/test_fake_provider.py::test_every_fault_mode_is_documented_as_applying_or_not PASSED   [ 92%]
+tests/test_fake_provider.py::test_error_after_apply_returns_500_but_effect_exists PASSED     [100%]
+
+======================================== 14 passed in 5.11s ========================================

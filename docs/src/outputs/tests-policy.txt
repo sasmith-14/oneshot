@@ -1,0 +1,30 @@
+$ python -m pytest -v tests/test_policy.py
+# captured 2026-11-03 by scripts/capture_outputs.py (exit code 0)
+
+======================================= test session starts ========================================
+collecting ... collected 22 items
+
+tests/test_policy.py::test_applied_succeeds PASSED                                           [  4%]
+tests/test_policy.py::test_permanent_rejection_fails_without_retry PASSED                    [  9%]
+tests/test_policy.py::test_provably_not_applied_is_retried_for_every_action_type[payment.charge] PASSED [ 13%]
+tests/test_policy.py::test_provably_not_applied_is_retried_for_every_action_type[message.send] PASSED [ 18%]
+tests/test_policy.py::test_provably_not_applied_is_retried_for_every_action_type[test.blind] PASSED [ 22%]
+tests/test_policy.py::test_retries_exhausted_with_only_clean_failures_is_failed PASSED       [ 27%]
+tests/test_policy.py::test_retries_exhausted_after_an_ambiguous_attempt_is_never_failed PASSED [ 31%]
+tests/test_policy.py::test_ambiguous_idempotent_retries_with_same_key PASSED                 [ 36%]
+tests/test_policy.py::test_ambiguous_non_idempotent_verifies_instead_of_retrying PASSED      [ 40%]
+tests/test_policy.py::test_ambiguous_without_idempotency_or_lookup_is_unknown PASSED         [ 45%]
+tests/test_policy.py::test_in_progress_and_crash_are_treated_as_ambiguous PASSED             [ 50%]
+tests/test_policy.py::test_same_key_retry_stops_before_provider_forgets_the_key PASSED       [ 54%]
+tests/test_policy.py::test_verify_found_means_succeeded PASSED                               [ 59%]
+tests/test_policy.py::test_verify_absent_after_settle_retries PASSED                         [ 63%]
+tests/test_policy.py::test_verify_absent_before_settle_waits PASSED                          [ 68%]
+tests/test_policy.py::test_verify_failures_end_in_unknown PASSED                             [ 72%]
+tests/test_policy.py::test_verify_found_twice_flags_duplicate PASSED                         [ 77%]
+tests/test_policy.py::test_backoff_grows_exponentially_and_is_capped PASSED                  [ 81%]
+tests/test_policy.py::test_jittered_backoff_stays_within_bounds PASSED                       [ 86%]
+tests/test_policy.py::test_retry_scheduled_past_retention_window_is_not_a_blind_retry PASSED [ 90%]
+tests/test_policy.py::test_pre_send_guard_cancels_a_late_retry PASSED                        [ 95%]
+tests/test_policy.py::test_in_progress_waits_at_least_the_settle_window PASSED               [100%]
+
+======================================== 22 passed in 0.01s ========================================

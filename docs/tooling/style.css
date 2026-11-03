@@ -1,0 +1,96 @@
+/* Print stylesheet for the OneShot learning docs (rendered by scripts/build_docs.py). */
+
+:root {
+  --ink: #1d2330;
+  --muted: #5b6475;
+  --rule: #e2e5eb;
+  --accent: #2b59c3;
+  --accent-soft: #eef3fd;
+  --good: #1f7a4d;
+  --good-soft: #ecf7f1;
+  --bad: #b3261e;
+  --bad-soft: #fcefee;
+  --warn-soft: #fff7e6;
+  --code-bg: #f6f7f9;
+}
+
+@page { size: A4; }
+
+html { font-size: 10.2pt; }
+body {
+  font-family: "Charter", "Georgia", "Times New Roman", serif;
+  color: var(--ink);
+  line-height: 1.5;
+  margin: 0;
+}
+main { max-width: 100%; }
+
+h1, h2, h3, h4 { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; line-height: 1.25; break-after: avoid; }
+h1 {
+  font-size: 22pt; margin: 0 0 4pt; padding-bottom: 6pt;
+  border-bottom: 3pt solid var(--accent);
+}
+h1 + p { color: var(--muted); font-size: 11pt; margin-top: 6pt; }
+h2 { font-size: 14.5pt; margin: 20pt 0 6pt; color: var(--accent); border-bottom: 0.6pt solid var(--rule); padding-bottom: 3pt; }
+h3 { font-size: 11.5pt; margin: 14pt 0 4pt; }
+h4 { font-size: 10.5pt; margin: 10pt 0 3pt; color: var(--muted); }
+
+p, li { orphans: 3; widows: 3; }
+a { color: var(--accent); text-decoration: none; }
+strong { color: #0f1420; }
+hr { border: 0; border-top: 0.6pt solid var(--rule); margin: 14pt 0; }
+
+code {
+  font-family: "SF Mono", Menlo, Consolas, monospace;
+  font-size: 8.6pt;
+  background: var(--code-bg);
+  padding: 0.5pt 3pt;
+  border-radius: 3pt;
+}
+pre {
+  font-family: "SF Mono", Menlo, Consolas, monospace;
+  font-size: 7.6pt;
+  line-height: 1.38;
+  background: var(--code-bg);
+  border: 0.6pt solid var(--rule);
+  border-left: 2.5pt solid #c9d3e6;
+  border-radius: 4pt;
+  padding: 7pt 9pt;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+pre code { background: none; padding: 0; font-size: inherit; }
+.hl pre { margin: 6pt 0; }
+
+table { border-collapse: collapse; width: 100%; margin: 8pt 0 10pt; font-size: 8.9pt; break-inside: auto; }
+th, td { border: 0.6pt solid var(--rule); padding: 4pt 6pt; vertical-align: top; text-align: left; }
+th { background: var(--accent-soft); font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-weight: 600; }
+tr { break-inside: avoid; }
+
+blockquote {
+  margin: 8pt 0; padding: 6pt 10pt;
+  background: var(--accent-soft); border-left: 3pt solid var(--accent); border-radius: 3pt;
+}
+blockquote p { margin: 3pt 0; }
+
+/* Callout boxes: <div class="protects" markdown> ... </div> */
+.protects, .cannot, .note {
+  padding: 6pt 10pt; margin: 10pt 0; border-radius: 4pt; break-inside: avoid;
+}
+.protects { background: var(--good-soft); border-left: 3pt solid var(--good); }
+.cannot { background: var(--bad-soft); border-left: 3pt solid var(--bad); }
+.note { background: var(--warn-soft); border-left: 3pt solid #c98a00; }
+.protects > p:first-child, .cannot > p:first-child, .note > p:first-child { margin-top: 2pt; }
+
+.diagram { text-align: center; margin: 10pt 0 12pt; break-inside: avoid; }
+.diagram svg { max-width: 100%; height: auto; max-height: 205mm; }
+pre.mermaid-src { white-space: pre; }
+
+/* Pygments (codehilite) — light, print-friendly */
+.hl .k, .hl .kn, .hl .kd, .hl .kc { color: #8a3ab9; font-weight: 600; }
+.hl .s, .hl .s1, .hl .s2, .hl .sd { color: #2f7d32; }
+.hl .c, .hl .c1, .hl .cm { color: #7a8394; font-style: italic; }
+.hl .nf, .hl .nc { color: #1f5fbf; }
+.hl .mi, .hl .mf { color: #b35c00; }
+.hl .o, .hl .ow { color: #444; }
+.hl .nd { color: #a35200; }

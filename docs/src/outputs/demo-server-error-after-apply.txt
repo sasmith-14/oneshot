@@ -1,0 +1,44 @@
+$ python -m oneshot demo server-error-after-apply
+# captured 2026-11-03 by scripts/capture_outputs.py (exit code 0)
+
+─────────────────────────────────────────── OneShot demo ───────────────────────────────────────────
+Each scenario uses a fresh provider process with its own ledger, a fresh OneShot database, and real 
+worker processes. Faults are injected at the provider (or as failpoints in the worker).
+Working directory: $TMPDIR/oneshot-demo-h8bg6688
+
+1/1  server-error-after-apply: Provider applies the charge, then a bug returns HTTP 500 ────────────
+  > fault armed at the provider: error_after_apply on /v1/charges
+  > agent POST /actions Idempotency-Key=agent-order-1008 -> HTTP 201 act_6d163d207c11: charge 
+cus_ada 42.00 USD
+  > start worker process
+  > worker process finished: every action is SUCCEEDED, FAILED or UNKNOWN (exit 0)
+  OneShot's record (event timeline):
+  act_6d163d207c11  charge cus_ada 42.00 USD  SUCCEEDED
+    +  0.00s (new) -> PENDING  accepted and durably recorded
+    +  0.06s PENDING -> IN_FLIGHT  attempt 1: claimed by worker-87204, intent recorded before 
+sending
+    +  0.07s IN_FLIGHT -> PENDING  HTTP 500 (server error; may have applied); outcome unknown -> 
+retry in 0.30s with the SAME idempotency key (provider deduplicates, so a retry cannot double-apply)
+    +  0.42s PENDING -> IN_FLIGHT  attempt 2: claimed by worker-87204, intent recorded before 
+sending
+    +  0.42s IN_FLIGHT -> SUCCEEDED  provider confirmed: replayed original result (provider 
+deduplicated) as eff_00001
+  Provider's side of the story (its log):
+    POST /v1/charges ref=act_6d163d207c11 key=act_6d163d207c11 mode=error_after_apply -> APPLIED 
+eff_00001, then answering 500 (bug after commit)
+    POST /v1/charges ref=act_6d163d207c11 key=act_6d163d207c11 -> REPLAY of stored response (no new 
+effect)
+  Provider's independent ledger:
+    act_6d163d207c11: 1 effect(s) ['eff_00001']
+  [PASS] act_6d163d207c11 is SUCCEEDED and provider ledger has 1 effect(s) (observed: SUCCEEDED, 1)
+  Lesson: A 5xx does NOT mean 'nothing happened': the server may have committed before failing. 
+OneShot classifies it as AMBIGUOUS, and the same-key retry is answered with a replay of the original
+success.
+
+Scorecard (every expectation checked against the     
+provider's real ledger)                              
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━┳━━━━━━━━┓
+┃ scenario                 ┃ checks ┃ time ┃ result ┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━╇━━━━━━╇━━━━━━━━┩
+│ server-error-after-apply │    1/1 │ 0.5s │ PASS   │
+└──────────────────────────┴────────┴──────┴────────┘

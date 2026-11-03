@@ -1,0 +1,33 @@
+$ python -m pytest -v tests/test_scenarios.py
+# captured 2026-11-03 by scripts/capture_outputs.py (exit code 0)
+
+======================================= test session starts ========================================
+collecting ... collected 25 items
+
+tests/test_scenarios.py::test_happy_path PASSED                                              [  4%]
+tests/test_scenarios.py::test_transient_failures_are_retried_with_backoff PASSED             [  8%]
+tests/test_scenarios.py::test_permanent_rejection_is_not_retried PASSED                      [ 12%]
+tests/test_scenarios.py::test_provider_unreachable_is_safe_to_retry_and_ends_failed PASSED   [ 16%]
+tests/test_scenarios.py::test_ambiguous_charge_is_retried_with_same_key_and_applied_once[lost_response] PASSED [ 20%]
+tests/test_scenarios.py::test_ambiguous_charge_is_retried_with_same_key_and_applied_once[timeout] PASSED [ 24%]
+tests/test_scenarios.py::test_ambiguous_charge_is_retried_with_same_key_and_applied_once[slow_success] PASSED [ 28%]
+tests/test_scenarios.py::test_lost_response_message_is_verified_not_resent PASSED            [ 32%]
+tests/test_scenarios.py::test_timed_out_message_is_verified_absent_then_resent_once PASSED   [ 36%]
+tests/test_scenarios.py::test_duplicate_slips_through_when_provider_is_slower_than_settle_window PASSED [ 40%]
+tests/test_scenarios.py::test_same_key_retry_is_not_attempted_once_provider_may_have_forgotten_the_key PASSED [ 44%]
+tests/test_scenarios.py::test_misconfigured_retention_window_causes_a_duplicate PASSED       [ 48%]
+tests/test_scenarios.py::test_worker_crash_after_provider_applied_is_recovered_without_duplicate PASSED [ 52%]
+tests/test_scenarios.py::test_worker_crash_before_send_on_message_is_verified_then_sent_once PASSED [ 56%]
+tests/test_scenarios.py::test_sigkill_mid_request_is_recovered PASSED                        [ 60%]
+tests/test_scenarios.py::test_many_actions_survive_repeated_worker_crashes PASSED            [ 64%]
+tests/test_scenarios.py::test_provider_crash_and_outage_lead_to_unknown_then_reconciliation_resolves PASSED [ 68%]
+tests/test_scenarios.py::test_unknown_with_no_effect_is_resolved_failed PASSED               [ 72%]
+tests/test_scenarios.py::test_wiping_oneshot_database_cannot_erase_provider_evidence PASSED  [ 76%]
+tests/test_scenarios.py::test_agent_retrying_with_new_key_creates_duplicate_that_reconciliation_flags PASSED [ 80%]
+tests/test_scenarios.py::test_reconciliation_dry_run_changes_nothing PASSED                  [ 84%]
+tests/test_scenarios.py::test_reconciliation_fails_loudly_when_provider_is_down PASSED       [ 88%]
+tests/test_scenarios.py::test_settings_reject_lease_shorter_than_timeout PASSED              [ 92%]
+tests/test_scenarios.py::test_error_after_apply_charge_is_retried_and_replayed_once PASSED   [ 96%]
+tests/test_scenarios.py::test_error_after_apply_message_is_verified_not_resent PASSED        [100%]
+
+======================================= 25 passed in 28.37s ========================================

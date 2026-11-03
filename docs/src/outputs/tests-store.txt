@@ -1,0 +1,20 @@
+$ python -m pytest -v tests/test_store.py
+# captured 2026-11-03 by scripts/capture_outputs.py (exit code 0)
+
+======================================= test session starts ========================================
+collecting ... collected 12 items
+
+tests/test_store.py::test_terminal_states_cannot_change PASSED                               [  8%]
+tests/test_store.py::test_unknown_can_only_be_resolved_to_a_final_answer PASSED              [ 16%]
+tests/test_store.py::test_same_key_same_request_returns_original PASSED                      [ 25%]
+tests/test_store.py::test_same_key_different_request_is_a_conflict PASSED                    [ 33%]
+tests/test_store.py::test_concurrent_duplicate_submissions_create_one_action PASSED          [ 41%]
+tests/test_store.py::test_claim_records_intent_before_any_send PASSED                        [ 50%]
+tests/test_store.py::test_an_action_is_claimed_by_only_one_worker PASSED                     [ 58%]
+tests/test_store.py::test_future_retries_are_not_claimed_early PASSED                        [ 66%]
+tests/test_store.py::test_worker_that_lost_its_lease_cannot_record_a_result PASSED           [ 75%]
+tests/test_store.py::test_take_over_only_after_lease_expiry PASSED                           [ 83%]
+tests/test_store.py::test_every_transition_is_audited PASSED                                 [ 91%]
+tests/test_store.py::test_resolve_is_only_for_unknown PASSED                                 [100%]
+
+======================================== 12 passed in 0.08s ========================================

@@ -1,0 +1,39 @@
+$ python -m pytest -v tests/test_invariants.py
+# captured 2026-11-03 by scripts/capture_outputs.py (exit code 0)
+
+======================================= test session starts ========================================
+collecting ... collected 31 items
+
+tests/test_invariants.py::test_every_action_type_has_a_demo_payload PASSED                   [  3%]
+tests/test_invariants.py::test_fault_mode_applies_effect_exactly_as_declared[success] PASSED [  6%]
+tests/test_invariants.py::test_fault_mode_applies_effect_exactly_as_declared[decline] PASSED [  9%]
+tests/test_invariants.py::test_fault_mode_applies_effect_exactly_as_declared[unavailable] PASSED [ 12%]
+tests/test_invariants.py::test_fault_mode_applies_effect_exactly_as_declared[timeout] PASSED [ 16%]
+tests/test_invariants.py::test_fault_mode_applies_effect_exactly_as_declared[lost_response] PASSED [ 19%]
+tests/test_invariants.py::test_fault_mode_applies_effect_exactly_as_declared[slow_success] PASSED [ 22%]
+tests/test_invariants.py::test_fault_mode_applies_effect_exactly_as_declared[crash_before_apply] PASSED [ 25%]
+tests/test_invariants.py::test_fault_mode_applies_effect_exactly_as_declared[crash_after_apply] PASSED [ 29%]
+tests/test_invariants.py::test_fault_mode_applies_effect_exactly_as_declared[error_after_apply] PASSED [ 32%]
+tests/test_invariants.py::test_guarantees_hold_for_every_fault_mode_and_action_type[success-message.send] PASSED [ 35%]
+tests/test_invariants.py::test_guarantees_hold_for_every_fault_mode_and_action_type[success-payment.charge] PASSED [ 38%]
+tests/test_invariants.py::test_guarantees_hold_for_every_fault_mode_and_action_type[decline-message.send] PASSED [ 41%]
+tests/test_invariants.py::test_guarantees_hold_for_every_fault_mode_and_action_type[decline-payment.charge] PASSED [ 45%]
+tests/test_invariants.py::test_guarantees_hold_for_every_fault_mode_and_action_type[unavailable-message.send] PASSED [ 48%]
+tests/test_invariants.py::test_guarantees_hold_for_every_fault_mode_and_action_type[unavailable-payment.charge] PASSED [ 51%]
+tests/test_invariants.py::test_guarantees_hold_for_every_fault_mode_and_action_type[timeout-message.send] PASSED [ 54%]
+tests/test_invariants.py::test_guarantees_hold_for_every_fault_mode_and_action_type[timeout-payment.charge] PASSED [ 58%]
+tests/test_invariants.py::test_guarantees_hold_for_every_fault_mode_and_action_type[lost_response-message.send] PASSED [ 61%]
+tests/test_invariants.py::test_guarantees_hold_for_every_fault_mode_and_action_type[lost_response-payment.charge] PASSED [ 64%]
+tests/test_invariants.py::test_guarantees_hold_for_every_fault_mode_and_action_type[slow_success-message.send] PASSED [ 67%]
+tests/test_invariants.py::test_guarantees_hold_for_every_fault_mode_and_action_type[slow_success-payment.charge] PASSED [ 70%]
+tests/test_invariants.py::test_guarantees_hold_for_every_fault_mode_and_action_type[crash_before_apply-message.send] PASSED [ 74%]
+tests/test_invariants.py::test_guarantees_hold_for_every_fault_mode_and_action_type[crash_before_apply-payment.charge] PASSED [ 77%]
+tests/test_invariants.py::test_guarantees_hold_for_every_fault_mode_and_action_type[crash_after_apply-message.send] PASSED [ 80%]
+tests/test_invariants.py::test_guarantees_hold_for_every_fault_mode_and_action_type[crash_after_apply-payment.charge] PASSED [ 83%]
+tests/test_invariants.py::test_guarantees_hold_for_every_fault_mode_and_action_type[error_after_apply-message.send] PASSED [ 87%]
+tests/test_invariants.py::test_guarantees_hold_for_every_fault_mode_and_action_type[error_after_apply-payment.charge] PASSED [ 90%]
+tests/test_invariants.py::test_guarantees_hold_under_random_fault_sequences[1] PASSED        [ 93%]
+tests/test_invariants.py::test_guarantees_hold_under_random_fault_sequences[2] PASSED        [ 96%]
+tests/test_invariants.py::test_guarantees_hold_under_random_fault_sequences[3] PASSED        [100%]
+
+======================================= 31 passed in 47.37s ========================================

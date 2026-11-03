@@ -1,0 +1,27 @@
+$ python -m pytest -v tests/test_provider_client.py
+# captured 2026-11-03 by scripts/capture_outputs.py (exit code 0)
+
+======================================= test session starts ========================================
+collecting ... collected 19 items
+
+tests/test_provider_client.py::test_response_classification[response0-APPLIED] PASSED        [  5%]
+tests/test_provider_client.py::test_response_classification[response1-AMBIGUOUS] PASSED      [ 10%]
+tests/test_provider_client.py::test_response_classification[response2-REJECTED] PASSED       [ 15%]
+tests/test_provider_client.py::test_response_classification[response3-REJECTED] PASSED       [ 21%]
+tests/test_provider_client.py::test_response_classification[response4-REJECTED] PASSED       [ 26%]
+tests/test_provider_client.py::test_response_classification[response5-IN_PROGRESS] PASSED    [ 31%]
+tests/test_provider_client.py::test_response_classification[response6-RETRYABLE] PASSED      [ 36%]
+tests/test_provider_client.py::test_response_classification[response7-RETRYABLE] PASSED      [ 42%]
+tests/test_provider_client.py::test_response_classification[response8-AMBIGUOUS] PASSED      [ 47%]
+tests/test_provider_client.py::test_response_classification[response9-AMBIGUOUS] PASSED      [ 52%]
+tests/test_provider_client.py::test_response_classification[response10-AMBIGUOUS] PASSED     [ 57%]
+tests/test_provider_client.py::test_response_classification[response11-AMBIGUOUS] PASSED     [ 63%]
+tests/test_provider_client.py::test_replay_is_detected PASSED                                [ 68%]
+tests/test_provider_client.py::test_exception_classification[exc0-RETRYABLE] PASSED          [ 73%]
+tests/test_provider_client.py::test_exception_classification[exc1-RETRYABLE] PASSED          [ 78%]
+tests/test_provider_client.py::test_exception_classification[exc2-AMBIGUOUS] PASSED          [ 84%]
+tests/test_provider_client.py::test_exception_classification[exc3-AMBIGUOUS] PASSED          [ 89%]
+tests/test_provider_client.py::test_exception_classification[exc4-AMBIGUOUS] PASSED          [ 94%]
+tests/test_provider_client.py::test_exception_classification[exc5-AMBIGUOUS] PASSED          [100%]
+
+======================================== 19 passed in 0.03s ========================================
