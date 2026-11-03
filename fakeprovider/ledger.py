@@ -20,6 +20,7 @@ from __future__ import annotations
 import json
 import sqlite3
 import threading
+from contextlib import closing
 import time
 from dataclasses import dataclass
 from pathlib import Path
@@ -88,7 +89,7 @@ class ProviderLedger:
     def __init__(self, path: str | Path) -> None:
         self.path = str(path)
         self._lock = threading.Lock()  # serialises writers inside this process
-        with self._connect() as conn:
+        with closing(self._connect()) as conn:
             conn.executescript(_SCHEMA)
 
     def _connect(self) -> sqlite3.Connection:
@@ -107,7 +108,7 @@ class ProviderLedger:
         transaction: an ``in_progress`` key that survived a restart belongs to
         a request whose effect was definitely *not* applied.
         """
-        with self._lock, self._connect() as conn:
+        with self._lock, closing(self._connect()) as conn:
             cur = conn.execute("DELETE FROM idempotency_keys WHERE status = 'in_progress'")
             return cur.rowcount
 
@@ -124,7 +125,7 @@ class ProviderLedger:
         * ``"mismatch"``   — key was used with a different request body.
         """
         now = time.time()
-        with self._lock, self._connect() as conn:
+        with self._lock, closing(self._connect()) as conn:
             conn.execute("BEGIN IMMEDIATE")
             try:
                 row = conn.execute("SELECT * FROM idempotency_keys WHERE key = ?", (key,)).fetchone()
@@ -155,12 +156,12 @@ class ProviderLedger:
 
     def release_key(self, key: str) -> None:
         """Forget a reservation for a request that applied nothing and should be retryable."""
-        with self._lock, self._connect() as conn:
+        with self._lock, closing(self._connect()) as conn:
             conn.execute("DELETE FROM idempotency_keys WHERE key = ? AND status = 'in_progress'", (key,))
 
     def complete_key_without_effect(self, key: str, code: int, body: dict[str, Any]) -> None:
         """Remember a final, non-applied answer (e.g. a decline) so retries replay it."""
-        with self._lock, self._connect() as conn:
+        with self._lock, closing(self._connect()) as conn:
             conn.execute(
                 "UPDATE idempotency_keys SET status='completed', response_code=?, response_json=? WHERE key=?",
                 (code, json.dumps(body), key),
@@ -184,7 +185,7 @@ class ProviderLedger:
         be stored for future replays.
         """
         now = time.time()
-        with self._lock, self._connect() as conn:
+        with self._lock, closing(self._connect()) as conn:
             conn.execute("BEGIN IMMEDIATE")
             try:
                 seq = conn.execute("SELECT COALESCE(MAX(seq), 0) + 1 FROM effects").fetchone()[0]
@@ -215,7 +216,7 @@ class ProviderLedger:
         return effect, body
 
     def effects(self, reference: str | None = None) -> list[Effect]:
-        with self._connect() as conn:
+        with closing(self._connect()) as conn:
             if reference is None:
                 rows = conn.execute("SELECT * FROM effects ORDER BY seq").fetchall()
             else:
