@@ -104,6 +104,10 @@ class Worker:
         action_type = get_action_type(action.type)
 
         if attempt.kind == "send":
+            veto = policy.before_send(action, action_type, self.settings, self.clock())
+            if veto is not None:
+                self._record(action, attempt, Outcome.NOT_SENT, "pre-send safety check", veto)
+                return True
             failpoint("before_send")
             result = self.client.send(action, action_type)
             failpoint("after_response")

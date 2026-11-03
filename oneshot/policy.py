@@ -100,10 +100,21 @@ def after_ambiguous(
     now: float,
     why: str,
     rng: random.Random | None = None,
+    *,
+    in_progress: bool = False,
 ) -> Decision:
-    """The effect MAY have been applied. Decide without risking a duplicate."""
-    if _attempts_left(action, settings) and same_key_retry_is_safe(action, action_type, settings, now):
-        delay = backoff_delay(action.attempt_count, settings, rng)
+    """The effect MAY have been applied. Decide without risking a duplicate.
+
+    ``in_progress=True`` means the provider told us the original request is
+    still running (HTTP 409); we then wait at least the settle window instead
+    of burning attempts on rapid retries that will all get 409 too.
+    """
+    delay = backoff_delay(action.attempt_count, settings, rng)
+    if in_progress:
+        delay = max(delay, settings.provider_settle_seconds)
+    # Safety is judged at the moment the retry will actually be SENT, not now:
+    # a retry scheduled past the provider's retention window would be a new request.
+    if _attempts_left(action, settings) and same_key_retry_is_safe(action, action_type, settings, now + delay):
         return Decision(
             S.PENDING,
             f"{why}; outcome unknown -> retry in {delay:.2f}s with the SAME idempotency key "
@@ -169,7 +180,30 @@ def after_send(
         )
 
     # AMBIGUOUS, IN_PROGRESS, CRASHED: the effect may exist.
-    return after_ambiguous(action, action_type, settings, now, result.detail, rng)
+    return after_ambiguous(
+        action, action_type, settings, now, result.detail, rng, in_progress=o is Outcome.IN_PROGRESS
+    )
+
+
+def before_send(action: Action, action_type: ActionType, settings: Settings, now: float) -> Decision | None:
+    """Last safety check immediately before a request leaves (defence in depth).
+
+    Returns None if sending is safe, otherwise the decision to take *instead*
+    of sending. Sending is unsafe when an earlier attempt may have applied the
+    effect and the provider can no longer be relied on to deduplicate — e.g. a
+    worker was down for hours and picks up a retry scheduled long ago.
+    """
+    if not action.maybe_applied or same_key_retry_is_safe(action, action_type, settings, now):
+        return None
+    why = "send cancelled: an earlier attempt may have applied and the provider may no longer deduplicate"
+    if action_type.supports_lookup:
+        return Decision(
+            S.VERIFYING,
+            f"{why} -> check provider's record instead",
+            next_attempt_at=now + settings.provider_settle_seconds,
+            maybe_applied=True,
+        )
+    return Decision(S.UNKNOWN, f"{why}, and the provider offers no lookup -> needs investigation", maybe_applied=True)
 
 
 def after_verify(

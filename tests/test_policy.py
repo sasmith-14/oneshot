@@ -145,3 +145,33 @@ def test_jittered_backoff_stays_within_bounds(settings):
     for n in range(1, 8):
         ceiling = min(4.0, 0.5 * 2 ** (n - 1))
         assert all(0 <= policy.backoff_delay(n, s, rng) <= ceiling for _ in range(200))
+
+
+# ------------------------------------------------- retention window, judged at send time
+
+
+def test_retry_scheduled_past_retention_window_is_not_a_blind_retry(settings):
+    """Safe *now* is not enough: the retry is sent after the backoff delay."""
+    s = replace(settings, provider_key_retention_seconds=10, key_retention_margin_seconds=1,
+                backoff_base_seconds=20, backoff_max_seconds=20, backoff_jitter=False)  # fmt: skip
+    a = make_action(first_sent_at=NOW - 1)  # 1s old: safe now, but retry would land at 21s
+    assert policy.same_key_retry_is_safe(a, PAYMENT_CHARGE, s, NOW)
+    d = policy.after_send(a, PAYMENT_CHARGE, AMBIGUOUS, s, NOW)
+    assert d.status is S.VERIFYING
+
+
+def test_pre_send_guard_cancels_a_late_retry(settings):
+    """A worker that was down for hours must not blindly fire a stale same-key retry."""
+    stale = make_action(status=S.IN_FLIGHT, maybe_applied=True,
+                        first_sent_at=NOW - settings.provider_key_retention_seconds)  # fmt: skip
+    d = policy.before_send(stale, PAYMENT_CHARGE, settings, NOW)
+    assert d is not None and d.status is S.VERIFYING
+    assert policy.before_send(make_action(maybe_applied=False), PAYMENT_CHARGE, settings, NOW) is None
+    assert policy.before_send(make_action(maybe_applied=True), PAYMENT_CHARGE, settings, NOW) is None
+    assert policy.before_send(replace(stale, type="test.blind"), BLIND, settings, NOW).status is S.UNKNOWN
+
+
+def test_in_progress_waits_at_least_the_settle_window(settings):
+    d = policy.after_send(make_action(), PAYMENT_CHARGE, SendResult(Outcome.IN_PROGRESS, "409"), settings, NOW)
+    assert d.status is S.PENDING
+    assert d.next_attempt_at - NOW >= settings.provider_settle_seconds

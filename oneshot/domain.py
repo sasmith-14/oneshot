@@ -88,6 +88,7 @@ class Outcome(str, Enum):
     IN_PROGRESS = "IN_PROGRESS"  # provider: original request with this key still running (409)
     AMBIGUOUS = "AMBIGUOUS"  # timeout, dropped connection, 5xx: may or may not be applied
     CRASHED = "CRASHED"  # worker died mid-attempt (found by recovery); treated as AMBIGUOUS
+    NOT_SENT = "NOT_SENT"  # pre-send safety check cancelled the send (see policy.before_send)
     # Outcomes of a verification lookup:
     FOUND = "FOUND"  # provider's ledger has the effect
     ABSENT = "ABSENT"  # provider's ledger has no such effect
