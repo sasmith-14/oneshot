@@ -83,21 +83,21 @@ uv run oneshot reconcile --all
 
 More hands-on experiments, each with the exact commands and expected output: **[EXPERIMENTS.md](EXPERIMENTS.md)**.
 
-### Web console: OneShot Lab
+### Web console
 
-A React console that makes failures visible. It has six pages:
+A React console that makes failures visible, designed as a newspaper of record for what happened on the wire. It has seven pages:
 
 | Page | What it shows |
 |---|---|
-| **Live** | *The wire*: every recent action is a token that glides between Accepted, On the wire, Checking the ledger, Settled and Needs a human as its real status changes. Also worker and provider health, activity, and a filterable list. |
+| **Live** | A front page whose headline is written from live data ("Three actions need a human."). Then *the wire*: every recent action is a token that glides between Accepted, On the wire, Checking the ledger, Settled and Needs a human as its real status changes. Then a plain-English report of each change, activity, and a filterable list. |
 | **Action** | A lifecycle diagram that draws the path the action took, a message-flow diagram built from recorded timestamps (with **Replay**), a timeline that explains every decision in plain English, OneShot's record next to the provider's ledger, and an evidence-first dialog to resolve UNKNOWN. |
-| **Chaos** | 15 one-click failure presets: lost responses, timeouts, crashes, duplicates and `kill -9` mid-request. Also real process control for the provider and worker, a custom fault form, and a live lab log. |
+| **Chaos** | 15 one-click failure presets, in sideways chapter strips: lost responses, timeouts, crashes, duplicates and `kill -9` mid-request. Also a lab bench with real process control for the provider and worker, a custom fault form, and a live lab log. |
 | **Reconcile** | Run or dry-run reconciliation, findings with what-it-means / how-it-happens / what-to-do, a live side-by-side diff, and run history. |
 | **Ledger** | The provider's own record, with duplicates and orphans highlighted. |
 | **Guarantees** | G1–G5, each with its condition and a live check against current data, plus the documented duplicate gaps. |
 | **Learn** | A scrollytelling walk through one action's life, and the concept docs rendered with their diagrams. |
 
-The console also has ⌘K to jump anywhere or run a preset, light and dark themes, and smooth scrolling. All motion respects the OS reduced-motion setting.
+The console also has ⌘K to jump anywhere or run a preset, a paper (light) theme with a dark option, smooth scrolling and an ink cursor. All motion respects the OS reduced-motion setting.
 
 ```bash
 make web-install   # once; needs Node >= 20

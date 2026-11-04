@@ -1,6 +1,6 @@
 # OneShot web console: agreed plan
 
-> Status: **agreed 2026-11-03. Everything here (M1–M4) is built and tested; the visual system was redesigned in v2, see `FRONTEND_DESIGN.md`.** One planned item changed: the concept-doc PDF about the UI (doc 08) was not written; the Learn page and FRONTEND_DESIGN.md cover it. This file is the shared spec for the frontend. What is built so far is tracked in HANDOFF.md; anything not listed here stays in ROADMAP.md.
+> Status: **agreed 2026-11-03. Everything here (M1–M4) is built and tested; the visual system was redesigned in v2 and again in v3 (2026-11-04, an editorial look chosen in a second design Q&A); see `FRONTEND_DESIGN.md`.** One planned item changed: the concept-doc PDF about the UI (doc 08) was not written; the Learn page and FRONTEND_DESIGN.md cover it. This file is the shared spec for the frontend. What is built so far is tracked in HANDOFF.md; anything not listed here stays in ROADMAP.md.
 
 ## Purpose
 
@@ -14,11 +14,11 @@ An interactive **lab console** that makes the invisible visible. Watch actions m
 | Live data | polling every 1 s (no SSE or WebSockets); the trade-off is documented |
 | Layout | top navigation bar + full-width main area |
 | Pages | Actions (home) · Action detail · Chaos · Reconcile · Provider ledger · Guarantees · Learn |
-| Theme | light + dark, follows the system setting, with a toggle |
-| Look | modern developer tool: Inter for UI text, JetBrains Mono for ids and payloads (self-hosted, no CDN), rounded cards, soft shadows |
+| Theme | light + dark with a toggle. v3: paper (light) is the default; dark is a remembered choice |
+| Look | v1–v2: a modern developer tool. **v3:** editorial print. Stone paper, ink and a vermilion accent; Instrument Serif, Schibsted Grotesk and IBM Plex Mono (self-hosted, no CDN); square corners; no shadows |
 | Status colours | muted/pastel: PENDING grey · IN_FLIGHT blue · VERIFYING amber · SUCCEEDED green · FAILED red · UNKNOWN purple |
 | Density | balanced: key facts visible, details one click away |
-| Motion | subtle (state transitions, an in-flight pulse, arrows drawing in); honours `prefers-reduced-motion` |
+| Motion | v3: purposeful but rich (headlines set line by line, a condensing masthead, chapter strips, a pinned story, a custom cursor); honours `prefers-reduced-motion` |
 | Explanations | inline plain-English sentence on every event (the backend's raw reason stays visible too) |
 | Responsive | desktop-first, still usable on a tablet |
 | Lab safety | chaos and process-control routes exist only when `ONESHOT_LAB=1`; otherwise 404, and the UI hides those controls with an explanation. Everything binds to 127.0.0.1 |

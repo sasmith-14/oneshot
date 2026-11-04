@@ -1,7 +1,7 @@
 # HANDOFF
 
 > Living status file, kept current so another session or tool can resume from the repo alone.
-> Last updated: 2026-11-03 (web console v2 complete).
+> Last updated: 2026-11-04 (web console v3: the editorial "paper of record" redesign).
 
 ## Current status: feature-complete v0.1
 
@@ -21,11 +21,11 @@ Learning docs: `docs/src/*.md` → `docs/pdf/*.pdf` (overview + 7 concept docs +
 
 ### Web console "OneShot Lab" (done; spec `docs/FRONTEND_PLAN.md`, design `docs/FRONTEND_DESIGN.md`)
 
-All seven pages are built: Live (The Wire), Action detail, Chaos, Reconcile, Ledger, Guarantees and Learn, plus the ⌘K palette.
+All seven pages are built: Live (a front page with a headline written from live data, the wire figure and the wire report), Action detail, Chaos (horizontal chapter strips and the lab bench), Reconcile, Ledger, Guarantees and Learn, plus the ⌘K palette. v3 is an editorial look: stone paper, ink, a vermilion "editor's pen", and Instrument Serif, Schibsted Grotesk and IBM Plex Mono (all self-hosted). The tokens, motion inventory and the reasoning are in `docs/FRONTEND_DESIGN.md`.
 
-**Stack:** React 19, Vite 8, TypeScript 7, Tailwind 4, shadcn/ui, TanStack Query (1 s polling), Motion (animations), Lenis (smooth scrolling), cmdk, Sonner, and react-markdown with lazily loaded Mermaid.
+**Stack:** React 19, Vite 8, TypeScript 7, Tailwind 4, shadcn/ui, TanStack Query (1 s polling), Motion (animations), Lenis (smooth scrolling), cmdk, Sonner, react-markdown with lazily loaded Mermaid, and Fontsource packages for the three faces.
 
-**Code layout:** `web/src/app/` holds the shell, palette, theme and smooth scrolling. `web/src/features/<page>/` holds the pages, `web/src/components/` the shared pieces, and `web/src/lib/` the tested logic: explanations, flow, comparison and findings.
+**Code layout:** `web/src/app/` holds the shell, palette, theme and smooth scrolling. `web/src/features/<page>/` holds the pages, `web/src/components/` the shared pieces, and `web/src/lib/` the tested logic: explanations, the headlines the console writes (`headline.ts`), flow, comparison and findings.
 
 **Backend added for the console:**
 - `oneshot/lab.py`: only with `ONESHOT_LAB=1`. It holds the presets, fault arming and the process supervisor, which runs with `ONESHOT_LAB_MANAGE=1`.
@@ -71,7 +71,9 @@ Things to know when working on it:
 - In lab mode the API *owns* the provider and worker processes (they stop when the API stops), so don't also start them by hand on the same ports.
 - Process presets (`worker-*`) take about the lease time (15 s by default) to recover; that wait is the point of the demonstration.
 - This shadcn version's `CommandDialog` does not wrap its children in cmdk's `<Command>`; `app/CommandPalette.tsx` adds it. Without it the page crashes.
-- Agent skills used for the design (`.claude/skills/`, not committed) can be reinstalled from `skills-lock.json`; the commands are in `docs/FRONTEND_DESIGN.md`.
+- Agent skills used for the design (15 of them in `.claude/skills/`, not committed) can be reinstalled from `skills-lock.json`; the commands are in `docs/FRONTEND_DESIGN.md`.
+- Headlines use `SetHeadline`, which reveals each line when it scrolls into view. A full-page screenshot that never scrolls will show headings below the fold as blank; scroll first. Under reduced motion they are plain text.
+- The theme is paper (light) by default and ignores the OS setting; dark is a remembered choice (`localStorage["oneshot-theme"]`).
 - npm blocks `fsevents`' install script (optional macOS file watcher). This is harmless; Vite works without it.
 
 ## Next steps (suggested, in order)

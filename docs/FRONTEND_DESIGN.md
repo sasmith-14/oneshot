@@ -1,122 +1,182 @@
-# OneShot Lab: design system (v2)
+# OneShot console: design system (v3, "the paper of record")
 
-The v2 redesign of the web console. The decisions from the planning discussion (`FRONTEND_PLAN.md`) still hold. This file adds the visual system and the research behind it.
+The v3 redesign of the web console. The page set, data and behaviour from `FRONTEND_PLAN.md` are unchanged; this file records the look, and why.
 
 ## The brief, restated
 
 - **Subject:** a console for watching an execution engine handle failure: lost responses, crashes, duplicates, and the moments where it refuses to guess.
 - **Audience:** the person learning backend reliability from this project, and anyone reviewing it as portfolio work.
-- **Primary job:** make what happened *on the wire* and *in the provider's ledger* visible, and explain every decision in plain language.
+- **Client's choices (from the design Q&A):**
+  - *Look and colour:* an editorial/print look; warm paper, ink and red; a serif, a grotesk and a mono.
+  - *Motion and scrolling:* purposeful but rich motion; a masthead that condenses on scroll; the pinned story on Learn; horizontal chapter strips; headlines set line by line; an "ink settle" page transition.
+  - *Page structure:* a masthead with section navigation; Live as a stacked front page (headline, wire figure, report); airy working pages.
+  - *Small things:* plain, factual headlines; fine ink line art; light by default with a dark toggle; paper grain; a custom cursor.
 
-## Research summary (what was used, and why)
+## The idea
 
-| Need | Choice | Why this, not the alternative |
-|---|---|---|
-| Animation | **Motion for React** (`motion`, formerly Framer Motion) | Layout animations and shared `layoutId` let a token glide when its status changes, springs are interruptible, `useScroll`/`useTransform` handle scroll-linked effects, and `MotionConfig reducedMotion="user"` respects the OS setting. GSAP (now free) is excellent, but two animation libraries would be redundant. |
-| Smooth scrolling | **Lenis**, on long reading pages only | Smooths wheel scrolling. Turned off for `prefers-reduced-motion` and on touch devices, following the accessibility cautions (Thoughtworks Radar, community guidance). |
-| Command palette | **cmdk** (via the shadcn `Command` component) | ⌘K navigation is a standard in developer tools (Linear, Raycast, Vercel): open any action by id, run any preset, switch pages. |
-| Feedback | **Sonner** toasts with `aria-live` | Every lab action confirms what changed, and failures say how to fix them. |
-| Documents | **react-markdown** + remark-gfm, **Mermaid** loaded lazily | The Learn pages render the same Markdown as the PDFs. The Mermaid bundle is code-split, so it loads only on Learn. |
-| Quality gates | Anthropic `frontend-design` skill; Vercel `web-design-guidelines`, `react-best-practices` and `react-view-transitions` skills (installed in `.claude/skills/`) | Used as checklists for design choices, accessibility, re-render and bundle hygiene. |
+> On this console, **the provider's ledger, the record of what really happened,** becomes **a paper of record**.
 
-Motion rules, distilled from the sources:
-- UI transitions are under about 300 ms, with a strong ease-out (`cubic-bezier(0.23, 1, 0.32, 1)`) or a critically damped spring.
-- Entrances start at a scale of 0.96–0.98, never 0.
-- Only `transform` and `opacity` are animated.
-- Actions started from the keyboard are not animated.
-- Motion answers a state change; there is no decoration on a loop.
+Every page is a section of that paper:
+- Live is the front page, and its headline is written from live data ("Three actions need a human.").
+- Each action has its own story page.
+- The provider's ledger is set like an accountant's book, with a double rule under the total.
+- The signature figure is **the wire**: one ink rail, five stations, and tokens that glide between them as the backend changes status.
 
-## Tokens
+This idea comes from the subject itself. OneShot's whole job is keeping a trustworthy record, and the ledger is the authority.
 
-**Colour means state. Nothing else is coloured.** The interface is ink on paper; hue appears only where an action's status or a finding's severity is being communicated.
+## Avoiding the generated look
+
+The `design-taste-frontend` skill lists the editorial look as the current most-generated style: a cream ground with terracotta, hairlines everywhere, and serif display used as a shortcut to "premium". The client asked for editorial, so v3 keeps it but removes each of those tells:
+
+| Tell | What v3 does instead |
+|---|---|
+| Yellow-cream ground with terracotta or rust | A low-chroma **stone** paper (`#F2F0EB`, chroma ≈ 0.006) and a true **vermilion** (`#E1361C`), not brown-orange |
+| Hairlines everywhere ("broadsheet cosplay") | Rules appear only where print uses them: a heavy rule under the masthead, 2 px rules over tables, hairlines between table rows. Surfaces are separated by a tone step (`sheet`, `well`), never by an outlined box |
+| Eyebrows, index numbers, tracked caps | None. Order is shown by position and words; labels are sentence case |
+| Monospace as a "technical" voice | Mono appears only for literal values: ids, timestamps, enum values, code |
+| Colour everywhere | Colour means state. Vermilion is the editor's pen (below); status inks appear only where a status is reported |
+
+## Tokens (`web/src/index.css`)
 
 | Token | Light | Dark | Role |
 |---|---|---|---|
-| ink | `#15171C` | `#E8EAEE` | text, primary buttons |
-| paper | `#F7F8FA` | `#101217` | page background |
-| panel | `#FFFFFF` | `#161920` | raised surfaces |
-| rule | `#E4E6EB` | `#262A33` | hairlines |
-| mute | `#6A7180` | `#8B93A3` | secondary text |
+| `paper` | `#F2F0EB` | `#12110E` | the ground |
+| `sheet` | `#F9F8F5` | `#1A1915` | raised surfaces (preset stories, diagrams, dialogs) |
+| `well` | `#E8E5DE` | `#23211C` | recessed surfaces, skeletons |
+| `ink` | `#17150F` | `#ECE7DB` | text, rules, primary buttons |
+| `ink-2` | `#57534A` | `#A8A193` | secondary text (contrast ≥ 6:1 on paper) |
+| `ink-3` | `#8C877C` | `#777164` | empty states and zero counts only |
+| `rule` | `#D6D2C8` | `#34312A` | hairlines inside tables |
+| `mark` | `#E1361C` | `#F2533A` | **the editor's pen**: the active section, the path an action took, a link under the cursor, the live mark, reading progress |
 
-Status hues (muted and pastel, the same in both themes, with adjusted lightness): PENDING slate, IN_FLIGHT blue, VERIFYING amber, SUCCEEDED green, FAILED red, UNKNOWN violet.
+**Status inks.** Each status has three tokens: `st-*`, `st-*-soft` and `st-*-fg`.
 
-**Type.**
-- Inter for the interface. JetBrains Mono only for things that *are* code: ids, timestamps, payloads and enum values.
-- Scale: 12 / 13 / 14 / 16 / 20 / 28 / 40 px.
-- Page titles are 28–40 px semibold with a letter spacing of −0.02 em.
-- Body text is 14–15 px with a line height of 1.55.
-- Headings are sentence case. No all-caps eyebrows.
+| Status | Ink |
+|---|---|
+| PENDING | graphite |
+| IN_FLIGHT | blue-black |
+| VERIFYING | ochre |
+| SUCCEEDED | green |
+| FAILED | oxblood, deliberately far from the vermilion so failure never reads as "the editor's mark" |
+| UNKNOWN | violet |
 
-**Shape.**
-- Radius follows hierarchy: 14 px for panels, 9 px for controls, fully round for status pills and tokens.
-- Hairlines separate sections. Cards are used only for objects you act on, such as presets and findings.
+**Type.** Three self-hosted faces, all OFL and free:
+
+| Face | Used for | Why |
+|---|---|---|
+| **Instrument Serif** | the wordmark, page titles, headlines, big numbers | a condensed display serif that sets tight at large sizes |
+| **Schibsted Grotesk** | everything read or clicked | a variable grotesk designed for a news publisher, so it belongs in a newspaper |
+| **IBM Plex Mono** | literal values only | ids, timestamps, enum values, code |
+
+Sizes:
+- Display runs from 52 to 140 px, at `line-height` 0.82–1.0 and −0.018 em tracking.
+- Body text is 16–17 px at 1.55–1.68.
+- The standfirst is 19 px.
+- The small floor is 12.5 px, used only for mono timestamps.
+
+**Shape.** Corners are square (2–4 px) and buttons are flat. A button is either an ink fill or an ink outline, and it scales to 0.97 when pressed.
 
 ## Layout
 
 ```text
-┌ OneShot ─ Live  Chaos  Reconcile  Ledger  Guarantees  Learn ───── ⌘K  ● live  ◐ ┐
-│                                                                                │
-│ Page title                                              [primary action]       │
-│ One sentence on what this page is for.                                         │
-│ ─────────────────────────────────────────────────────────────────────────────  │
-│ content, left-aligned, max width 1240                                          │
-└────────────────────────────────────────────────────────────────────────────────┘
+Wednesday, 4 November 2026          16 actions on record          ● Live  Jump to ⌘K  ◐
+OneShot.                                         The record of every action an agent…
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Live   Chaos   Reconcile   Ledger   Guarantees   Learn          (red mark on the heavy rule)
+─────────────────────────────────────────────────────────────────────────────────────────
+Page title (serif, large)                                                  [page actions]
+Standfirst: one sentence on what this page is for.
 ```
 
-## The one memorable thing: **The Wire**
+- **Frame:** one 1320 px frame with equal 20/32/40 px margins and a 12-column grid inside it.
+- **Section gaps:** sections sit 96–112 px apart.
+- **Condensed bar:** when the masthead scrolls away, a slim bar slides down (transform only) with the wordmark, the sections and the tools.
+- **Colophon:** the footer closes the page with the name set at full width.
 
-The home page opens with a live pipeline instead of a row of identical count cards. It has five columns:
+## Motion inventory
 
-> Accepted → On the wire → Checking the ledger → Settled · Needs a human
-
-Each recent action is a token that **physically glides to its new column** when the backend changes its status. This uses a shared layout animation driven by real polled data. A token that goes ON the wire pulses, a token that lands in "Needs a human" is violet, and clicking a token opens its full story. Everything else on the page stays quiet so this stays the focus.
-
-## Motion inventory (everything that moves, and why)
-
-| Element | Motion | Purpose |
+| Element | Motion | Why |
 |---|---|---|
-| Wire tokens | spring layout move between columns | shows the status change itself |
-| Nav and tab indicator | shared `layoutId` slide | shows where you are |
-| Route change | 160 ms fade + 6 px rise | continuity without delay |
-| State diagram | path taken is drawn in (`pathLength`) | shows the route this action took |
-| Flow diagram | **Replay** button steps through the recorded facts | lets you watch a failure happen in order |
-| Learn | scroll progress bar, sticky table of contents, "Life of an action" scrollytelling (a sticky diagram that lights up as you read) | interactive scrolling with a purpose |
-| Guarantees | each guarantee's live check fills in as it scrolls into view | ties the claim to the evidence |
-| Counters | number roll on change | draws the eye to a change |
+| Headlines | set line by line: each line rises out of a mask, once, measured after fonts load (`components/SetHeadline.tsx`) | the one typographic signature; it reads like type dropping into a forme |
+| Page change | "ink settle": 280 ms opacity with a 10 px rise; exit 120 ms | continuity without delay |
+| Masthead | the slim bar slides in when the masthead leaves view | navigation is always one move away |
+| Section and tab mark | a red bar slides between items on a critically damped spring | shows where you are |
+| The wire | tokens glide between stations on a spring (shared `layoutId`), driven only by polled data | shows the status change itself |
+| Wire report | new lines slide in at the top as changes are seen between polls | the paper updating |
+| Lifecycle figure | the path taken is drawn in red (`pathLength`) | the editor marking the route |
+| Flow diagram | **Replay** steps through the recorded facts | watch a failure happen in order |
+| Chaos | horizontal chapter strips: native scroll, mouse drag, step buttons, a red progress line; snapping on touch; the vertical wheel is never hijacked | browse stories without losing the page |
+| Learn | the diagram is pinned while the story scrolls and lights each step; a red reading-progress line; a table of contents with an active marker | scrolling with a purpose |
+| Guarantees | a red line in the margin follows reading; each check's ring and glyph draw in when reached | ties the claim to the evidence |
+| Cursor | an ink dot under the pointer, and a ring on a spring that grows over anything clickable; it inverts against what it is over; mouse only, never under reduced motion; text fields keep the caret | a printed-page feel, and precise feedback |
+| Counts | numbers roll to their new value | draws the eye to a change |
 
-All of it is reduced to instant changes under `prefers-reduced-motion`.
+**Rules.**
+- Only `transform` and `opacity` are animated, except the link underline, which animates `background-size`.
+- UI motion is ≤ 300 ms with a strong ease-out (`cubic-bezier(0.23, 1, 0.32, 1)`).
+- Nothing enters from `scale(0)`.
+- Nothing bounces.
+- Keyboard actions (⌘K, keys 1–6) are not animated.
+- Under `prefers-reduced-motion`: headlines are plain text, there is no smooth scrolling and no custom cursor, and pulses stop.
 
-## Self-review against the brief (pass 2)
+## The agent skills used
 
-- *First instinct:* six identical status cards, as in v1. That is the "SaaS card kit" default, so it was **replaced by The Wire**, which shows the same counts in the column headers and also shows *movement*.
-- *First instinct:* an uppercase "LAB CONSOLE" tag next to the logo. That is a decorative eyebrow, so it was **removed**. The lab state is shown where it matters, on Chaos.
-- *First instinct:* fade-and-rise every section on scroll. That is generic, so it was **limited to the Learn scrollytelling and the Guarantees checks**, where scrolling *means* something.
-- *Kept from the brief, deliberately:* Inter + JetBrains Mono, top navigation, pastel status colours, and light and dark themes. These are the client's explicit choices.
+Installed in `.claude/skills/` (not committed; `skills-lock.json` records their sources and hashes), and used as checklists while building:
 
-## Reinstalling the agent skills
+| Skill | Source | Used for |
+|---|---|---|
+| `frontend-design` | anthropics/skills | committing to one direction |
+| `design-taste-frontend` | leonxlnx/taste-skill | the generated-look registry above; app-screen rules (one question per screen, KPIs as type, honest zeros) |
+| `emil-design-eng`, `animate`, `animation-performance`, `review-animations`, `break-ui` | emilkowalski/skills | motion decisions, durations and easing, transform-only motion, worst-case data |
+| `better-typography`, `better-colors`, `better-layout`, `better-accessibility`, `better-interface` | jakubkrehel/skills | type scale and wrapping, contrast, grid, focus and screen-reader names |
+| `web-design-guidelines`, `vercel-react-best-practices`, `vercel-react-view-transitions` | vercel-labs/agent-skills | interface guidelines and React performance |
 
-The skill files are third-party, so they are not committed. `skills-lock.json` records their sources and hashes. To reinstall them into `.claude/skills/`:
+Reinstall them with:
 
 ```bash
 npx skills add anthropics/skills --skill frontend-design --agent claude-code
 npx skills add vercel-labs/agent-skills --skill web-design-guidelines --skill vercel-react-best-practices --skill vercel-react-view-transitions --agent claude-code
+npx skills add emilkowalski/skills --skill animate --skill animation-performance --skill review-animations --skill emil-design-eng --skill break-ui --agent claude-code
+npx skills add jakubkrehel/skills --skill better-typography --skill better-colors --skill better-layout --skill better-accessibility --skill better-interface --agent claude-code
+npx skills add leonxlnx/taste-skill --skill design-taste-frontend --agent claude-code
 ```
+
+Their scripts were read before use. Only `assets.mjs` uses the network (it searches public image archives); it was not run, because this console uses no photographs.
+
+**Where the client's choices override a skill.** `design-taste-frontend` bans serif display, more than two typefaces, hairlines and a custom cursor. The client explicitly chose a serif, three faces, a masthead with rules and a custom cursor. Those choices win; the table under "Avoiding the generated look" is how the tells were removed anyway.
+
+## Customising
+
+- **Colours and type:** the token blocks at the top of `web/src/index.css`. Dark mode is the `.dark` block. Mermaid needs literal colours, so `web/src/features/learn/Mermaid.tsx` repeats them.
+- **Motion:** `web/src/lib/motion.ts` holds the easing curves and springs. The headline reveal timing is in `components/SetHeadline.tsx`, and the cursor in `app/Cursor.tsx`.
+- **Headlines the console writes:** `web/src/lib/headline.ts`, with tests in `headline.test.ts`.
+- **The wire's stations and captions:** `web/src/features/live/Wire.tsx`.
+- **Preset stories:** `oneshot/lab.py`.
+- **Turning off the grain or the cursor:**
+  - grain: remove `class="paper-grain"` from `web/index.html`;
+  - cursor: remove `<Cursor />` from `app/Shell.tsx`.
 
 ## How it is verified
 
-- **Vitest** (`make web-test`): explanations, flow building, the ledger comparison, finding guides and diff pairing, the Wire's columns, and the state machine matching `ALLOWED_TRANSITIONS`.
-- **Browser end-to-end tests** (`tests/test_web_e2e.py`, real API + provider + worker, headless Chromium):
+- **Vitest** (`make web-test`):
+  - headline writing for every system state;
+  - explanations, flow building and the ledger comparison;
+  - finding guides;
+  - the wire's columns;
+  - the state machine matching `ALLOWED_TRANSITIONS`.
+- **Browser end-to-end tests** (`tests/test_web_e2e.py`). They run against the real API, provider and worker in headless Chromium, and any page error fails a test:
   - a lost-response story across all three tabs;
   - resolving an UNKNOWN with evidence;
   - a Chaos preset, then reconciliation, then the guarantees;
   - the ⌘K palette;
   - Learn rendering Mermaid;
   - every page under reduced motion.
-
-  Any page error fails the test.
-- **Backend** (`tests/test_lab.py`): every preset that does not need process control ends exactly as its card says. The supervisor really kills, crashes and restarts processes.
-- **Screenshots** of every page, in light and dark, mid-scroll and mid-failure, were reviewed while building.
-
-Two bugs were found this way and fixed:
-- The command palette crashed the page, because this shadcn version's `CommandDialog` does not create the cmdk root. A browser test caught it.
-- Two different presets sent identical charges, which reconciliation correctly flagged as a suspected duplicate request. The presets now use unique payloads, and a test checks it.
+- **Interaction checks** (scripted in Playwright while building), on the chapter strips:
+  - a sideways wheel scrolls the strip and leaves the page alone;
+  - a vertical wheel over the strip scrolls the page;
+  - the step buttons and mouse drag move it.
+- **Screenshots reviewed:**
+  - every page in light mode;
+  - Live and an action page in dark mode;
+  - Learn and Guarantees mid-scroll (pinned story, condensed bar, cursor);
+  - Live at 390 px and Chaos at 820 px.

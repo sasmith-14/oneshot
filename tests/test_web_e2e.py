@@ -80,7 +80,8 @@ def test_lost_response_story_is_visible_in_the_console(stack, page):
     run_worker(cfg)
 
     page.goto(f"{base}/ui/")
-    page.get_by_role("link", name=action_id, exact=True).click()
+    # the id appears in the wire report too; open it from the full list
+    page.locator("#actions").get_by_role("link", name=action_id, exact=True).click()
     page.wait_for_url(f"**/ui/actions/{action_id}")
 
     # Flow: the lost response, the ledger write the client never heard about, the check that found it.
