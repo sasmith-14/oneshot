@@ -20,7 +20,7 @@ const TONE: Record<Tone, { stroke: string; fill: string; text: string }> = {
   bad: { stroke: "stroke-st-failed", fill: "fill-st-failed", text: "fill-st-failed-fg" },
   warn: { stroke: "stroke-st-verifying", fill: "fill-st-verifying", text: "fill-st-verifying-fg" },
   unknown: { stroke: "stroke-st-unknown", fill: "fill-st-unknown", text: "fill-st-unknown-fg" },
-  neutral: { stroke: "stroke-muted-foreground", fill: "fill-muted-foreground", text: "fill-foreground" },
+  neutral: { stroke: "stroke-ink", fill: "fill-ink", text: "fill-ink" },
 };
 
 const clip = (s: string | undefined, n: number) => (s && s.length > n ? s.slice(0, n - 1) + "…" : s);
@@ -45,31 +45,31 @@ export function FlowSequence({ rows, start }: { rows: FlowRow[]; start: number }
 
   return (
     <div>
-      <div className="mb-3 flex flex-wrap items-center gap-2">
+      <div className="mb-6 flex flex-wrap items-center gap-3">
         <button
           type="button"
           onClick={() => {
             if (step === null || step >= rows.length) setStep(0);
             setPlaying((p) => !(p && step !== null && step < rows.length));
           }}
-          className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-foreground px-3 text-[13px] font-medium text-background"
+          className="btn btn-ink btn-sm"
         >
           {playing ? <Pause aria-hidden className="size-3.5" /> : <Play aria-hidden className="size-3.5" />}
           {playing ? "Pause" : step !== null && step < rows.length ? "Resume" : "Replay"}
         </button>
         {step !== null && (
-          <button type="button" onClick={() => { setStep(null); setPlaying(false); }} className="inline-flex h-8 items-center gap-1.5 rounded-lg border px-3 text-[13px]">
+          <button type="button" onClick={() => { setStep(null); setPlaying(false); }} className="btn btn-line btn-sm">
             <RotateCcw aria-hidden className="size-3.5" /> Show all
           </button>
         )}
-        <span className="text-xs text-muted-foreground tabular-nums" aria-live="polite">
+        <span className="text-[13.5px] text-ink-2 tnum" aria-live="polite">
           {step === null ? `${rows.length} recorded facts` : `Step ${Math.min(step, rows.length)} of ${rows.length}`}
         </span>
         <AnimatePresence mode="wait">
           {current && (
-            <motion.span key={step} initial={{ opacity: 0, x: -4 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.18 }} className="text-[13px]">
+            <motion.span key={step} initial={{ opacity: 0, x: -4 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.18 }} className="text-[15px]">
               {current.label}
-              {current.sub && <span className="text-muted-foreground"> ({current.sub})</span>}
+              {current.sub && <span className="text-ink-2"> ({current.sub})</span>}
             </motion.span>
           )}
         </AnimatePresence>
@@ -86,9 +86,9 @@ export function FlowSequence({ rows, start }: { rows: FlowRow[]; start: number }
           {LANES.map((l) => (
             <g key={l.id}>
               <title>{l.hint}</title>
-              <rect x={X[l.id] - 76} y={6} width={152} height={30} rx={9} className="fill-muted stroke-border" />
-              <text x={X[l.id]} y={25} textAnchor="middle" className="fill-foreground text-[12.5px] font-medium">{l.label}</text>
-              <line x1={X[l.id]} y1={38} x2={X[l.id]} y2={height - 6} className="stroke-border" strokeDasharray="2 5" />
+              <line x1={X[l.id] - 76} y1={36} x2={X[l.id] + 76} y2={36} className="stroke-ink" strokeWidth={1.5} />
+              <text x={X[l.id]} y={26} textAnchor="middle" className="fill-ink font-serif text-[20px]">{l.label}</text>
+              <line x1={X[l.id]} y1={40} x2={X[l.id]} y2={height - 6} className="stroke-rule" strokeDasharray="2 5" />
             </g>
           ))}
           {rows.map((r, i) => {
@@ -96,7 +96,7 @@ export function FlowSequence({ rows, start }: { rows: FlowRow[]; start: number }
             const shown = i < visible;
             return (
               <motion.g key={i} initial={false} animate={{ opacity: shown ? 1 : 0.08 }} transition={{ duration: 0.25, ease: EASE_OUT }}>
-                <text x={10} y={y + 4} className="fill-muted-foreground font-mono text-[10px]">{offset(r.at, start)}</text>
+                <text x={10} y={y + 4} className="fill-ink-2 font-mono text-[10.5px]">{offset(r.at, start)}</text>
                 {r.kind === "msg" ? <Message row={r} y={y} animate={step !== null && i === visible - 1} /> : <Note row={r} y={y} />}
               </motion.g>
             );
@@ -138,8 +138,8 @@ function Message({ row, y, animate }: { row: Extract<FlowRow, { kind: "msg" }>; 
           {...draw}
         />
       )}
-      <text x={mid} y={y - 9} textAnchor="middle" className={cn("text-[12px] font-medium", t.text)}>{clip(row.label, 40)}</text>
-      {row.sub && <text x={mid} y={y + 16} textAnchor="middle" className="fill-muted-foreground font-mono text-[10px]">{clip(row.sub, 46)}</text>}
+      <text x={mid} y={y - 9} textAnchor="middle" className={cn("text-[12.5px] font-medium", t.text)}>{clip(row.label, 40)}</text>
+      {row.sub && <text x={mid} y={y + 16} textAnchor="middle" className="fill-ink-2 font-mono text-[10.5px]">{clip(row.sub, 46)}</text>}
     </g>
   );
 }
@@ -150,9 +150,9 @@ function Note({ row, y }: { row: Extract<FlowRow, { kind: "note" }>; y: number }
   return (
     <g>
       <title>{[row.label, row.sub].filter(Boolean).join(": ")}</title>
-      <rect x={x - 128} y={y - 18} width={256} height={row.sub ? 38 : 28} rx={9} strokeWidth={1.5} className={cn("fill-card", t.stroke)} />
+      <rect x={x - 160} y={y - 18} width={320} height={row.sub ? 38 : 28} rx={2} strokeWidth={1.2} className={cn("fill-sheet", t.stroke)} />
       <text x={x} y={y - (row.sub ? 1 : -1)} textAnchor="middle" className={cn("text-[11.5px] font-medium", t.text)}>{clip(row.label, 40)}</text>
-      {row.sub && <text x={x} y={y + 13} textAnchor="middle" className="fill-muted-foreground font-mono text-[9.5px]">{clip(row.sub, 46)}</text>}
+      {row.sub && <text x={x} y={y + 13} textAnchor="middle" className="fill-ink-2 font-mono text-[10px]">{clip(row.sub, 50)}</text>}
     </g>
   );
 }

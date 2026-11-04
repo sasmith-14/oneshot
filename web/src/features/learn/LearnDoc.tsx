@@ -9,6 +9,7 @@ import { useDoc, useDocs } from "@/hooks/queries";
 import { useLenis } from "@/app/SmoothScroll";
 import { cn } from "@/lib/utils";
 import { Mermaid } from "./Mermaid";
+import { SetHeadline } from "@/components/SetHeadline";
 
 export const slugify = (s: string) => s.toLowerCase().replace(/[`*_]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 
@@ -20,9 +21,9 @@ function textOf(node: React.ReactNode): string {
 }
 
 const CALLOUT: Record<string, { label: string; cls: string }> = {
-  note: { label: "Note", cls: "border-st-inflight bg-st-inflight-soft/50" },
-  protects: { label: "What this protects against", cls: "border-st-succeeded bg-st-succeeded-soft/50" },
-  cannot: { label: "What this cannot protect against", cls: "border-st-unknown bg-st-unknown-soft/50" },
+  note: { label: "Note", cls: "border-ink bg-sheet" },
+  protects: { label: "What this protects against", cls: "border-st-succeeded bg-st-succeeded-soft" },
+  cannot: { label: "What this cannot protect against", cls: "border-mark bg-sheet" },
 };
 
 const components: Components = {
@@ -39,8 +40,8 @@ const components: Components = {
     if (!m) return <blockquote>{children}</blockquote>;
     const c = CALLOUT[m[1]];
     return (
-      <aside className={cn("my-6 rounded-r-xl border-l-4 px-5 py-1 text-foreground", c.cls)}>
-        <p className="!mb-0 pt-3 text-xs font-semibold">{c.label}</p>
+      <aside className={cn("my-8 border-l-[3px] px-6 py-1 text-ink", c.cls)}>
+        <p className="!mb-0 pt-4 text-[13.5px] font-semibold">{c.label}</p>
         <div className="[&>p:first-child]:hidden">{children}</div>
       </aside>
     );
@@ -70,28 +71,33 @@ export function LearnDoc() {
 
   return (
     <>
-      <motion.div aria-hidden style={{ scaleX: progress }} className="fixed inset-x-0 top-14 z-20 h-0.5 origin-left bg-st-inflight" />
-      <Link to="/learn" className="mb-6 inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground">
+      <motion.div aria-hidden style={{ scaleX: progress }} className="fixed inset-x-0 top-14 z-[41] h-[2px] origin-left bg-mark" />
+      <Link to="/learn" className="ink-link mb-10 inline-flex items-center gap-1.5 text-[15px] text-ink-2">
         <ArrowLeft aria-hidden className="size-4" /> Learn
       </Link>
       {doc.isError ? (
-        <p className="py-10">There is no document called <span className="font-mono">{slug}</span>.</p>
+        <p className="t-title py-10 text-[40px]">There is no document called <span className="font-mono text-[0.6em]">{slug}</span>.</p>
       ) : !doc.data ? (
-        <Skeleton className="h-[600px] max-w-3xl rounded-[14px]" />
+        <Skeleton className="h-[600px] max-w-3xl rounded-none bg-well" />
       ) : (
-        <div className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_220px]">
+        <>
+        <header className="mb-14 max-w-5xl">
+          <SetHeadline key={doc.data.title} text={doc.data.title} className="t-display text-[clamp(2.75rem,6vw,5.5rem)]" />
+          <p className="mt-5 text-[15px] text-ink-2">{readMinutes(doc.data.markdown)} min read{headings.length ? `, ${headings.length} sections` : ""}</p>
+        </header>
+        <div className="grid gap-16 lg:grid-cols-[minmax(0,1fr)_240px]">
           <article className="prose-os min-w-0">
             <ReactMarkdown remarkPlugins={[remarkGfm]} components={components}>{doc.data.markdown}</ReactMarkdown>
-            <nav aria-label="More documents" className="mt-16 flex justify-between gap-4 border-t pt-6 text-sm">
+            <nav aria-label="More documents" className="mt-20 flex justify-between gap-6 border-t-2 border-ink pt-6 text-[16px]">
               {prev ? <Link to={`/learn/${prev.slug}`} className="flex items-center gap-2 no-underline"><ArrowLeft aria-hidden className="size-4" />{prev.title}</Link> : <span />}
               {next && <Link to={`/learn/${next.slug}`} className="flex items-center gap-2 text-right no-underline">{next.title}<ArrowRight aria-hidden className="size-4" /></Link>}
             </nav>
           </article>
           {headings.length > 2 && (
             <aside className="hidden lg:block">
-              <nav aria-label="On this page" className="sticky top-24 text-[13px]">
-                <p className="mb-3 font-medium">On this page</p>
-                <ol className="space-y-0.5 border-l">
+              <nav aria-label="On this page" className="sticky top-28 text-[14px]">
+                <p className="t-head mb-3 text-[22px]">On this page</p>
+                <ol className="border-l border-rule">
                   {headings.map((h) => (
                     <li key={h.id}>
                       <a
@@ -102,7 +108,7 @@ export function LearnDoc() {
                           lenis.scrollTo(`#${h.id}`, { offset: -80 });
                           history.replaceState(null, "", `#${h.id}`);
                         }}
-                        className={cn("relative -ml-px block border-l py-1 pl-3 transition-colors", active === h.id ? "border-foreground text-foreground" : "border-transparent text-muted-foreground hover:text-foreground")}
+                        className={cn("relative -ml-px block border-l-2 py-1.5 pl-4 leading-snug transition-colors duration-150", active === h.id ? "border-mark text-ink" : "border-transparent text-ink-2 hover:text-ink")}
                       >
                         {h.text}
                       </a>
@@ -113,9 +119,14 @@ export function LearnDoc() {
             </aside>
           )}
         </div>
+        </>
       )}
     </>
   );
+}
+
+function readMinutes(md: string) {
+  return Math.max(1, Math.round(md.split(/\s+/).length / 230));
 }
 
 function useActiveHeading(ids: string[]) {

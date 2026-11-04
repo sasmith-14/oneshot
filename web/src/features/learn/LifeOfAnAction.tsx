@@ -39,23 +39,23 @@ export function LifeOfAnAction() {
   const [active, setActive] = useState(0);
   const step = STEPS[active];
   return (
-    <div className="grid gap-x-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)]">
-      <div className="order-2 lg:order-1">
+    <div className="grid gap-x-16 lg:grid-cols-12">
+      <div className="order-2 lg:order-1 lg:col-span-5">
         {STEPS.map((s, i) => <StepText key={i} index={i} step={s} active={i === active} onEnter={setActive} />)}
       </div>
-      <div className="order-1 lg:order-2">
-        <div className="sticky top-16 z-10 -mx-4 border-b bg-background/90 px-4 py-3 backdrop-blur lg:top-24 lg:mx-0 lg:rounded-[14px] lg:border lg:bg-card lg:p-5">
+      <div className="order-1 lg:order-2 lg:col-span-7">
+        <div className="sticky top-14 z-10 -mx-5 bg-paper px-5 py-4 sm:-mx-8 sm:px-8 lg:top-28 lg:mx-0 lg:bg-sheet lg:p-7">
           <StateMachine current={step.current} path={pathOf(step)} focus={step.focus} label={`Diagram for step ${active + 1}: ${step.title}`} />
-          <div className="mt-2 flex items-center justify-between gap-3">
+          <div className="mt-4 flex items-center justify-between gap-4">
             <AnimatePresence mode="wait" initial={false}>
-              <motion.p key={active} initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }} transition={{ duration: 0.2, ease: EASE_OUT }} className="text-sm font-medium">
+              <motion.p key={active} initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -5 }} transition={{ duration: 0.22, ease: EASE_OUT }} className="t-head text-[22px]">
                 {step.title}
               </motion.p>
             </AnimatePresence>
-            <ol className="flex gap-1" aria-label="Progress through the story">
+            <ol className="flex shrink-0 gap-1" aria-label={`Part ${active + 1} of ${STEPS.length}`}>
               {STEPS.map((_, i) => (
-                <li key={i} className="relative h-1.5 w-5 overflow-hidden rounded-full bg-muted">
-                  {i <= active && <motion.span layoutId={i === active ? "story-dot" : undefined} className="absolute inset-0 rounded-full bg-foreground" />}
+                <li key={i} className="relative h-[3px] w-5 overflow-hidden bg-rule">
+                  <motion.span className="absolute inset-0 origin-left bg-mark" initial={false} animate={{ scaleX: i <= active ? 1 : 0 }} transition={{ duration: 0.35, ease: EASE_OUT }} />
                 </li>
               ))}
             </ol>
@@ -73,11 +73,10 @@ function StepText({ step, index, active, onEnter }: { step: Step; index: number;
     if (inView) onEnter(index);
   }, [inView, onEnter, index]);
   return (
-    <div ref={ref} className="flex min-h-[62vh] items-center py-10 first:pt-4 last:min-h-[70vh]">
-      <motion.div animate={{ opacity: active ? 1 : 0.32 }} transition={{ duration: 0.3, ease: EASE_OUT }}>
-        <p className="font-mono text-xs text-muted-foreground">Step {index + 1} of {STEPS.length}</p>
-        <h3 className="mt-2 text-2xl leading-tight font-semibold tracking-[-0.015em]">{step.title}</h3>
-        <p className="mt-3 max-w-[60ch] text-[15.5px] leading-relaxed text-muted-foreground">{step.body}</p>
+    <div ref={ref} className="flex min-h-[64vh] items-center py-10 first:pt-4 last:min-h-[72vh]">
+      <motion.div animate={{ opacity: active ? 1 : 0.28 }} transition={{ duration: 0.35, ease: EASE_OUT }}>
+        <h3 className="t-title text-[clamp(2rem,3vw,2.5rem)]">{step.title}</h3>
+        <p className="mt-4 max-w-[52ch] text-[17px] leading-relaxed">{step.body}</p>
       </motion.div>
     </div>
   );

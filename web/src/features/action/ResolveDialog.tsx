@@ -46,52 +46,52 @@ export function ResolveDialog({ action }: { action: ActionDetail }) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <button type="button" className="h-8 rounded-lg bg-foreground px-3 text-[13px] font-medium text-background">Investigate and resolve</button>
+        <button type="button" className="btn btn-ink">Investigate and resolve</button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-lg" data-lenis-prevent>
+      <DialogContent className="rounded-[3px] border-ink bg-sheet p-7 sm:max-w-xl" data-lenis-prevent>
         <DialogHeader>
-          <DialogTitle>Resolve an UNKNOWN action</DialogTitle>
-          <DialogDescription>Look at the provider's own record first. Resolving is final and audited, and the agent will be told this answer.</DialogDescription>
+          <DialogTitle className="t-title text-[34px] font-normal">Resolve an UNKNOWN action</DialogTitle>
+          <DialogDescription className="text-[15px] text-ink-2">Look at the provider's own record first. Resolving is final and audited, and the agent will be told this answer.</DialogDescription>
         </DialogHeader>
-        <div className="space-y-4">
+        <div className="space-y-6">
           <div>
             <div className="mb-2 flex items-center justify-between">
-              <h3 className="text-sm font-medium">1. Evidence from the provider's ledger</h3>
-              <button type="button" onClick={() => record.refetch()} disabled={record.isFetching} className="inline-flex h-7 items-center gap-1.5 rounded-md border px-2 text-xs">
+              <h3 className="text-[15px] font-semibold">1. Evidence from the provider's ledger</h3>
+              <button type="button" onClick={() => record.refetch()} disabled={record.isFetching} className="btn btn-line btn-sm">
                 <RefreshCw aria-hidden className={record.isFetching ? "size-3 animate-spin motion-reduce:animate-none" : "size-3"} /> Check provider now
               </button>
             </div>
             {verdict ? (
               <VerdictBanner verdict={verdict} />
             ) : (
-              <p className="rounded-xl border border-dashed px-3 py-2 text-sm text-muted-foreground">
+              <p className="bg-well px-4 py-3 text-[15px] text-ink-2">
                 {record.isError ? "The provider cannot be reached, so there is no evidence to resolve with. Restart it from Chaos, then check again." : "Checking…"}
               </p>
             )}
-            {settling && <p className="mt-2 rounded-lg bg-st-verifying-soft px-3 py-2 text-xs text-st-verifying-fg">The settle window after the last send has not passed. The provider might still apply it, so “no effect” is not conclusive yet.</p>}
+            {settling && <p className="mt-2 bg-st-verifying-soft px-4 py-2.5 text-[14px] text-st-verifying-fg">The settle window after the last send has not passed. The provider might still apply it, so “no effect” is not conclusive yet.</p>}
           </div>
           <div>
-            <h3 className="mb-2 text-sm font-medium">2. Your decision</h3>
+            <h3 className="mb-2 text-[15px] font-semibold">2. Your decision</h3>
             <RadioGroup value={choice ?? ""} onValueChange={(v) => setPicked(v as Choice)} className="grid grid-cols-2 gap-2" disabled={!effects}>
               {(["SUCCEEDED", "FAILED"] as Choice[]).map((c) => (
-                <Label key={c} className="flex cursor-pointer items-center gap-2 rounded-xl border p-3 has-[[data-state=checked]]:border-foreground">
+                <Label key={c} className="flex cursor-pointer items-center gap-2.5 rounded-[2px] border border-rule bg-paper p-3.5 transition-colors has-[[data-state=checked]]:border-ink has-[[data-state=checked]]:shadow-[inset_0_0_0_1px_var(--ink)]">
                   <RadioGroupItem value={c} />
-                  <span className="font-mono text-xs">{c}</span>
-                  {c === suggested && <span className="ml-auto text-[11px] text-muted-foreground">Matches evidence</span>}
+                  <span className="font-mono text-[13px]">{c}</span>
+                  {c === suggested && <span className="ml-auto text-[12.5px] text-ink-2">Matches evidence</span>}
                 </Label>
               ))}
             </RadioGroup>
-            {against && <p className="mt-2 rounded-lg bg-st-failed-soft px-3 py-2 text-xs text-st-failed-fg">This goes against the provider's ledger. Only do this if you have other evidence, and say what it is in the note.</p>}
+            {against && <p className="mt-2 bg-st-failed-soft px-4 py-2.5 text-[14px] text-st-failed-fg">This goes against the provider's ledger. Only do this if you have other evidence, and say what it is in the note.</p>}
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="resolve-note">3. Note for the audit trail (required)</Label>
-            <Textarea id="resolve-note" name="note" autoComplete="off" value={note} onChange={(e) => setNote(e.target.value)} placeholder="Ledger shows eff_00012 created 12:03:04…" />
+            <Label htmlFor="resolve-note" className="text-[15px] font-semibold">3. Note for the audit trail (required)</Label>
+            <Textarea id="resolve-note" name="note" autoComplete="off" value={note} onChange={(e) => setNote(e.target.value)} placeholder="Ledger shows eff_00012 created 12:03:04…" className="rounded-[2px] border-input bg-paper text-[15px]" />
           </div>
-          {mutation.isError && <p role="alert" className="text-sm text-st-failed-fg">{(mutation.error as Error).message}</p>}
+          {mutation.isError && <p role="alert" className="text-[14px] text-st-failed-fg">{(mutation.error as Error).message}</p>}
         </div>
         <DialogFooter>
-          <button type="button" onClick={() => setOpen(false)} className="h-9 rounded-lg border px-3 text-sm">Cancel</button>
-          <button type="button" onClick={() => mutation.mutate()} disabled={!canSubmit || mutation.isPending} className="h-9 rounded-lg bg-foreground px-3 text-sm font-medium text-background disabled:opacity-40">
+          <button type="button" onClick={() => setOpen(false)} className="btn btn-quiet">Cancel</button>
+          <button type="button" onClick={() => mutation.mutate()} disabled={!canSubmit || mutation.isPending} className="btn btn-ink">
             {mutation.isPending ? "Resolving…" : `Resolve as ${choice ?? "…"}`}
           </button>
         </DialogFooter>
