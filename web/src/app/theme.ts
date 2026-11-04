@@ -2,23 +2,17 @@ import { useCallback, useEffect, useState } from "react";
 
 export type Theme = "light" | "dark";
 const KEY = "oneshot-theme";
-const system = (): Theme => (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+const PAPER = { light: "#F2F0EB", dark: "#12110E" } as const;
 
 function apply(theme: Theme) {
   document.documentElement.classList.toggle("dark", theme === "dark");
-  document.querySelector('meta[name="theme-color"]')?.setAttribute("content", theme === "dark" ? "#101217" : "#F7F8FA");
+  document.querySelector('meta[name="theme-color"]')?.setAttribute("content", PAPER[theme]);
 }
 
-/** Follows the OS until the user picks a theme; the choice is remembered. */
+/** Paper (light) is the default and the identity; dark is a choice, remembered. */
 export function useTheme(): [Theme, () => void] {
-  const [theme, setTheme] = useState<Theme>(() => (localStorage.getItem(KEY) as Theme | null) ?? system());
+  const [theme, setTheme] = useState<Theme>(() => (localStorage.getItem(KEY) === "dark" ? "dark" : "light"));
   useEffect(() => apply(theme), [theme]);
-  useEffect(() => {
-    const mq = matchMedia("(prefers-color-scheme: dark)");
-    const onChange = () => !localStorage.getItem(KEY) && setTheme(system());
-    mq.addEventListener("change", onChange);
-    return () => mq.removeEventListener("change", onChange);
-  }, []);
   const toggle = useCallback(() => {
     setTheme((t) => {
       const next = t === "dark" ? "light" : "dark";

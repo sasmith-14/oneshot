@@ -102,15 +102,15 @@ export function StateMachine({
     <svg viewBox="0 0 840 280" className={cn("w-full", className)} role="img" aria-label={label ?? `Lifecycle diagram${current ? `, current state ${current}` : ""}`}>
       <defs>
         <marker id="sm-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-          <path d="M0,0 L10,5 L0,10 z" className="fill-muted-foreground/40" />
+          <path d="M0,0 L10,5 L0,10 z" className="fill-ink-3/60" />
         </marker>
         <marker id="sm-arrow-on" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-          <path d="M0,0 L10,5 L0,10 z" className="fill-foreground" />
+          <path d="M0,0 L10,5 L0,10 z" className="fill-mark" />
         </marker>
       </defs>
 
-      <circle cx={10} cy={NODES.PENDING.y} r={4.5} className="fill-foreground" />
-      <line x1={15} y1={NODES.PENDING.y} x2={NODES.PENDING.x - W / 2 - 5} y2={NODES.PENDING.y} className="stroke-foreground" strokeWidth={1.6} markerEnd="url(#sm-arrow-on)" />
+      <circle cx={10} cy={NODES.PENDING.y} r={4.5} className="fill-ink" />
+      <line x1={15} y1={NODES.PENDING.y} x2={NODES.PENDING.x - W / 2 - 5} y2={NODES.PENDING.y} className="stroke-ink" strokeWidth={1.4} markerEnd="url(#sm-arrow)" />
 
       {EDGES.map((e) => {
         const key = `${e.from}>${e.to}`;
@@ -121,14 +121,14 @@ export function StateMachine({
           <g key={key}>
             <title>{`${e.from} → ${e.to}: ${e.meaning}${count ? ` (taken ${count}×)` : ""}`}</title>
             <path d={d} fill="none" strokeWidth={12} className="stroke-transparent" />
-            <path d={d} fill="none" strokeWidth={1.2} strokeDasharray="3 4" className="stroke-muted-foreground/30" markerEnd="url(#sm-arrow)" />
+            <path d={d} fill="none" strokeWidth={1.2} strokeDasharray="2 4" className="stroke-ink-3/50" markerEnd="url(#sm-arrow)" />
             {on && (
               <motion.path
                 d={d}
                 fill="none"
-                strokeWidth={2.2}
+                strokeWidth={2}
                 strokeLinecap="round"
-                className={focus === key ? "stroke-st-inflight" : "stroke-foreground"}
+                className="stroke-mark"
                 markerEnd="url(#sm-arrow-on)"
                 initial={{ pathLength: 0, opacity: 0 }}
                 animate={{ pathLength: 1, opacity: 1 }}
@@ -142,9 +142,9 @@ export function StateMachine({
 
       <g>
         <title>{`VERIFYING → VERIFYING: no answer yet (settle window not over, or lookup failed); check again${loops ? ` (taken ${loops}×)` : ""}`}</title>
-        <path d={LOOP} fill="none" strokeWidth={1.2} strokeDasharray="3 4" className="stroke-muted-foreground/30" markerEnd="url(#sm-arrow)" />
+        <path d={LOOP} fill="none" strokeWidth={1.2} strokeDasharray="2 4" className="stroke-ink-3/50" markerEnd="url(#sm-arrow)" />
         {(loops > 0 || focus === "VERIFYING>VERIFYING") && (
-          <motion.path d={LOOP} fill="none" strokeWidth={2.2} className={focus === "VERIFYING>VERIFYING" ? "stroke-st-inflight" : "stroke-foreground"} markerEnd="url(#sm-arrow-on)" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.5, ease: EASE_OUT }} />
+          <motion.path d={LOOP} fill="none" strokeWidth={2.2} className="stroke-mark" markerEnd="url(#sm-arrow-on)" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.5, ease: EASE_OUT }} />
         )}
         {loops > 1 && <Count x={NODES.VERIFYING.x} y={NODES.VERIFYING.y + 42} n={loops} />}
       </g>
@@ -169,7 +169,7 @@ function Node({ status, current, visited }: { status: Status; current: boolean; 
           y={p.y - H / 2 - 6}
           width={W + 12}
           height={H + 12}
-          rx={15}
+          rx={5}
           fill="none"
           strokeWidth={2}
           className={cn(meta.stroke)}
@@ -178,8 +178,8 @@ function Node({ status, current, visited }: { status: Status; current: boolean; 
           transition={isActive(status) ? { duration: 1.6, repeat: Infinity, ease: "easeInOut" } : { duration: 0.3 }}
         />
       )}
-      <rect x={p.x - W / 2} y={p.y - H / 2} width={W} height={H} rx={11} strokeWidth={current ? 2 : lit ? 1.4 : 1} className={cn("transition-[fill,stroke] duration-300", lit ? cn(meta.fill, meta.stroke) : "fill-card stroke-border")} />
-      <text x={p.x} y={p.y + 4} textAnchor="middle" className={cn("font-mono text-[11px] font-medium", lit ? meta.text : "fill-muted-foreground")}>
+      <rect x={p.x - W / 2} y={p.y - H / 2} width={W} height={H} rx={3} strokeWidth={current ? 2 : lit ? 1.2 : 1} className={cn("transition-[fill,stroke] duration-300", current ? cn(meta.fill, "stroke-ink") : lit ? cn(meta.fill, meta.stroke) : "fill-sheet stroke-rule")} />
+      <text x={p.x} y={p.y + 4} textAnchor="middle" className={cn("font-mono text-[11.5px] font-medium", lit ? meta.text : "fill-ink-3")}>
         {status}
       </text>
     </g>
@@ -189,8 +189,8 @@ function Node({ status, current, visited }: { status: Status; current: boolean; 
 function Count({ x, y, n }: { x: number; y: number; n: number }) {
   return (
     <g>
-      <circle cx={x} cy={y} r={10} className="fill-foreground" />
-      <text x={x} y={y + 3.5} textAnchor="middle" className="fill-background font-mono text-[10px] font-semibold">{n}×</text>
+      <circle cx={x} cy={y} r={10} className="fill-mark" />
+      <text x={x} y={y + 3.5} textAnchor="middle" className="fill-white font-mono text-[10px] font-medium">{n}×</text>
     </g>
   );
 }

@@ -1,32 +1,29 @@
-import { motion } from "motion/react";
-import { EASE_OUT } from "@/lib/motion";
+import { SetHeadline } from "./SetHeadline";
+import { cn } from "@/lib/utils";
 
-export function PageHeader({ title, children, actions }: { title: string; children?: React.ReactNode; actions?: React.ReactNode }) {
+/** A section front: the page's name set large in the serif, the standfirst
+ * (one sentence on what the page is for), and the page's own actions. */
+export function PageHeader({ title, children, actions, className }: { title: string; children?: React.ReactNode; actions?: React.ReactNode; className?: string }) {
   return (
-    <header className="mb-8 flex flex-wrap items-end justify-between gap-x-8 gap-y-4 border-b pb-6">
-      <div className="min-w-0 max-w-2xl">
-        <motion.h1
-          initial={{ opacity: 0, y: 6 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.32, ease: EASE_OUT }}
-          className="text-[28px] leading-tight font-semibold tracking-[-0.02em] sm:text-[34px]"
-        >
-          {title}
-        </motion.h1>
-        {children && <div className="mt-2 text-[15px] leading-relaxed text-muted-foreground">{children}</div>}
+    <header className={cn("mb-14 grid gap-x-12 gap-y-6 lg:grid-cols-12 lg:items-end", className)}>
+      <div className="min-w-0 lg:col-span-8">
+        <SetHeadline text={title} className="t-display text-[clamp(3.25rem,7.4vw,6.5rem)]" />
+        {children && <div className="t-stand mt-5">{children}</div>}
       </div>
-      {actions && <div className="flex flex-wrap items-center gap-2">{actions}</div>}
+      {actions && <div className="flex flex-wrap items-center gap-2 lg:col-span-4 lg:justify-end lg:pb-2">{actions}</div>}
     </header>
   );
 }
 
-export function Section({ title, about, children, id, aside }: { title: string; about?: React.ReactNode; children: React.ReactNode; id?: string; aside?: React.ReactNode }) {
+/** A section of a page: a serif heading, an optional one-line explanation,
+ * and an optional control on the right. */
+export function Section({ title, about, children, id, aside, className }: { title: string; about?: React.ReactNode; children: React.ReactNode; id?: string; aside?: React.ReactNode; className?: string }) {
   return (
-    <section id={id} className="mb-12">
-      <div className="mb-4 flex flex-wrap items-baseline justify-between gap-2">
-        <div>
-          <h2 className="text-lg font-semibold tracking-tight">{title}</h2>
-          {about && <p className="mt-0.5 text-sm text-muted-foreground">{about}</p>}
+    <section id={id} aria-labelledby={id ? `${id}-title` : undefined} className={cn("mb-24", className)}>
+      <div className="mb-7 flex flex-wrap items-end justify-between gap-x-8 gap-y-3">
+        <div className="max-w-3xl">
+          <SetHeadline as="h2" id={id ? `${id}-title` : undefined} text={title} className="t-title text-[clamp(2rem,3.4vw,2.875rem)]" />
+          {about && <p className="mt-2.5 text-[15.5px] leading-relaxed text-ink-2">{about}</p>}
         </div>
         {aside}
       </div>

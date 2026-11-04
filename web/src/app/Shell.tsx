@@ -1,15 +1,18 @@
-import { useEffect, useState } from "react";
-import { NavLink, useLocation, useNavigate, useOutlet } from "react-router";
-import { AnimatePresence, motion } from "motion/react";
+import { useEffect, useRef, useState } from "react";
+import { Link, NavLink, useLocation, useNavigate, useOutlet } from "react-router";
+import { AnimatePresence, motion, useInView } from "motion/react";
 import { Moon, Search, Sun } from "lucide-react";
 import { Toaster } from "sonner";
 import { CommandPalette, PAGES } from "./CommandPalette";
+import { Cursor } from "./Cursor";
 import { useLenis } from "./SmoothScroll";
 import { useTheme } from "./theme";
 import { Kbd } from "@/components/Kbd";
 import { useSystemStatus } from "@/hooks/queries";
-import { EASE_OUT } from "@/lib/motion";
+import { EASE_OUT, RULE_SPRING } from "@/lib/motion";
 import { cn } from "@/lib/utils";
+
+const FRAME = "mx-auto w-full max-w-[1320px] px-5 sm:px-8 lg:px-10";
 
 export function Shell() {
   const [theme, toggleTheme] = useTheme();
@@ -19,15 +22,17 @@ export function Shell() {
   const outlet = useOutlet();
   const lenis = useLenis();
   const section = "/" + (location.pathname.split("/")[1] ?? "");
+  const mastRef = useRef<HTMLElement>(null);
+  const mastInView = useInView(mastRef, { margin: "-56px 0px 0px 0px" });
 
-  // New page: start at the top (instantly; animating a long scroll would be noise).
+  // A new page starts at the top (instantly: animating a long scroll is noise).
   useEffect(() => {
     if (location.hash) return;
     if (lenis) lenis.scrollTo(0, { immediate: true });
     else window.scrollTo(0, 0);
   }, [section, lenis, location.hash]);
 
-  // Number keys 1–6 jump between pages (when not typing).
+  // Keys 1–6 jump between sections (when not typing).
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.metaKey || e.ctrlKey || e.altKey || /input|textarea|select/i.test((e.target as HTMLElement).tagName)) return;
@@ -39,77 +44,153 @@ export function Shell() {
     return () => window.removeEventListener("keydown", onKey);
   }, [navigate]);
 
+  const tools = <Tools theme={theme} toggleTheme={toggleTheme} openPalette={() => setPaletteOpen(true)} />;
+
   return (
     <div className="flex min-h-dvh flex-col">
-      <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded-md focus:bg-foreground focus:px-3 focus:py-2 focus:text-background">
+      <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[90] focus:bg-ink focus:px-3 focus:py-2 focus:text-paper">
         Skip to content
       </a>
-      <header className="sticky top-0 z-30 border-b bg-background/80 backdrop-blur-md supports-[backdrop-filter]:bg-background/70">
-        <div className="mx-auto flex h-14 max-w-[1240px] items-center gap-4 px-4 sm:px-6">
-          <NavLink to="/" className="mr-2 flex shrink-0 items-center gap-2 rounded-md font-semibold tracking-tight" aria-label="OneShot, live view">
-            <Logo />
-            <span>OneShot</span>
-          </NavLink>
-          <nav aria-label="Main" className="flex min-w-0 flex-1 items-center gap-0.5 overflow-x-auto text-[13.5px] [scrollbar-width:none]">
-            {PAGES.map((p) => {
-              const active = p.to === "/" ? section === "/" || section === "/actions" : section === p.to;
-              return (
-                <NavLink key={p.to} to={p.to} className={cn("relative rounded-lg px-3 py-1.5 whitespace-nowrap transition-colors", active ? "text-foreground" : "text-muted-foreground hover:text-foreground")}>
-                  {active && <motion.span layoutId="nav-pill" className="absolute inset-0 rounded-lg bg-muted" transition={{ type: "spring", stiffness: 500, damping: 40 }} />}
-                  <span className="relative">{p.label}</span>
-                </NavLink>
-              );
-            })}
-          </nav>
-          <button
-            type="button"
-            onClick={() => setPaletteOpen(true)}
-            className="hidden h-8 items-center gap-2 rounded-lg border bg-card px-2.5 text-[13px] text-muted-foreground transition-colors hover:text-foreground md:flex"
-          >
-            <Search aria-hidden className="size-3.5" />
-            Jump to…
-            <Kbd className="ml-3">⌘K</Kbd>
-          </button>
-          <LiveIndicator />
-          <button
-            type="button"
-            onClick={toggleTheme}
-            aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} theme`}
-            className="grid size-8 place-items-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-          >
-            <AnimatePresence mode="wait" initial={false}>
-              <motion.span key={theme} initial={{ rotate: -60, opacity: 0, scale: 0.8 }} animate={{ rotate: 0, opacity: 1, scale: 1 }} exit={{ rotate: 60, opacity: 0, scale: 0.8 }} transition={{ duration: 0.18, ease: EASE_OUT }}>
-                {theme === "dark" ? <Sun aria-hidden className="size-4" /> : <Moon aria-hidden className="size-4" />}
-              </motion.span>
-            </AnimatePresence>
-          </button>
-        </div>
-      </header>
 
-      <main id="main" className="mx-auto w-full max-w-[1240px] flex-1 px-4 pt-8 pb-20 sm:px-6">
+      <Masthead ref={mastRef} section={section} tools={tools} />
+      <SlimBar visible={!mastInView} section={section} tools={tools} />
+
+      <main id="main" className={cn(FRAME, "flex-1 pt-14 pb-32")}>
         <AnimatePresence mode="wait" initial={false}>
-          <motion.div key={section} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }} transition={{ duration: 0.16, ease: EASE_OUT }}>
+          <motion.div
+            key={section}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, transition: { duration: 0.12 } }}
+            transition={{ duration: 0.28, ease: EASE_OUT }}
+          >
             {outlet}
           </motion.div>
         </AnimatePresence>
       </main>
 
-      <footer className="border-t">
-        <div className="mx-auto flex max-w-[1240px] flex-wrap items-center justify-between gap-2 px-4 py-5 text-xs text-muted-foreground sm:px-6">
-          <span>OneShot is an educational reference implementation. It runs locally, uses no real money, and never claims exactly-once delivery.</span>
-          <span className="flex items-center gap-1.5">
-            Press <Kbd>⌘K</Kbd> to jump anywhere, or <Kbd>1</Kbd>–<Kbd>6</Kbd> for pages
-          </span>
-        </div>
-      </footer>
-
+      <Colophon />
+      <Cursor />
       <CommandPalette open={paletteOpen} setOpen={setPaletteOpen} theme={theme} toggleTheme={toggleTheme} />
-      <Toaster theme={theme} position="bottom-right" closeButton toastOptions={{ classNames: { toast: "!rounded-xl !border-border !bg-popover !text-popover-foreground", description: "!text-muted-foreground" } }} />
+      <Toaster
+        theme={theme}
+        position="bottom-left"
+        closeButton
+        toastOptions={{ classNames: { toast: "!rounded-[3px] !border-ink !bg-sheet !text-ink !font-sans !shadow-[0_10px_30px_-12px_rgba(0,0,0,0.25)]", description: "!text-ink-2" } }}
+      />
     </div>
   );
 }
 
-function LiveIndicator() {
+// ------------------------------------------------------------------ masthead
+
+function isActive(to: string, section: string) {
+  return to === "/" ? section === "/" || section === "/actions" : section === to;
+}
+
+function today() {
+  return new Intl.DateTimeFormat("en-GB", { weekday: "long", day: "numeric", month: "long", year: "numeric" }).format(new Date());
+}
+
+const Masthead = ({ ref, section, tools }: { ref: React.Ref<HTMLElement>; section: string; tools: React.ReactNode }) => {
+  const status = useSystemStatus();
+  const total = status.data ? Object.values(status.data.counts).reduce((a, b) => a + (b ?? 0), 0) : null;
+  return (
+    <header ref={ref} className={cn(FRAME, "pt-5")}>
+      <div className="flex items-center justify-between gap-4 pb-5 text-[13.5px] text-ink-2">
+        <span>{today()}</span>
+        <span className="hidden md:block">{total === null ? "" : `${total.toLocaleString("en-GB")} action${total === 1 ? "" : "s"} on record`}</span>
+        {tools}
+      </div>
+      <div className="flex items-end justify-between gap-8 pb-5">
+        <Link to="/" aria-label="OneShot, live front page" className="t-display -ml-[0.04em] text-[clamp(3.6rem,10.5vw,8.75rem)] leading-[0.82]">
+          <Wordmark />
+        </Link>
+        <p className="hidden max-w-[30ch] pb-2 text-right text-[15px] leading-snug text-ink-2 md:block">
+          The record of every action an agent asked for, and of what really happened on the wire.
+        </p>
+      </div>
+      {/* The heavy rule sits under the nav's own top edge, so the red section
+          mark can be drawn over it without being clipped by the scroll box. */}
+      <div className="relative">
+        <div aria-hidden className="absolute inset-x-0 top-0 h-[3px] bg-ink" />
+        <nav aria-label="Sections" className="relative flex items-center gap-x-7 overflow-x-auto border-b border-rule [scrollbar-width:none]">
+          {PAGES.map((p) => {
+            const active = isActive(p.to, section);
+            return (
+              <NavLink key={p.to} to={p.to} className={cn("relative pt-[17px] pb-3.5 text-[15.5px] whitespace-nowrap transition-colors duration-150", active ? "font-medium text-ink" : "text-ink-2 hover:text-ink")}>
+                {active && <motion.span layoutId="mast-mark" aria-hidden className="absolute inset-x-0 top-0 h-[3px] bg-mark" transition={RULE_SPRING} />}
+                {p.label}
+              </NavLink>
+            );
+          })}
+        </nav>
+      </div>
+    </header>
+  );
+};
+
+function SlimBar({ visible, section, tools }: { visible: boolean; section: string; tools: React.ReactNode }) {
+  return (
+    <motion.div
+      aria-hidden={!visible}
+      inert={!visible}
+      initial={false}
+      animate={{ y: visible ? 0 : "-105%" }}
+      transition={{ duration: 0.32, ease: EASE_OUT }}
+      className="fixed inset-x-0 top-0 z-40 border-b border-rule bg-paper"
+    >
+      <div className={cn(FRAME, "flex h-14 items-center gap-6")}>
+        <Link to="/" aria-label="OneShot" className="t-display shrink-0 text-[30px] leading-none">
+          <Wordmark />
+        </Link>
+        <nav aria-label="Sections (compact)" className="flex min-w-0 flex-1 items-center gap-x-5 overflow-x-auto text-[14.5px] [scrollbar-width:none]">
+          {PAGES.map((p) => {
+            const active = isActive(p.to, section);
+            return (
+              <NavLink key={p.to} to={p.to} className={cn("relative py-4 whitespace-nowrap transition-colors duration-150", active ? "font-medium text-ink" : "text-ink-2 hover:text-ink")}>
+                {p.label}
+                {active && <motion.span layoutId="slim-mark" aria-hidden className="absolute inset-x-0 bottom-0 h-[3px] bg-mark" transition={RULE_SPRING} />}
+              </NavLink>
+            );
+          })}
+        </nav>
+        {tools}
+      </div>
+    </motion.div>
+  );
+}
+
+/** The wordmark: the name, and one red full stop. One shot. */
+export function Wordmark() {
+  return (
+    <>
+      OneShot<span className="text-mark">.</span>
+    </>
+  );
+}
+
+function Tools({ theme, toggleTheme, openPalette }: { theme: string; toggleTheme: () => void; openPalette: () => void }) {
+  return (
+    <div className="flex shrink-0 items-center gap-1">
+      <LiveMark />
+      <button type="button" onClick={openPalette} className="btn btn-quiet btn-sm hidden gap-2 md:inline-flex" aria-label="Jump to a page, action or preset">
+        <Search aria-hidden className="size-3.5" />
+        Jump to
+        <Kbd>⌘K</Kbd>
+      </button>
+      <button type="button" onClick={toggleTheme} aria-label={`Switch to ${theme === "dark" ? "paper" : "dark"} theme`} className="btn btn-quiet btn-sm size-8 px-0">
+        <AnimatePresence mode="wait" initial={false}>
+          <motion.span key={theme} initial={{ opacity: 0, rotate: -40, scale: 0.85 }} animate={{ opacity: 1, rotate: 0, scale: 1 }} exit={{ opacity: 0, rotate: 40, scale: 0.85 }} transition={{ duration: 0.16, ease: EASE_OUT }}>
+            {theme === "dark" ? <Sun aria-hidden className="size-4" /> : <Moon aria-hidden className="size-4" />}
+          </motion.span>
+        </AnimatePresence>
+      </button>
+    </div>
+  );
+}
+
+function LiveMark() {
   const { isError, dataUpdatedAt } = useSystemStatus();
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => {
@@ -118,24 +199,33 @@ function LiveIndicator() {
   }, []);
   const fresh = !isError && now - dataUpdatedAt < 4000;
   return (
-    <span role="status" aria-live="polite" className="hidden items-center gap-1.5 text-xs text-muted-foreground sm:flex" title={fresh ? "Polling the OneShot API every second" : "The OneShot API is not answering"}>
+    <span role="status" aria-live="polite" className="mr-2 hidden items-center gap-2 text-[13px] text-ink-2 sm:flex" title={fresh ? "Reading the OneShot API every second" : "The OneShot API is not answering"}>
       <span className="relative flex size-2">
-        {fresh && <span className="os-ring absolute inset-0 rounded-full bg-st-succeeded" />}
-        <span className={cn("relative size-2 rounded-full", fresh ? "bg-st-succeeded" : "bg-st-failed")} />
+        {fresh && <span className="os-ring absolute inset-0 rounded-full bg-mark" />}
+        <span className={cn("relative size-2 rounded-full", fresh ? "bg-mark" : "bg-ink-3")} />
       </span>
       {fresh ? "Live" : "API offline"}
     </span>
   );
 }
 
-export function Logo({ className }: { className?: string }) {
-  // One shot: a single arrow meeting a single target.
+// ------------------------------------------------------------------ colophon
+
+function Colophon() {
   return (
-    <svg viewBox="0 0 24 24" className={cn("size-5", className)} aria-hidden>
-      <circle cx="14.5" cy="9.5" r="6.5" className="fill-none stroke-st-inflight" strokeWidth="2" />
-      <circle cx="14.5" cy="9.5" r="2.2" className="fill-st-inflight" />
-      <path d="M3.5 20.5 L12.5 11.5" className="stroke-foreground" strokeWidth="2.2" strokeLinecap="round" />
-      <path d="M3.5 20.5 l3.2 -.4 M3.5 20.5 l.4 -3.2" className="stroke-foreground" strokeWidth="2" strokeLinecap="round" />
-    </svg>
+    <footer className={cn(FRAME, "pb-10")}>
+      <div className="rule-heavy pt-8">
+        <div className="grid gap-x-12 gap-y-4 text-[14px] leading-relaxed text-ink-2 md:grid-cols-3">
+          <p>An educational reference implementation. Everything runs on this machine, against a simulated provider, with no real money.</p>
+          <p>OneShot never claims exactly-once delivery. It retries only when that is provably safe, and says UNKNOWN when it cannot tell.</p>
+          <p className="flex flex-wrap items-center gap-1.5">
+            Press <Kbd>⌘K</Kbd> to jump anywhere, or <Kbd>1</Kbd>–<Kbd>6</Kbd> for a section.
+          </p>
+        </div>
+        <p aria-hidden className="t-display mt-14 -mb-[0.16em] -ml-[0.05em] text-[clamp(5rem,21vw,19rem)] leading-[0.8] select-none">
+          <Wordmark />
+        </p>
+      </div>
+    </footer>
   );
 }

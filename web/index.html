@@ -3,17 +3,16 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#F7F8FA" />
-    <meta name="description" content="OneShot lab console: watch an execution engine handle failure." />
-    <title>OneShot Lab</title>
+    <meta name="theme-color" content="#F2F0EB" />
+    <meta name="description" content="OneShot: the record of every action an agent asked for, and of what really happened on the wire." />
+    <link rel="icon" type="image/svg+xml" href="/ui/favicon.svg" />
+    <title>OneShot</title>
     <script>
-      // Apply the saved/system theme before first paint (no flash).
-      const t = localStorage.getItem("oneshot-theme");
-      const dark = t ? t === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
-      document.documentElement.classList.toggle("dark", dark);
+      // Paper is the default; dark only if it was chosen. Applied before first paint.
+      document.documentElement.classList.toggle("dark", localStorage.getItem("oneshot-theme") === "dark");
     </script>
   </head>
-  <body>
+  <body class="paper-grain">
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

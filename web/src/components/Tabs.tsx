@@ -1,12 +1,14 @@
 import { useRef } from "react";
 import { motion } from "motion/react";
+import { RULE_SPRING } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 
-/** Accessible tabs (arrow keys move between them) with a sliding indicator. */
+/** Accessible tabs (arrow keys move between them). The red editor's mark
+ * slides under the chosen one. */
 export function TabBar<T extends string>({ tabs, value, onChange, id }: { tabs: { id: T; label: string }[]; value: T; onChange: (v: T) => void; id: string }) {
   const refs = useRef<(HTMLButtonElement | null)[]>([]);
   return (
-    <div role="tablist" aria-label="Views" className="flex gap-1 border-b">
+    <div role="tablist" aria-label="Views" className="flex gap-8 border-b border-rule">
       {tabs.map((t, i) => (
         <button
           key={t.id}
@@ -26,10 +28,10 @@ export function TabBar<T extends string>({ tabs, value, onChange, id }: { tabs: 
             onChange(tabs[next].id);
             refs.current[next]?.focus();
           }}
-          className={cn("relative px-3 pt-1.5 pb-3 text-sm transition-colors", value === t.id ? "text-foreground" : "text-muted-foreground hover:text-foreground")}
+          className={cn("relative pt-1 pb-3.5 text-[17px] transition-colors duration-150", value === t.id ? "font-medium text-ink" : "text-ink-2 hover:text-ink")}
         >
           {t.label}
-          {value === t.id && <motion.span layoutId={`${id}-underline`} className="absolute inset-x-1 -bottom-px h-0.5 rounded-full bg-foreground" transition={{ type: "spring", stiffness: 500, damping: 40 }} />}
+          {value === t.id && <motion.span layoutId={`${id}-underline`} className="absolute inset-x-0 -bottom-px h-[3px] bg-mark" transition={RULE_SPRING} />}
         </button>
       ))}
     </div>
