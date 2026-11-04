@@ -1,6 +1,8 @@
-# OneShot console: design system (v3, "the paper of record")
+# OneShot console: design system (v3, "the paper of record", Cobalt and Archivo)
 
 The v3 redesign of the web console. The page set, data and behaviour from `FRONTEND_PLAN.md` are unchanged; this file records the look, and why.
+
+> **Revision (2026-11-04).** The first v3 palette (stone paper, ink, vermilion) matched the client's own portfolio, so they chose **Cobalt** from four previews: cool newsprint grey `#ECEDEA`, blue-black ink `#0F1216` and a cobalt accent `#2340F5` (dark: `#0E1013`, `#E7EAEE`, `#6A80FF`). IN_FLIGHT moved from blue to teal so it never reads as the accent. The client also asked for better type than Instrument Serif and Schibsted Grotesk. The default is now **Archivo** for both display and text: a variable grotesk set wide (112%) and heavy (640) for headlines, at normal width for text. Four other type systems can be previewed with `?type=bricolage|fraunces|newsreader|instrument`. Where the tables below still mention paper, vermilion or the serif, read the Cobalt and Archivo values in `web/src/index.css`; the structure, rules and motion are unchanged.
 
 ## The brief, restated
 
@@ -150,7 +152,7 @@ Their scripts were read before use. Only `assets.mjs` uses the network (it searc
 
 - **Colours and type:** the token blocks at the top of `web/src/index.css`. Dark mode is the `.dark` block. Mermaid reads the live tokens, so diagrams follow automatically.
 - **Theme:** `app/theme.ts` (System / Light / Dark; System is stored as no choice, so it keeps following the OS) and `app/ThemeSwitch.tsx`. The pre-paint copy of the logic is in `web/index.html`.
-- **Palette previews (not yet chosen):** four alternative two-neutrals-plus-one-accent palettes (`cobalt`, `sage`, `magenta`, `night`) sit under `html[data-palette=…]` in `index.css`. Pick one with `?palette=<name>` in the URL; `?palette=paper` returns to the default. `night` is dark-first and ignores the theme switch.
+- **Type systems:** the `html[data-type=…]` blocks in `index.css`. Each sets the display and text faces, the display weight, width, tracking and leading, and `--ds` / `--ts`, which scale the large headlines and the section titles, because a wide grotesk needs less size than a condensed serif. Preview one with `?type=<name>` (remembered); `?type=archivo` returns to the default.
 - **Motion:** `web/src/lib/motion.ts` holds the easing curves and springs. The headline reveal timing is in `components/SetHeadline.tsx`, and the cursor in `app/Cursor.tsx`.
 - **Headlines the console writes:** `web/src/lib/headline.ts`, with tests in `headline.test.ts`.
 - **The wire's stations and captions:** `web/src/features/live/Wire.tsx`.

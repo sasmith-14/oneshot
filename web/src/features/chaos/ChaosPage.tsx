@@ -55,7 +55,7 @@ export function ChaosPage() {
           return (
             <section key={g.id} id={g.id} aria-labelledby={`${g.id}-title`} className="mb-24 grid gap-x-12 gap-y-7 lg:grid-cols-12">
               <div className="lg:col-span-3">
-                <SetHeadline as="h2" id={`${g.id}-title`} text={g.title} className="t-title text-[clamp(2rem,3vw,2.625rem)]" />
+                <SetHeadline as="h2" id={`${g.id}-title`} text={g.title} className="t-title text-[length:calc(var(--ts)*clamp(2rem,3vw,2.625rem))]" />
                 <p className="mt-3 text-[15.5px] leading-relaxed text-ink-2">{g.about}</p>
                 <p className="mt-4 text-[13.5px] text-ink-3">{items.length} {items.length === 1 ? "story" : "stories"}. Drag, swipe or step through.</p>
               </div>
@@ -73,7 +73,7 @@ export function ChaosPage() {
 
       <section id="bench" aria-labelledby="bench-title" className="scroll-mt-24">
         <div className="mb-8 max-w-3xl">
-          <SetHeadline as="h2" id="bench-title" text="The lab bench" className="t-title text-[clamp(2rem,3.4vw,2.875rem)]" />
+          <SetHeadline as="h2" id="bench-title" text="The lab bench" className="t-title text-[length:calc(var(--ts)*clamp(2rem,3.4vw,2.875rem))]" />
           <p className="mt-2.5 text-[15.5px] text-ink-2">The real processes behind the console, the faults waiting at the provider, and a log of everything the lab did.</p>
         </div>
         <div className="grid gap-x-12 gap-y-14 border-t-2 border-ink pt-8 lg:grid-cols-3">
@@ -129,7 +129,7 @@ function Results({ results, actions }: { results: PresetResult[]; actions: Actio
   const byId = new Map(actions.map((a) => [a.id, a]));
   return (
     <motion.section initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3, ease: EASE_OUT }} className="mb-24" aria-labelledby="runs-title">
-      <h2 id="runs-title" className="t-title mb-5 text-[clamp(2rem,3.4vw,2.875rem)]">Your runs</h2>
+      <h2 id="runs-title" className="t-title mb-5 text-[length:calc(var(--ts)*clamp(2rem,3.4vw,2.875rem))]">Your runs</h2>
       <ul className="border-t-2 border-ink">
         <AnimatePresence initial={false}>
           {results.map((r, i) => (
@@ -278,7 +278,7 @@ function Faults({ state }: { state?: LabState }) {
           </AnimatePresence>
         </ul>
       ) : (
-        <p className="mb-5 font-serif text-[19px] text-ink-3 italic">None. Requests succeed normally.</p>
+        <p className="mb-5 font-display text-[19px] text-ink-3 italic">None. Requests succeed normally.</p>
       )}
       <form
         className="grid grid-cols-[1fr_5rem] gap-2"
@@ -312,7 +312,7 @@ function EventLog({ state }: { state?: LabState }) {
       <BenchTitle>Lab log</BenchTitle>
       <p className="mb-5 text-[14.5px] text-ink-2">What the lab did to the processes, newest first.</p>
       {events.length === 0 ? (
-        <p className="font-serif text-[19px] text-ink-3 italic">Nothing yet.</p>
+        <p className="font-display text-[19px] text-ink-3 italic">Nothing yet.</p>
       ) : (
         <ol className="max-h-[22rem] overflow-y-auto border-t border-rule pr-1" data-lenis-prevent aria-live="polite">
           <AnimatePresence initial={false}>

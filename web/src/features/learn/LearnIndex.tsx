@@ -24,7 +24,7 @@ export function LearnIndex() {
             {docs.data.map((d, i) => (
               <motion.li key={d.slug} initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-40px" }} transition={{ duration: 0.4, delay: Math.min(i, 6) * 0.04, ease: EASE_OUT }} className="border-b border-rule">
                 <Link to={`/learn/${d.slug}`} className="group flex items-baseline gap-4 py-5">
-                  <span className="t-head text-[clamp(1.5rem,2.4vw,2rem)] transition-colors duration-200 group-hover:text-mark-ink">{d.title}</span>
+                  <span className="t-head text-[length:calc(var(--ts)*clamp(1.5rem,2.4vw,2rem))] transition-colors duration-200 group-hover:text-mark-ink">{d.title}</span>
                   <span aria-hidden className="mb-[0.35em] min-w-8 flex-1 border-b border-dotted border-ink-3" />
                   <span className="shrink-0 text-[14.5px] text-ink-2">{Math.max(1, Math.round(d.words / 230))} min read</span>
                 </Link>

@@ -3,7 +3,7 @@ import { motion } from "motion/react";
 import { RULE_SPRING } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 
-/** Accessible tabs (arrow keys move between them). The red editor's mark
+/** Accessible tabs (arrow keys move between them). The accent mark
  * slides under the chosen one. */
 export function TabBar<T extends string>({ tabs, value, onChange, id }: { tabs: { id: T; label: string }[]; value: T; onChange: (v: T) => void; id: string }) {
   const refs = useRef<(HTMLButtonElement | null)[]>([]);

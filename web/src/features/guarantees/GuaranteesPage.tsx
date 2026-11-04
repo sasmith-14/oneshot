@@ -18,7 +18,7 @@ const STATUS: Record<Guarantee["status"], { label: string; ring: string; text: s
 };
 
 /** The promises, each set as a statement with its condition, and beside it
- * the live check against the data that exists right now. A red line in the
+ * the live check against the data that exists right now. A line in the accent colour in the
  * margin follows your reading; each check draws itself as you reach it. */
 export function GuaranteesPage() {
   const report = useGuarantees();
@@ -33,7 +33,7 @@ export function GuaranteesPage() {
       </PageHeader>
 
       <div className="mb-24 grid gap-x-16 gap-y-6 border-t-2 border-ink pt-10 lg:grid-cols-12">
-        <p className="t-title text-[clamp(2rem,3.6vw,3rem)] lg:col-span-7">OneShot does not provide exactly-once delivery.</p>
+        <p className="t-title text-[length:calc(var(--ts)*clamp(2rem,3.6vw,3rem))] lg:col-span-7">OneShot does not provide exactly-once delivery.</p>
         <p className="text-[17px] leading-relaxed text-ink-2 lg:col-span-5 lg:pt-2">
           No system that talks to an external service over a network can. What it does provide is retries only when provably safe, deduplication where the provider supports it, verification where it does not, and an honest UNKNOWN when none of that is enough.
         </p>
@@ -68,7 +68,7 @@ export function GuaranteesPage() {
                       </p>
                     )}
                   </div>
-                  <span className={cn("font-serif text-[56px] leading-none", gap.count > 0 ? "text-st-verifying-fg" : "text-ink-3")}>{gap.count}</span>
+                  <span className={cn("font-display text-[56px] leading-none", gap.count > 0 ? "text-st-verifying-fg" : "text-ink-3")}>{gap.count}</span>
                 </motion.div>
               ))}
               <div className="border-b border-rule py-6 text-[15.5px] leading-relaxed text-ink-2">
@@ -93,7 +93,7 @@ function Row({ g }: { g: Guarantee }) {
       </div>
       <div>
         <p className="font-mono text-[13px] text-ink-2">{g.id}</p>
-        <h2 className="t-head mt-2 text-[clamp(1.75rem,2.6vw,2.25rem)]">{g.statement}</h2>
+        <h2 className="t-head mt-2 text-[length:calc(var(--ts)*clamp(1.75rem,2.6vw,2.25rem))]">{g.statement}</h2>
         <p className="mt-4 max-w-[62ch] text-[16px] leading-relaxed text-ink-2"><span className="font-semibold text-ink">Only if </span>{g.condition}</p>
       </div>
       <motion.div initial={{ opacity: 0, y: 10 }} animate={seen ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.45, delay: 0.3, ease: EASE_OUT }} className="bg-sheet p-5 sm:col-start-2 lg:col-start-auto lg:self-start">

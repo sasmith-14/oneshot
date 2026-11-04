@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#F2F0EB" />
+    <meta name="theme-color" content="#ECEDEA" />
     <meta name="description" content="OneShot: the record of every action an agent asked for, and of what really happened on the wire." />
     <link rel="icon" type="image/svg+xml" href="/ui/favicon.svg" />
     <title>OneShot</title>
@@ -12,11 +12,12 @@
       const mode = localStorage.getItem("oneshot-theme");
       const dark = mode === "dark" || (mode !== "light" && matchMedia("(prefers-color-scheme: dark)").matches);
       document.documentElement.classList.toggle("dark", dark);
-      // Palette preview: ?palette=cobalt|sage|magenta|night (paper is the default).
-      const pick = new URLSearchParams(location.search).get("palette");
-      if (pick) localStorage.setItem("oneshot-palette", pick);
-      const palette = localStorage.getItem("oneshot-palette");
-      if (palette && palette !== "paper") document.documentElement.dataset.palette = palette;
+      // Type preview: ?type=archivo|bricolage|fraunces|newsreader|instrument (Archivo is the default).
+      const pick = new URLSearchParams(location.search).get("type");
+      if (pick) localStorage.setItem("oneshot-type", pick);
+      localStorage.removeItem("oneshot-palette");
+      const type = localStorage.getItem("oneshot-type");
+      if (type && type !== "archivo") document.documentElement.dataset.type = type;
     </script>
   </head>
   <body class="paper-grain">

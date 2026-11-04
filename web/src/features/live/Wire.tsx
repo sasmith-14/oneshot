@@ -48,7 +48,7 @@ export function Wire({ actions }: { actions: Action[] }) {
           return (
             <section key={col.id} aria-labelledby={`wire-${col.id}`} className="relative flex min-w-0 flex-col">
               <header className="lg:min-h-[164px]">
-                <NumberRoll value={items.length} className={cn("t-display block text-[clamp(3rem,5vw,4.5rem)] leading-[0.9]", items.length === 0 && "text-ink-3")} />
+                <NumberRoll value={items.length} className={cn("t-display block text-[length:calc(var(--ds)*clamp(3rem,5vw,4.5rem))] leading-[0.9]", items.length === 0 && "text-ink-3")} />
                 <h3 id={`wire-${col.id}`} className="mt-3 text-[15.5px] font-semibold">{col.title}</h3>
                 <p className="mt-0.5 text-[13.5px] leading-snug text-ink-2">{col.caption}</p>
               </header>
@@ -60,7 +60,7 @@ export function Wire({ actions }: { actions: Action[] }) {
                 {!last && <span className="absolute top-1/2 right-0 hidden h-0 w-0 -translate-y-1/2 border-y-[4px] border-l-[7px] border-y-transparent border-l-ink lg:block" />}
               </div>
 
-              {items.length === 0 && <p className="font-serif text-[17px] text-ink-3 italic">Nothing here</p>}
+              {items.length === 0 && <p className="font-display text-[17px] text-ink-3 italic">Nothing here</p>}
               <ul className="flex flex-wrap content-start gap-1.5" aria-live="polite">
                 <AnimatePresence initial={false} mode="popLayout">
                   {shown.map((a) => (

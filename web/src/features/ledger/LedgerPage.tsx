@@ -108,7 +108,7 @@ export function LedgerPage() {
                 </tfoot>
               )}
             </table>
-            {shown.length === 0 && <p className="py-12 font-serif text-[19px] text-ink-3 italic">{effects.length ? "No effects match this filter." : "The provider has not applied anything yet."}</p>}
+            {shown.length === 0 && <p className="py-12 font-display text-[19px] text-ink-3 italic">{effects.length ? "No effects match this filter." : "The provider has not applied anything yet."}</p>}
           </div>
         </>
       )}
@@ -120,7 +120,7 @@ function Stat({ label, value, bad }: { label: string; value: number; bad?: boole
   return (
     <div className="border-b border-rule py-4">
       <dt className="text-[14px] text-ink-2">{label}</dt>
-      <dd className={cn("mt-1 font-serif text-[52px] leading-none", bad && "text-st-failed-fg", !bad && value === 0 && "text-ink-3")}><NumberRoll value={value} /></dd>
+      <dd className={cn("mt-1 font-display text-[52px] leading-none", bad && "text-st-failed-fg", !bad && value === 0 && "text-ink-3")}><NumberRoll value={value} /></dd>
     </div>
   );
 }

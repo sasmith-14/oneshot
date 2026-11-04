@@ -27,7 +27,7 @@ export function LivePage() {
   return (
     <>
       <div className="mb-10 flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
-        <SetHeadline text="Live" className="t-title text-[44px]" />
+        <SetHeadline text="Live" className="t-title text-[length:calc(var(--ts)*44px)]" />
         <p className="text-[14px] text-ink-2">{updated ? `Read at ${updated}, every second` : "Connecting…"}</p>
       </div>
 
@@ -46,12 +46,12 @@ export function LivePage() {
 
       <div className="mb-24 grid gap-x-16 gap-y-16 lg:grid-cols-12">
         <section aria-labelledby="report-title" className="min-w-0 lg:col-span-7">
-          <SetHeadline as="h2" id="report-title" text="The wire report" className="t-title mb-2 text-[clamp(2rem,3.4vw,2.875rem)]" />
+          <SetHeadline as="h2" id="report-title" text="The wire report" className="t-title mb-2 text-[length:calc(var(--ts)*clamp(2rem,3.4vw,2.875rem))]" />
           <p className="mb-6 text-[15.5px] text-ink-2">Each change as it happens, in plain words.</p>
           <WireReport actions={actions.data} />
         </section>
         <section aria-labelledby="activity-title" className="min-w-0 lg:col-span-5">
-          <SetHeadline as="h2" id="activity-title" text="The last five minutes" className="t-title mb-2 text-[clamp(2rem,3.4vw,2.875rem)]" />
+          <SetHeadline as="h2" id="activity-title" text="The last five minutes" className="t-title mb-2 text-[length:calc(var(--ts)*clamp(2rem,3.4vw,2.875rem))]" />
           <p className="mb-6 text-[15.5px] text-ink-2">Submissions per ten seconds, coloured by how they turned out.</p>
           <Activity actions={all} now={now} />
         </section>

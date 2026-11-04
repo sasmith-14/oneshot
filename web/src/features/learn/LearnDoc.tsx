@@ -82,7 +82,7 @@ export function LearnDoc() {
       ) : (
         <>
         <header className="mb-14 max-w-5xl">
-          <SetHeadline key={doc.data.title} text={doc.data.title} className="t-display text-[clamp(2.75rem,6vw,5.5rem)]" />
+          <SetHeadline key={doc.data.title} text={doc.data.title} className="t-display text-[length:calc(var(--ds)*clamp(2.75rem,6vw,5.5rem))]" />
           <p className="mt-5 text-[15px] text-ink-2">{readMinutes(doc.data.markdown)} min read{headings.length ? `, ${headings.length} sections` : ""}</p>
         </header>
         <div className="grid gap-16 lg:grid-cols-[minmax(0,1fr)_240px]">

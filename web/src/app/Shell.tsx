@@ -104,14 +104,14 @@ const Masthead = ({ ref, section, tools }: { ref: React.Ref<HTMLElement>; sectio
         {tools}
       </div>
       <div className="flex items-end justify-between gap-8 pb-5">
-        <Link to="/" aria-label="OneShot, live front page" className="t-display -ml-[0.04em] text-[clamp(3.6rem,10.5vw,8.75rem)] leading-[0.82]">
+        <Link to="/" aria-label="OneShot, live front page" className="t-display -ml-[0.04em] text-[length:calc(var(--ds)*clamp(3.6rem,10.5vw,8.75rem))] leading-[0.82]">
           <Wordmark />
         </Link>
         <p className="hidden max-w-[30ch] pb-2 text-right text-[15px] leading-snug text-ink-2 md:block">
           The record of every action an agent asked for, and of what really happened on the wire.
         </p>
       </div>
-      {/* The heavy rule sits under the nav's own top edge, so the red section
+      {/* The heavy rule sits under the nav's own top edge, so the accent section
           mark can be drawn over it without being clipped by the scroll box. */}
       <div className="relative">
         <div aria-hidden className="absolute inset-x-0 top-0 h-[3px] bg-ink" />
@@ -162,7 +162,7 @@ function SlimBar({ visible, section, tools }: { visible: boolean; section: strin
   );
 }
 
-/** The wordmark: the name, and one red full stop. One shot. */
+/** The wordmark: the name, and one full stop in the accent colour. One shot. */
 export function Wordmark() {
   return (
     <>
@@ -217,7 +217,7 @@ function Colophon() {
             Press <Kbd>⌘K</Kbd> to jump anywhere, or <Kbd>1</Kbd>–<Kbd>6</Kbd> for a section.
           </p>
         </div>
-        <p aria-hidden className="t-display mt-14 -mb-[0.16em] -ml-[0.05em] text-[clamp(5rem,21vw,19rem)] leading-[0.8] select-none">
+        <p aria-hidden className="t-display mt-14 -mb-[0.16em] -ml-[0.05em] text-[length:calc(var(--ds)*clamp(5rem,21vw,19rem))] leading-[0.8] select-none">
           <Wordmark />
         </p>
       </div>

@@ -87,7 +87,7 @@ export function FlowSequence({ rows, start }: { rows: FlowRow[]; start: number }
             <g key={l.id}>
               <title>{l.hint}</title>
               <line x1={X[l.id] - 76} y1={36} x2={X[l.id] + 76} y2={36} className="stroke-ink" strokeWidth={1.5} />
-              <text x={X[l.id]} y={26} textAnchor="middle" className="fill-ink font-serif text-[20px]">{l.label}</text>
+              <text x={X[l.id]} y={26} textAnchor="middle" className="fill-ink font-display text-[20px]">{l.label}</text>
               <line x1={X[l.id]} y1={40} x2={X[l.id]} y2={height - 6} className="stroke-rule" strokeDasharray="2 5" />
             </g>
           ))}

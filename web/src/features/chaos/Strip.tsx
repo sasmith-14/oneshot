@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 /**
  * A horizontal chapter strip. It scrolls natively (trackpad swipe, shift+wheel,
  * touch with snapping, keyboard focus), can be dragged with a mouse, and has
- * step buttons. A red line under it shows how far through the chapter you are.
+ * step buttons. A line in the accent colour under it shows how far through the chapter you are.
  * Vertical wheel always scrolls the page: the strip never hijacks it.
  */
 export function Strip({ label, children }: { label: string; children: React.ReactNode }) {

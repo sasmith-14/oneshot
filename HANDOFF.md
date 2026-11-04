@@ -21,7 +21,7 @@ Learning docs: `docs/src/*.md` → `docs/pdf/*.pdf` (overview + 7 concept docs +
 
 ### Web console "OneShot Lab" (done; spec `docs/FRONTEND_PLAN.md`, design `docs/FRONTEND_DESIGN.md`)
 
-All seven pages are built: Live (a front page with a headline written from live data, the wire figure and the wire report), Action detail, Chaos (horizontal chapter strips and the lab bench), Reconcile, Ledger, Guarantees and Learn, plus the ⌘K palette. v3 is an editorial look: stone paper, ink, a vermilion "editor's pen", and Instrument Serif, Schibsted Grotesk and IBM Plex Mono (all self-hosted). The tokens, motion inventory and the reasoning are in `docs/FRONTEND_DESIGN.md`.
+All seven pages are built: Live (a front page with a headline written from live data, the wire figure and the wire report), Action detail, Chaos (horizontal chapter strips and the lab bench), Reconcile, Ledger, Guarantees and Learn, plus the ⌘K palette. v3 is an editorial look: cool newsprint grey, blue-black ink, a cobalt accent, and Archivo with IBM Plex Mono (self-hosted). The tokens, motion inventory and the reasoning are in `docs/FRONTEND_DESIGN.md`.
 
 **Stack:** React 19, Vite 8, TypeScript 7, Tailwind 4, shadcn/ui, TanStack Query (1 s polling), Motion (animations), Lenis (smooth scrolling), cmdk, Sonner, react-markdown with lazily loaded Mermaid, and Fontsource packages for the three faces.
 
@@ -74,7 +74,7 @@ Things to know when working on it:
 - Agent skills used for the design (15 of them in `.claude/skills/`, not committed) can be reinstalled from `skills-lock.json`; the commands are in `docs/FRONTEND_DESIGN.md`.
 - Headlines use `SetHeadline`, which reveals each line when it scrolls into view. A full-page screenshot that never scrolls will show headings below the fold as blank; scroll first. Under reduced motion they are plain text.
 - Theme: a System / Light / Dark switch in the masthead (and ⌘K). System follows the OS and is the default; a choice is remembered in `localStorage["oneshot-theme"]` (absent means system).
-- Palette previews: `?palette=cobalt|sage|magenta|night` re-colours the console (remembered in `localStorage["oneshot-palette"]`; `?palette=paper` resets). The user is choosing a final palette because the current paper and red scheme matches their portfolio; once chosen, make it the default and delete the others.
+- Colours are Cobalt (chosen by the user because the first palette matched their portfolio). Type is Archivo by default; `?type=bricolage|fraunces|newsreader|instrument` previews the alternatives (remembered in `localStorage["oneshot-type"]`), and `?type=archivo` resets.
 - npm blocks `fsevents`' install script (optional macOS file watcher). This is harmless; Vite works without it.
 
 ## Next steps (suggested, in order)

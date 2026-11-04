@@ -20,7 +20,7 @@ export function Mermaid({ code }: { code: string }) {
 
   useEffect(() => {
     const obs = new MutationObserver(() => setDark(document.documentElement.classList.contains("dark")));
-    obs.observe(document.documentElement, { attributes: true, attributeFilter: ["class", "data-palette"] });
+    obs.observe(document.documentElement, { attributes: true, attributeFilter: ["class", "data-type"] });
     return () => obs.disconnect();
   }, []);
 
@@ -28,7 +28,7 @@ export function Mermaid({ code }: { code: string }) {
     let cancelled = false;
     loadMermaid()
       .then(async (mermaid) => {
-        mermaid.initialize({ startOnLoad: false, securityLevel: "strict", theme: "base", themeVariables: inkColours(), fontFamily: "Schibsted Grotesk Variable, ui-sans-serif", sequence: { wrap: true } });
+        mermaid.initialize({ startOnLoad: false, securityLevel: "strict", theme: "base", themeVariables: inkColours(), fontFamily: getComputedStyle(document.documentElement).getPropertyValue("--face-text").trim(), sequence: { wrap: true } });
         const { svg } = await mermaid.render(`m${id}${dark ? "d" : "l"}`, code);
         if (!cancelled && ref.current) ref.current.innerHTML = svg;
       })

@@ -23,7 +23,7 @@ export function Lead({ status, apiDown }: { status?: SystemStatus; apiDown: bool
         key={fp.headline}
         as="h2"
         text={fp.headline}
-        className="t-display text-[clamp(3rem,6.6vw,6.25rem)]"
+        className="t-display text-[length:calc(var(--ds)*clamp(3.9rem,6.6vw,6.25rem))]"
       />
       <AnimatePresence mode="wait" initial={false}>
         <motion.div key={fp.standfirst} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.3, ease: EASE_OUT, delay: 0.15 }}>
@@ -64,7 +64,7 @@ export function StateOfThings({ status }: { status?: SystemStatus }) {
                     <span className="ink-link">{STATUS_META[st].label}</span>
                   </Link>
                 </th>
-                <td className={cn("py-1.5 text-right font-serif text-[26px] leading-none", n === 0 && "text-ink-2", st === "UNKNOWN" && n > 0 && "text-st-unknown-fg")}>
+                <td className={cn("py-1.5 text-right font-display text-[26px] leading-none", n === 0 && "text-ink-2", st === "UNKNOWN" && n > 0 && "text-st-unknown-fg")}>
                   <NumberRoll value={n} />
                 </td>
               </tr>
@@ -150,7 +150,7 @@ const time = (s: number) => new Date(s * 1000).toLocaleTimeString("en-GB", { hou
 
 export function WireReport({ actions }: { actions: Action[] | undefined }) {
   const lines = useWireReport(actions);
-  if (!lines.length) return <p className="font-serif text-[19px] text-ink-3 italic">Nothing has happened yet.</p>;
+  if (!lines.length) return <p className="font-display text-[19px] text-ink-3 italic">Nothing has happened yet.</p>;
   return (
     <ol aria-live="polite" className="border-t-2 border-ink">
       <AnimatePresence initial={false}>
@@ -318,7 +318,7 @@ export function ActionList({ actions }: { actions: Action[] }) {
             </AnimatePresence>
           </tbody>
         </table>
-        {shown.length === 0 && <p className="py-12 font-serif text-[19px] text-ink-3 italic">No actions match this filter.</p>}
+        {shown.length === 0 && <p className="py-12 font-display text-[19px] text-ink-3 italic">No actions match this filter.</p>}
         {actions.length > 200 && shown.length === 200 && <p className="pt-4 text-[13.5px] text-ink-2">Showing the newest 200. Filter or search to find older ones.</p>}
       </div>
     </div>

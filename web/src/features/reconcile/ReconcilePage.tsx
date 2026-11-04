@@ -99,14 +99,14 @@ function RunReport({ run }: { run: ReconcileRun }) {
           {run.applied ? "" : "A dry run, "}at {new Date(run.at * 1000).toLocaleTimeString("en-GB", { hour12: false })}, {ago(run.at)}. Checked {run.actions_checked} actions against {run.effects_checked} effects.
         </p>
       </div>
-      <SetHeadline key={`${run.id}-${verdict}`} as="p" text={verdict} className="t-display mt-4 text-[clamp(2.75rem,5.6vw,5rem)]" />
+      <SetHeadline key={`${run.id}-${verdict}`} as="p" text={verdict} className="t-display mt-4 text-[length:calc(var(--ds)*clamp(2.75rem,5.6vw,5rem))]" />
       {notable.length === 0 && <p className="t-stand mt-4 text-ink">{ok} {ok === 1 ? "action matches" : "actions match"} the provider's ledger, and nothing needs attention.</p>}
 
       <dl className="mt-10 grid grid-cols-2 gap-x-8 border-t-2 border-ink sm:grid-cols-5">
         {SEVERITY_ORDER.map((s) => (
           <div key={s} className="border-b border-rule py-3.5">
             <dt className="flex items-center gap-2 text-[14px] text-ink-2"><span className={cn("size-1.5 rounded-full", SEVERITY_STYLE[s].dot)} />{SEVERITY_STYLE[s].label}</dt>
-            <dd><NumberRoll value={count(run, s)} className={cn("font-serif text-[40px] leading-none", count(run, s) === 0 && "text-ink-3")} /></dd>
+            <dd><NumberRoll value={count(run, s)} className={cn("font-display text-[40px] leading-none", count(run, s) === 0 && "text-ink-3")} /></dd>
           </div>
         ))}
       </dl>
@@ -241,7 +241,7 @@ function Connector({ row }: { row: DiffRow }) {
 }
 
 function History({ runs, selected, onSelect }: { runs: ReconcileRun[]; selected: number | null; onSelect: (id: number) => void }) {
-  if (!runs.length) return <p className="font-serif text-[19px] text-ink-3 italic">No runs yet.</p>;
+  if (!runs.length) return <p className="font-display text-[19px] text-ink-3 italic">No runs yet.</p>;
   return (
     <ol className="max-h-[70vh] overflow-y-auto border-t-2 border-ink" data-lenis-prevent>
       {runs.map((r) => {

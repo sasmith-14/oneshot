@@ -75,7 +75,7 @@ function StepText({ step, index, active, onEnter }: { step: Step; index: number;
   return (
     <div ref={ref} className="flex min-h-[64vh] items-center py-10 first:pt-4 last:min-h-[72vh]">
       <motion.div animate={{ opacity: active ? 1 : 0.28 }} transition={{ duration: 0.35, ease: EASE_OUT }}>
-        <h3 className="t-title text-[clamp(2rem,3vw,2.5rem)]">{step.title}</h3>
+        <h3 className="t-title text-[length:calc(var(--ts)*clamp(2rem,3vw,2.5rem))]">{step.title}</h3>
         <p className="mt-4 max-w-[52ch] text-[17px] leading-relaxed">{step.body}</p>
       </motion.div>
     </div>

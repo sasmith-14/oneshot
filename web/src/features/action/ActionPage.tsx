@@ -62,7 +62,7 @@ export function ActionPage() {
             A {noun(action.type)}, created at {created} ({ago(action.created_at)})
             {type && <>. The provider {type.idempotent_at_provider ? "deduplicates by key" : "does not deduplicate"}{type.provider_lookup ? " and keeps a ledger OneShot can read" : ""}</>}.
           </p>
-          <SetHeadline key={headline} text={headline} className="t-display mt-5 text-[clamp(2.75rem,5.4vw,5rem)]" />
+          <SetHeadline key={headline} text={headline} className="t-display mt-5 text-[length:calc(var(--ds)*clamp(2.75rem,5.4vw,5rem))]" />
           <p className="t-stand mt-6 text-ink">{STATUS_META[action.status].meaning}</p>
           <div className="mt-7 flex flex-wrap items-center gap-x-4 gap-y-2">
             <motion.span key={action.status} initial={{ scale: 0.92, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ duration: 0.25, ease: EASE_OUT }}>
@@ -92,8 +92,8 @@ export function ActionPage() {
 
       <section aria-labelledby="path-title" className="mb-20">
         <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
-          <SetHeadline as="h2" id="path-title" text="The path it took" className="t-title text-[clamp(2rem,3.4vw,2.875rem)]" />
-          <p className="max-w-md text-[14.5px] text-ink-2">The red line is this action's route through the lifecycle; a number shows a step taken more than once. Hover any arrow for its meaning.</p>
+          <SetHeadline as="h2" id="path-title" text="The path it took" className="t-title text-[length:calc(var(--ts)*clamp(2rem,3.4vw,2.875rem))]" />
+          <p className="max-w-md text-[14.5px] text-ink-2">The blue line is this action's route through the lifecycle; a number shows a step taken more than once. Hover any arrow for its meaning.</p>
         </div>
         <div className="bg-sheet px-4 py-8 sm:px-8">
           <StateMachine current={action.status} path={pathTaken(action.events)} className="mx-auto max-h-[300px]" />
@@ -130,7 +130,7 @@ function Fact({ k, children, mono }: { k: string; children: React.ReactNode; mon
   return (
     <div className="flex items-baseline justify-between gap-4 border-b border-rule py-3">
       <dt className="text-[14.5px] text-ink-2">{k}</dt>
-      <dd className={mono ? "truncate font-mono text-[13px]" : "font-serif text-[30px] leading-none"}>{children}</dd>
+      <dd className={mono ? "truncate font-mono text-[13px]" : "font-display text-[30px] leading-none"}>{children}</dd>
     </div>
   );
 }
