@@ -75,7 +75,7 @@ export function FlowSequence({ rows, start }: { rows: FlowRow[]; start: number }
         </AnimatePresence>
       </div>
       <div className="overflow-x-auto" data-lenis-prevent>
-        <svg viewBox={`0 0 ${WIDTH} ${height}`} className="w-full min-w-[720px]" role="img" aria-label="Message flow between agent, OneShot, provider and ledger">
+        <svg viewBox={`0 0 ${WIDTH} ${height}`} className="mx-auto w-full max-w-[1040px] min-w-[720px]" role="img" aria-label="Message flow between agent, OneShot, provider and ledger">
           <defs>
             {Object.entries(TONE).map(([k, t]) => (
               <marker key={k} id={`fs-${k}`} viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">

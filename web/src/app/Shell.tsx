@@ -58,7 +58,7 @@ export function Shell() {
         Skip to content
       </a>
 
-      <header className={cn("sticky top-0 z-40 border-b transition-[background-color,border-color] duration-200", scrolled ? "border-line bg-canvas/88 backdrop-blur-md" : "border-transparent bg-canvas")}>
+      <header className={cn("sticky top-0 z-40 border-b transition-[background-color,border-color] duration-200", scrolled ? "border-line bg-canvas/72 backdrop-blur-md backdrop-saturate-150" : "border-transparent bg-transparent")}>
         <div className={cn(FRAME, "flex h-14 items-center gap-6")}>
           <Link to="/" aria-label="OneShot, live view" className="shrink-0 rounded-md">
             <Wordmark />

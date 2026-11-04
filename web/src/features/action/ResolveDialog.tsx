@@ -48,7 +48,7 @@ export function ResolveDialog({ action }: { action: ActionDetail }) {
       <DialogTrigger asChild>
         <button type="button" className="btn btn-primary">Investigate and resolve</button>
       </DialogTrigger>
-      <DialogContent className="rounded-[14px] border-line bg-surface p-6 shadow-[var(--shadow-pop)] sm:max-w-xl" data-lenis-prevent>
+      <DialogContent className="rounded-[14px] border-line bg-raised p-6 shadow-[var(--shadow-pop)] sm:max-w-xl" data-lenis-prevent>
         <DialogHeader>
           <DialogTitle className="t-h2 text-[20px]">Resolve an UNKNOWN action</DialogTitle>
           <DialogDescription className="text-[14px] text-fg-2">Look at the provider's own record first. Resolving is final and audited, and the agent will be told this answer.</DialogDescription>

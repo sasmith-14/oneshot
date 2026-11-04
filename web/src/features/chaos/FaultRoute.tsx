@@ -53,7 +53,7 @@ export function FaultRoute({ preset, className }: { preset: string; className?: 
           <g key={n}>
             {nodeHit === n && <circle cx={x(n)} cy={16} r={9} className="fill-st-failed/15 stroke-st-failed" strokeWidth={1.4} />}
             <circle cx={x(n)} cy={16} r={4.5} className={nodeHit === n ? "fill-st-failed" : "fill-surface stroke-fg-3"} strokeWidth={1.3} />
-            <text x={x(n)} y={40} textAnchor="middle" className={cn("text-[9px]", nodeHit === n ? "fill-st-failed-fg font-semibold" : "fill-fg-3")}>{LETTER[n]}</text>
+            <text x={x(n)} y={40} textAnchor="middle" className={cn("text-[10px]", nodeHit === n ? "fill-st-failed-fg font-semibold" : "fill-fg-3")}>{LETTER[n]}</text>
           </g>
         ))}
       </svg>

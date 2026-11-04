@@ -83,12 +83,12 @@
 }
 
 :root {
-    --canvas: #F4F5FA;
-    --surface: rgba(255, 255, 255, 0.86);
+    --canvas: #F3F4FD;
+    --surface: rgba(255, 255, 255, 0.78);
     --raised: #FFFFFF;
-    --sunken: #EDEFF5;
-    --line: #E1E4EE;
-    --line-strong: #C9CEDC;
+    --sunken: #ECEEFA;
+    --line: #E0E3F2;
+    --line-strong: #C7CCE2;
     --fg: #0B0D16;
     --fg-2: #4D5466;
     --fg-3: #828A9C;
@@ -145,21 +145,28 @@
     --id-worker: #2F6BFF;
     --id-provider: #D9409A;
     --id-ledger: #0EA66B;
-    --aurora-1: rgba(242, 90, 29, 0.13);
-    --aurora-2: rgba(47, 107, 255, 0.12);
-    --aurora-3: rgba(123, 77, 242, 0.09);
+    --aurora-1: rgba(255, 120, 60, 0.20);
+    --aurora-2: rgba(56, 120, 255, 0.18);
+    --aurora-3: rgba(150, 90, 255, 0.14);
+    /* the static colour mesh under the aurora */
+    --mesh: radial-gradient(70vw 55vh at 6% -6%, rgba(255, 150, 100, 0.34), transparent 62%),
+            radial-gradient(60vw 60vh at 102% 4%, rgba(110, 160, 255, 0.34), transparent 62%),
+            radial-gradient(55vw 55vh at 88% 78%, rgba(255, 130, 200, 0.22), transparent 62%),
+            radial-gradient(60vw 55vh at 18% 96%, rgba(90, 220, 180, 0.22), transparent 62%),
+            linear-gradient(180deg, #F5F3FF 0%, #F1F5FF 55%, #F3FBF8 100%);
+    --grid-line: rgba(40, 50, 110, 0.045);
 }
 
 .dark {
-    --canvas: #090A11;
-    --surface: rgba(19, 21, 31, 0.86);
-    --raised: #181B27;
-    --sunken: #0E1018;
-    --line: #232738;
-    --line-strong: #343A50;
+    --canvas: #060915;
+    --surface: rgba(14, 18, 36, 0.78);
+    --raised: #141A30;
+    --sunken: #0A0E1E;
+    --line: #1E2540;
+    --line-strong: #2F3858;
     --fg: #EDEFF6;
     --fg-2: #A3A9BB;
-    --fg-3: #6C7388;
+    --fg-3: #6E7694;
     --signal: #FF6A2B;
     --signal-fg: #0A0B0D;
     --signal-soft: #2C150B;
@@ -191,10 +198,16 @@
     --id-worker: #5B9DFF;
     --id-provider: #F472B6;
     --id-ledger: #3DDC97;
-    --aurora-1: rgba(255, 106, 43, 0.17);
-    --aurora-2: rgba(91, 157, 255, 0.15);
-    --aurora-3: rgba(167, 139, 250, 0.12);
+    --aurora-1: rgba(255, 106, 43, 0.24);
+    --aurora-2: rgba(64, 140, 255, 0.22);
+    --aurora-3: rgba(168, 100, 255, 0.17);
     --shadow-card: 0 1px 0 rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.015);
+    --mesh: radial-gradient(70vw 60vh at 4% -8%, rgba(255, 106, 43, 0.30), transparent 62%),
+            radial-gradient(62vw 62vh at 104% 2%, rgba(40, 110, 255, 0.34), transparent 62%),
+            radial-gradient(56vw 56vh at 90% 82%, rgba(230, 60, 170, 0.20), transparent 62%),
+            radial-gradient(64vw 58vh at 14% 100%, rgba(20, 200, 160, 0.18), transparent 62%),
+            linear-gradient(180deg, #070B1C 0%, #060915 50%, #050A14 100%);
+    --grid-line: rgba(140, 160, 255, 0.05);
 }
 
 @layer base {
@@ -281,7 +294,15 @@
 /* ambient aurora: three soft fields of the accent colours, drifting slowly
    behind everything. Radial gradients (no blur filter), transform-only motion,
    and still under reduced motion. */
-.aurora { position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; }
+.aurora { position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; background: var(--mesh); }
+/* a faint engineering grid over the mesh, fading out toward the edges */
+.aurora::after {
+  content: ""; position: absolute; inset: 0;
+  background-image: linear-gradient(var(--grid-line) 1px, transparent 1px), linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: radial-gradient(ellipse 80% 70% at 50% 30%, black 30%, transparent 85%);
+  -webkit-mask-image: radial-gradient(ellipse 80% 70% at 50% 30%, black 30%, transparent 85%);
+}
 .aurora > span { position: absolute; border-radius: 9999px; will-change: transform; }
 .aurora > span:nth-child(1) { width: 70vw; height: 70vw; left: -18vw; top: -34vw; background: radial-gradient(closest-side, var(--aurora-1), transparent); animation: os-drift-a 34s ease-in-out infinite alternate; }
 .aurora > span:nth-child(2) { width: 64vw; height: 64vw; right: -16vw; top: -30vw; background: radial-gradient(closest-side, var(--aurora-2), transparent); animation: os-drift-b 41s ease-in-out infinite alternate; }

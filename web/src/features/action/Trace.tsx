@@ -32,8 +32,9 @@ export function Trace({ action, effects }: { action: ActionDetail; effects?: Eff
 
   return (
     <div>
+      <div className="no-scrollbar overflow-x-auto" data-lenis-prevent-horizontal>
       <div
-        className="relative grid grid-cols-[132px_minmax(0,1fr)] gap-x-4 sm:grid-cols-[168px_minmax(0,1fr)]"
+        className="relative grid min-w-[680px] grid-cols-[132px_minmax(0,1fr)] gap-x-4 sm:grid-cols-[168px_minmax(0,1fr)]"
         onMouseLeave={() => setHover(null)}
         onMouseMove={(e) => onMove(e, track.current, setHover)}
       >
@@ -119,6 +120,7 @@ export function Trace({ action, effects }: { action: ActionDetail; effects?: Eff
             </span>
           )}
         </div>
+      </div>
       </div>
 
       <AnimatePresence mode="wait" initial={false}>

@@ -43,11 +43,11 @@ export function LifeOfAnAction() {
   const step = STEPS[active];
   const label = `Diagram for step ${active + 1}: ${step.title}`;
   return (
-    <div className="grid gap-x-12 lg:grid-cols-12">
-      <div className="order-2 lg:order-1 lg:col-span-5">
+    <div className="grid grid-cols-[minmax(0,1fr)] gap-x-12 lg:grid-cols-12">
+      <div className="order-2 min-w-0 lg:order-1 lg:col-span-5">
         {STEPS.map((s, i) => <StepText key={i} index={i} step={s} active={i === active} onEnter={setActive} />)}
       </div>
-      <div className="order-1 lg:order-2 lg:col-span-7">
+      <div className="order-1 min-w-0 lg:order-2 lg:col-span-7">
         <div className="panel sticky top-16 z-10 overflow-hidden lg:top-24">
           <div className="panel-head">
             <AnimatePresence mode="wait" initial={false}>

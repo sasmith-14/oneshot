@@ -8,6 +8,7 @@ import { StatusPill } from "@/components/StatusPill";
 import { SetHeadline } from "@/components/SetHeadline";
 import { StateMachine, pathTaken } from "@/components/StateMachine";
 import { TabBar } from "@/components/Tabs";
+import { useState } from "react";
 import { useAction, useActionTypes, useProviderRecord } from "@/hooks/queries";
 import { buildFlow } from "@/lib/flow";
 import { noun, storyHeadline } from "@/lib/headline";
@@ -19,6 +20,8 @@ import { LedgerCompare } from "./LedgerCompare";
 import { ResolveDialog } from "./ResolveDialog";
 import { Timeline } from "./Timeline";
 import { Trace } from "./Trace";
+import { Story3D } from "@/features/learn/Story3D";
+import type { ActionDetail } from "@/lib/api";
 
 const TABS = [
   { id: "trace", label: "Trace" },
@@ -127,12 +130,26 @@ export function ActionPage() {
       </section>
 
       <div className="grid gap-4 lg:grid-cols-12">
-        <Panel className="lg:col-span-8" title="The route it took" aside={<span className="text-[12.5px] text-fg-3">orange marks the path; a number, a step taken more than once</span>}>
-          <StateMachine current={action.status} path={pathTaken(action.events)} className="mx-auto max-h-[280px]" />
-        </Panel>
-        <Panel className="lg:col-span-4" title="Payload" aside={<span className="font-mono text-[11.5px] text-fg-3">{action.type}</span>}>
-          <pre className="well max-h-[260px] overflow-auto p-3.5 font-mono text-[12px] leading-relaxed" data-lenis-prevent>{JSON.stringify(action.payload, null, 2)}</pre>
-          {action.resolution && <p className="mt-3 text-[12.5px] text-fg-2"><span className="font-[560] text-fg">Resolution: </span>{action.resolution}</p>}
+        <RouteView action={action} />
+        <Panel className="lg:col-span-4" title="Details" aside={<span className="font-mono text-[11.5px] text-fg-3">{action.type}</span>}>
+          <dl className="mb-4 grid grid-cols-[auto_minmax(0,1fr)] gap-x-4 gap-y-2 text-[13px]">
+            <dt className="text-fg-3">Created</dt>
+            <dd className="font-mono text-[12px]">{new Date(action.created_at * 1000).toLocaleString("en-GB", { hour12: false })}</dd>
+            <dt className="text-fg-3">Last change</dt>
+            <dd className="font-mono text-[12px]">{new Date(action.updated_at * 1000).toLocaleString("en-GB", { hour12: false })}</dd>
+            <dt className="text-fg-3">May have applied</dt>
+            <dd>{action.maybe_applied ? "yes, an attempt was ambiguous" : "no"}</dd>
+            <dt className="text-fg-3">Latest problem</dt>
+            <dd className="break-words text-fg-2">{action.last_error ?? "none"}</dd>
+            {action.resolution && (
+              <>
+                <dt className="text-fg-3">Resolution</dt>
+                <dd className="break-words text-fg-2">{action.resolution}</dd>
+              </>
+            )}
+          </dl>
+          <p className="mb-2 text-[12px] font-[560] text-fg-3">Payload</p>
+          <pre className="well max-h-[220px] overflow-auto p-3.5 font-mono text-[12px] leading-relaxed" data-lenis-prevent>{JSON.stringify(action.payload, null, 2)}</pre>
         </Panel>
       </div>
     </article>
@@ -145,5 +162,31 @@ function Fact({ k, children, mono, border, top }: { k: string; children: React.R
       <dt className="text-[12px] text-fg-3">{k}</dt>
       <dd className={mono ? "mt-1.5 truncate font-mono text-[13px]" : "t-figure mt-1 text-[22px]"}>{children}</dd>
     </div>
+  );
+}
+
+/** The route this action took through the lifecycle: an explorable 3D scene
+ * (the same one Learn uses), or the flat diagram with step counts. */
+function RouteView({ action }: { action: ActionDetail }) {
+  const [view, setView] = useState<"3d" | "flat">("3d");
+  const path = pathTaken(action.events);
+  const last = [...action.events].reverse().find((e) => e.from);
+  const focus = last ? `${last.from}>${last.to}` : undefined;
+  return (
+    <Panel
+      className="overflow-hidden lg:col-span-8"
+      bodyClassName="p-0"
+      title="The route it took"
+      aside={<TabBar id="route-view" tabs={[{ id: "3d", label: "3D" }, { id: "flat", label: "Flat" }]} value={view} onChange={setView} />}
+    >
+      {view === "3d" ? (
+        <Story3D current={action.status} path={path} focus={focus} index={2} label={`The route ${action.id} took, ending at ${action.status}`} />
+      ) : (
+        <div className="p-[18px]">
+          <StateMachine current={action.status} path={path} className="mx-auto max-h-[280px]" />
+          <p className="mt-2 text-center text-[12px] text-fg-3">Orange marks the path; a number shows a step taken more than once.</p>
+        </div>
+      )}
+    </Panel>
   );
 }

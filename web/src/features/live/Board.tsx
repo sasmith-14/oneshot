@@ -178,7 +178,7 @@ export function ActionList({ actions }: { actions: Action[] }) {
       ) : (
         <div className="max-h-[560px] overflow-auto" data-lenis-prevent>
           <table className="w-full min-w-[720px] text-[13px]">
-            <thead className="sticky top-0 z-10 bg-surface">
+            <thead className="sticky top-0 z-10 bg-raised">
               <tr className="border-b border-line text-left text-[12px] text-fg-3">
                 <th className="py-2.5 pr-4 pl-[18px] font-[500]">Action</th>
                 <th className="py-2.5 pr-4 font-[500]">Type</th>

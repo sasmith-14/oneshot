@@ -76,6 +76,30 @@ The client asked for the console to feel alive, not dead. Colour and motion were
 - **Chaos colours.** Each Chaos group keeps one hue: core is blue, ambiguous outcomes are violet, duplicates are amber and process crashes are rose. Cards light up in that hue on hover, and a card with a run in progress glows orange.
 - **Reduced motion.** All of it is still under `prefers-reduced-motion`, checked in a browser: 21 running animations normally, 0 with reduced motion.
 
+## A living background (2026-11-05)
+
+The canvas is no longer a flat grey. One fixed, composited layer (`.aurora` in `index.css`, so scrolling never repaints it) holds:
+- **A static colour mesh** (`--mesh`): soft pools of orange (top left), electric blue (top right), magenta (lower right) and mint (lower left).
+  - **Dark:** over a deep midnight blue (`#060915`).
+  - **Light:** in pastels over a cool white.
+- **The drifting aurora** on top of the mesh, slightly stronger than before.
+- **A faint engineering grid** that fades out toward the edges.
+
+The panels are 78% opaque, so the colour shows through them. The top bar is transparent at the top of the page and frosted once you scroll. There are no blur filters behind animated content, and the motion still stops under reduced motion.
+
+## Audit fixes (2026-11-05)
+
+Found by checking every page and tab in both themes, at 1440 px and 390 px:
+- **Phone overflow, Learn (43 px):** the story's grid columns could not shrink.
+- **Phone overflow, Chaos (4 px):** the group tabs now scroll.
+- **Trace:** scrolls sideways on narrow screens instead of piling labels together.
+- **Sequence diagram:** capped at 1040 px wide, so its text stays in proportion.
+- **Translucent surfaces:** the resolve dialog and the sticky table header are now opaque.
+- **Duplicate buttons:** Live had two that both went to Reconcile.
+- **Fault-route labels:** raised to the 10 px floor.
+- **Action page:** "The route it took" is now the explorable 3D scene, with a Flat view, beside a Details panel.
+- **Error pages:** the 404 and crash pages are designed.
+
 ## The 3D lifecycle on Learn (2026-11-04)
 
 The client asked for the Learn diagram to be more 3D and immersive. `features/learn/Story3D.tsx` builds it with CSS 3D transforms and Motion. There is no WebGL and no new dependency, so text stays crisp and the page stays light.

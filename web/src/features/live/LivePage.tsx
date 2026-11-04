@@ -46,7 +46,7 @@ export function LivePage() {
           </AnimatePresence>
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          {fp.links.slice(0, 1).map((l) => (
+          {fp.links.filter((l) => l.to !== "/reconcile").slice(0, 1).map((l) => (
             <Link key={l.to} to={l.to} className="btn btn-outline">{l.label}</Link>
           ))}
           <Link to="/reconcile" className="btn btn-outline"><Scale aria-hidden className="size-3.5" />Reconcile</Link>
