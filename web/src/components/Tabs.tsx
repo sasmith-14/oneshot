@@ -3,12 +3,12 @@ import { motion } from "motion/react";
 import { RULE_SPRING } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 
-/** Accessible tabs (arrow keys move between them). The accent mark
- * slides under the chosen one. */
-export function TabBar<T extends string>({ tabs, value, onChange, id }: { tabs: { id: T; label: string }[]; value: T; onChange: (v: T) => void; id: string }) {
+/** Accessible segmented tabs (arrow keys move between them); a raised pill
+ * slides to the chosen one. */
+export function TabBar<T extends string>({ tabs, value, onChange, id, className }: { tabs: { id: T; label: string }[]; value: T; onChange: (v: T) => void; id: string; className?: string }) {
   const refs = useRef<(HTMLButtonElement | null)[]>([]);
   return (
-    <div role="tablist" aria-label="Views" className="flex gap-8 border-b border-rule">
+    <div role="tablist" aria-label="Views" className={cn("inline-flex gap-0.5 rounded-[10px] border border-line bg-sunken p-0.5", className)}>
       {tabs.map((t, i) => (
         <button
           key={t.id}
@@ -28,10 +28,10 @@ export function TabBar<T extends string>({ tabs, value, onChange, id }: { tabs: 
             onChange(tabs[next].id);
             refs.current[next]?.focus();
           }}
-          className={cn("relative pt-1 pb-3.5 text-[17px] transition-colors duration-150", value === t.id ? "font-medium text-ink" : "text-ink-2 hover:text-ink")}
+          className={cn("relative h-7 rounded-[8px] px-3 text-[13px] transition-colors duration-150", value === t.id ? "font-[560] text-fg" : "text-fg-2 hover:text-fg")}
         >
-          {t.label}
-          {value === t.id && <motion.span layoutId={`${id}-underline`} className="absolute inset-x-0 -bottom-px h-[3px] bg-mark" transition={RULE_SPRING} />}
+          {value === t.id && <motion.span layoutId={`${id}-tab`} aria-hidden className="absolute inset-0 rounded-[8px] border border-line bg-surface shadow-[var(--shadow-card)]" transition={RULE_SPRING} />}
+          <span className="relative">{t.label}</span>
         </button>
       ))}
     </div>

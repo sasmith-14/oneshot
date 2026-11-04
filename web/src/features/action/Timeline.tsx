@@ -22,16 +22,16 @@ export function Timeline({ action }: { action: ActionDetail }) {
   ].sort((x, y) => x.at - y.at || (x.type === y.type ? x.order - y.order : x.type === "attempt" ? -1 : 1));
 
   return (
-    <ol className="max-w-4xl border-t-2 border-ink">
+    <ol className="relative max-w-4xl">
       {items.map((it, i) => (
         <motion.li
           key={i}
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.35, ease: EASE_OUT, delay: Math.min(i, 10) * 0.035 }}
-          className="grid grid-cols-[5.5rem_minmax(0,1fr)] gap-x-6 border-b border-rule py-5 sm:grid-cols-[7rem_minmax(0,1fr)]"
+          className="grid grid-cols-[5rem_minmax(0,1fr)] gap-x-5 border-b border-line py-4 last:border-0 sm:grid-cols-[6.5rem_minmax(0,1fr)]"
         >
-          <time className="pt-1 font-mono text-[12.5px] text-ink-2 tnum" title={clock(it.at)}>{offset(it.at, action.created_at)}</time>
+          <time className="pt-1 font-mono text-[11.5px] text-fg-3 tnum" title={clock(it.at)}>{offset(it.at, action.created_at)}</time>
           <div className="min-w-0">{it.type === "event" ? <EventItem e={it.e} /> : <AttemptItem a={it.a} />}</div>
         </motion.li>
       ))}
@@ -44,11 +44,11 @@ function EventItem({ e }: { e: ActionEvent }) {
     <>
       <div className="flex flex-wrap items-center gap-2">
         {e.from && <StatusPill status={e.from} explain={false} />}
-        {e.from && <ArrowRight aria-label="to" className="size-4 text-ink-2" />}
+        {e.from && <ArrowRight aria-label="to" className="size-4 text-fg-2" />}
         <StatusPill status={e.to} />
       </div>
-      <p className="mt-3 text-[17px] leading-relaxed">{explainEvent(e)}</p>
-      <p className="mt-1.5 font-mono text-[12.5px] break-words text-ink-2">{e.message}</p>
+      <p className="mt-2.5 text-[14.5px] leading-relaxed">{explainEvent(e)}</p>
+      <p className="mt-1 font-mono text-[11.5px] break-words text-fg-3">{e.message}</p>
     </>
   );
 }
@@ -57,17 +57,17 @@ function AttemptItem({ a }: { a: Attempt }) {
   const risky = mayHaveApplied(a);
   const took = a.finished_at ? `${(a.finished_at - a.started_at).toFixed(2)}s` : null;
   return (
-    <div className={cn("border-l-[3px] pl-4", risky ? "border-st-unknown" : "border-rule")}>
-      <p className="flex flex-wrap items-baseline gap-x-3 gap-y-1 text-[15px]">
+    <div className={cn("rounded-[10px] border px-4 py-3", risky ? "border-st-unknown/30 bg-st-unknown-soft/60" : "border-line bg-sunken")}>
+      <p className="flex flex-wrap items-baseline gap-x-3 gap-y-1 text-[13.5px]">
         <span className="font-semibold">{a.kind === "send" ? `Send ${a.number}` : `Ledger check ${a.number}`}</span>
-        <span className={cn("rounded-[2px] px-1.5 py-0.5 font-mono text-[12px]", a.outcome == null ? "os-pulse " + STATUS_META.IN_FLIGHT.badge : risky ? STATUS_META.UNKNOWN.badge : "bg-well")}>{a.outcome ?? "running…"}</span>
-        <span className="text-[13.5px] text-ink-2">
+        <span className={cn("rounded-[5px] px-1.5 py-0.5 font-mono text-[11px] font-[560]", a.outcome == null ? "os-pulse " + STATUS_META.IN_FLIGHT.badge : risky ? STATUS_META.UNKNOWN.badge : "bg-surface")}>{a.outcome ?? "running…"}</span>
+        <span className="text-[12.5px] text-fg-3">
           by <span className="font-mono">{a.worker_id}</span>
           {took && `, took ${took}`}
         </span>
       </p>
-      <p className="mt-1.5 text-[15.5px]">{explainOutcome(a.outcome)}</p>
-      {a.detail && <p className="mt-1 font-mono text-[12.5px] text-ink-2">{a.detail}</p>}
+      <p className="mt-1 text-[14px]">{explainOutcome(a.outcome)}</p>
+      {a.detail && <p className="mt-1 font-mono text-[11.5px] text-fg-3">{a.detail}</p>}
     </div>
   );
 }

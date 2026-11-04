@@ -39,26 +39,28 @@ export function LifeOfAnAction() {
   const [active, setActive] = useState(0);
   const step = STEPS[active];
   return (
-    <div className="grid gap-x-16 lg:grid-cols-12">
+    <div className="grid gap-x-12 lg:grid-cols-12">
       <div className="order-2 lg:order-1 lg:col-span-5">
         {STEPS.map((s, i) => <StepText key={i} index={i} step={s} active={i === active} onEnter={setActive} />)}
       </div>
       <div className="order-1 lg:order-2 lg:col-span-7">
-        <div className="sticky top-14 z-10 -mx-5 bg-paper px-5 py-4 sm:-mx-8 sm:px-8 lg:top-28 lg:mx-0 lg:bg-sheet lg:p-7">
-          <StateMachine current={step.current} path={pathOf(step)} focus={step.focus} label={`Diagram for step ${active + 1}: ${step.title}`} />
-          <div className="mt-4 flex items-center justify-between gap-4">
+        <div className="panel sticky top-16 z-10 overflow-hidden lg:top-24">
+          <div className="panel-head">
             <AnimatePresence mode="wait" initial={false}>
-              <motion.p key={active} initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -5 }} transition={{ duration: 0.22, ease: EASE_OUT }} className="t-head text-[22px]">
+              <motion.p key={active} initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -5 }} transition={{ duration: 0.22, ease: EASE_OUT }} className="t-h3 truncate">
                 {step.title}
               </motion.p>
             </AnimatePresence>
             <ol className="flex shrink-0 gap-1" aria-label={`Part ${active + 1} of ${STEPS.length}`}>
               {STEPS.map((_, i) => (
-                <li key={i} className="relative h-[3px] w-5 overflow-hidden bg-rule">
-                  <motion.span className="absolute inset-0 origin-left bg-mark" initial={false} animate={{ scaleX: i <= active ? 1 : 0 }} transition={{ duration: 0.35, ease: EASE_OUT }} />
+                <li key={i} className="relative h-1 w-5 overflow-hidden rounded-full bg-sunken">
+                  <motion.span className="absolute inset-0 origin-left rounded-full bg-signal" initial={false} animate={{ scaleX: i <= active ? 1 : 0 }} transition={{ duration: 0.35, ease: EASE_OUT }} />
                 </li>
               ))}
             </ol>
+          </div>
+          <div className="dot-grid p-4">
+            <StateMachine current={step.current} path={pathOf(step)} focus={step.focus} label={`Diagram for step ${active + 1}: ${step.title}`} />
           </div>
         </div>
       </div>
@@ -73,10 +75,10 @@ function StepText({ step, index, active, onEnter }: { step: Step; index: number;
     if (inView) onEnter(index);
   }, [inView, onEnter, index]);
   return (
-    <div ref={ref} className="flex min-h-[64vh] items-center py-10 first:pt-4 last:min-h-[72vh]">
-      <motion.div animate={{ opacity: active ? 1 : 0.28 }} transition={{ duration: 0.35, ease: EASE_OUT }}>
-        <h3 className="t-title text-[length:calc(var(--ts)*clamp(2rem,3vw,2.5rem))]">{step.title}</h3>
-        <p className="mt-4 max-w-[52ch] text-[17px] leading-relaxed">{step.body}</p>
+    <div ref={ref} className="flex min-h-[60vh] items-center py-8 first:pt-2 last:min-h-[70vh]">
+      <motion.div animate={{ opacity: active ? 1 : 0.3, x: active ? 0 : -4 }} transition={{ duration: 0.35, ease: EASE_OUT }} className={"border-l-2 pl-5 transition-colors duration-300 " + (active ? "border-signal" : "border-line")}>
+        <h3 className="text-[clamp(1.375rem,2vw,1.75rem)] leading-tight font-[640] tracking-[-0.025em] [font-stretch:108%]">{step.title}</h3>
+        <p className="mt-3 max-w-[52ch] text-[15px] leading-relaxed text-fg-2">{step.body}</p>
       </motion.div>
     </div>
   );

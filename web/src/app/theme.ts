@@ -21,7 +21,7 @@ function resolve(mode: ThemeMode): Theme {
 function apply(theme: Theme) {
   document.documentElement.classList.toggle("dark", theme === "dark");
   // the browser chrome takes the page's own ground colour
-  const paper = getComputedStyle(document.documentElement).getPropertyValue("--paper").trim();
+  const paper = getComputedStyle(document.documentElement).getPropertyValue("--canvas").trim();
   if (paper) document.querySelector('meta[name="theme-color"]')?.setAttribute("content", paper);
 }
 

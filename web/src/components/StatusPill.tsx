@@ -3,8 +3,8 @@ import { STATUS_META, isActive } from "@/lib/status";
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
-/** A status is data, so it is printed as its literal value, in its own ink on
- * a pale wash of that ink. Hover or focus explains what it means. */
+/** A status is data, so it is printed as its literal value, in its own colour
+ * on a soft wash of that colour. Hover or focus explains what it means. */
 export function StatusPill({ status, size = "sm", explain = true, className }: { status: Status; size?: "sm" | "md"; explain?: boolean; className?: string }) {
   const meta = STATUS_META[status];
   const pill = (
@@ -12,8 +12,8 @@ export function StatusPill({ status, size = "sm", explain = true, className }: {
       data-status={status}
       translate="no"
       className={cn(
-        "inline-flex flex-none items-center gap-1.5 rounded-[2px] font-mono font-medium whitespace-nowrap",
-        size === "sm" ? "h-[22px] px-1.5 text-[11.5px]" : "h-7 px-2 text-[13px]",
+        "inline-flex flex-none items-center gap-1.5 rounded-[6px] font-mono font-[560] whitespace-nowrap ring-1 ring-inset ring-current/15",
+        size === "sm" ? "h-[22px] px-1.5 text-[11px]" : "h-7 px-2.5 text-[12.5px]",
         meta.badge,
         className,
       )}
@@ -29,7 +29,7 @@ export function StatusPill({ status, size = "sm", explain = true, className }: {
   return (
     <Tooltip>
       <TooltipTrigger asChild>
-        <span tabIndex={0} className="inline-flex rounded-[2px]">{pill}</span>
+        <span tabIndex={0} className="inline-flex rounded-[6px]">{pill}</span>
       </TooltipTrigger>
       <TooltipContent className="max-w-72 text-pretty">{meta.meaning}</TooltipContent>
     </Tooltip>

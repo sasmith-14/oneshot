@@ -12,12 +12,11 @@ export const THEME_MODES: { mode: ThemeMode; label: string; Icon: typeof Sun }[]
 ];
 
 /** System, light or dark, as a three-way switch (a radio group: arrow keys
- * move the choice). `id` keeps the sliding marker separate when the switch
- * appears twice (masthead and condensed bar). */
+ * move the choice). */
 export function ThemeSwitch({ id, mode, setMode }: { id: string; mode: ThemeMode; setMode: (m: ThemeMode) => void }) {
   const refs = useRef<(HTMLButtonElement | null)[]>([]);
   return (
-    <div role="radiogroup" aria-label="Theme" className="flex items-center rounded-[3px] border border-rule p-0.5">
+    <div role="radiogroup" aria-label="Theme" className="flex items-center gap-0.5 rounded-[9px] border border-line bg-sunken p-0.5">
       {THEME_MODES.map(({ mode: m, label, Icon }, i) => {
         const on = mode === m;
         return (
@@ -41,9 +40,9 @@ export function ThemeSwitch({ id, mode, setMode }: { id: string; mode: ThemeMode
               setMode(THEME_MODES[next].mode);
               refs.current[next]?.focus();
             }}
-            className={cn("relative grid size-7 place-items-center rounded-[2px] transition-colors duration-150", on ? "text-paper" : "text-ink-2 hover:text-ink")}
+            className={cn("relative grid size-7 place-items-center rounded-[7px] transition-colors duration-150", on ? "text-fg" : "text-fg-3 hover:text-fg")}
           >
-            {on && <motion.span layoutId={`${id}-theme`} aria-hidden className="absolute inset-0 rounded-[2px] bg-ink" transition={RULE_SPRING} />}
+            {on && <motion.span layoutId={`${id}-theme`} aria-hidden className="absolute inset-0 rounded-[7px] border border-line bg-surface shadow-[var(--shadow-card)]" transition={RULE_SPRING} />}
             <Icon aria-hidden className="relative size-3.5" />
           </button>
         );

@@ -3,8 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#ECEDEA" />
-    <meta name="description" content="OneShot: the record of every action an agent asked for, and of what really happened on the wire." />
+    <meta name="theme-color" content="#0A0B0D" />
+    <meta name="description" content="OneShot: mission control for actions that must happen once. Watch them cross the wire, break things on purpose, and reconcile against the provider." />
     <link rel="icon" type="image/svg+xml" href="/ui/favicon.svg" />
     <title>OneShot</title>
     <script>
@@ -12,15 +12,10 @@
       const mode = localStorage.getItem("oneshot-theme");
       const dark = mode === "dark" || (mode !== "light" && matchMedia("(prefers-color-scheme: dark)").matches);
       document.documentElement.classList.toggle("dark", dark);
-      // Type preview: ?type=archivo|bricolage|fraunces|newsreader|instrument (Archivo is the default).
-      const pick = new URLSearchParams(location.search).get("type");
-      if (pick) localStorage.setItem("oneshot-type", pick);
-      localStorage.removeItem("oneshot-palette");
-      const type = localStorage.getItem("oneshot-type");
-      if (type && type !== "archivo") document.documentElement.dataset.type = type;
+      ["oneshot-type", "oneshot-palette"].forEach((k) => localStorage.removeItem(k));
     </script>
   </head>
-  <body class="paper-grain">
+  <body class="grain">
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

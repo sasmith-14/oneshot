@@ -1,33 +1,46 @@
 import { SetHeadline } from "./SetHeadline";
 import { cn } from "@/lib/utils";
 
-/** A section front: the page's name set large in the serif, the standfirst
- * (one sentence on what the page is for), and the page's own actions. */
+/** The page's name, one sentence on what it is for, and its own actions. */
 export function PageHeader({ title, children, actions, className }: { title: string; children?: React.ReactNode; actions?: React.ReactNode; className?: string }) {
   return (
-    <header className={cn("mb-14 grid gap-x-12 gap-y-6 lg:grid-cols-12 lg:items-end", className)}>
-      <div className="min-w-0 lg:col-span-8">
-        <SetHeadline text={title} className="t-display text-[length:calc(var(--ds)*clamp(3.25rem,7.4vw,6.5rem))]" />
-        {children && <div className="t-stand mt-5">{children}</div>}
+    <header className={cn("mb-8 flex flex-wrap items-end justify-between gap-x-10 gap-y-5", className)}>
+      <div className="min-w-0 max-w-3xl">
+        <SetHeadline text={title} className="t-title" />
+        {children && <div className="mt-2.5 text-[15px] leading-relaxed text-fg-2">{children}</div>}
       </div>
-      {actions && <div className="flex flex-wrap items-center gap-2 lg:col-span-4 lg:justify-end lg:pb-2">{actions}</div>}
+      {actions && <div className="flex flex-wrap items-center gap-2">{actions}</div>}
     </header>
   );
 }
 
-/** A section of a page: a serif heading, an optional one-line explanation,
- * and an optional control on the right. */
+/** A titled block of a page, with an optional note and a control on the right. */
 export function Section({ title, about, children, id, aside, className }: { title: string; about?: React.ReactNode; children: React.ReactNode; id?: string; aside?: React.ReactNode; className?: string }) {
   return (
-    <section id={id} aria-labelledby={id ? `${id}-title` : undefined} className={cn("mb-24", className)}>
-      <div className="mb-7 flex flex-wrap items-end justify-between gap-x-8 gap-y-3">
+    <section id={id} aria-labelledby={id ? `${id}-title` : undefined} className={cn("mb-12", className)}>
+      <div className="mb-4 flex flex-wrap items-end justify-between gap-x-6 gap-y-2">
         <div className="max-w-3xl">
-          <SetHeadline as="h2" id={id ? `${id}-title` : undefined} text={title} className="t-title text-[length:calc(var(--ts)*clamp(2rem,3.4vw,2.875rem))]" />
-          {about && <p className="mt-2.5 text-[15.5px] leading-relaxed text-ink-2">{about}</p>}
+          <h2 id={id ? `${id}-title` : undefined} className="t-h2">{title}</h2>
+          {about && <p className="mt-1 text-[13.5px] text-fg-2">{about}</p>}
         </div>
         {aside}
       </div>
       {children}
+    </section>
+  );
+}
+
+/** A surface with an optional header row. */
+export function Panel({ title, aside, children, className, bodyClassName, id }: { title?: React.ReactNode; aside?: React.ReactNode; children: React.ReactNode; className?: string; bodyClassName?: string; id?: string }) {
+  return (
+    <section id={id} className={cn("panel min-w-0", className)}>
+      {(title || aside) && (
+        <div className="panel-head">
+          {typeof title === "string" ? <h2 className="t-h3">{title}</h2> : title}
+          {aside}
+        </div>
+      )}
+      <div className={cn("p-[18px]", bodyClassName)}>{children}</div>
     </section>
   );
 }

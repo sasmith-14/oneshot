@@ -21,9 +21,9 @@ function textOf(node: React.ReactNode): string {
 }
 
 const CALLOUT: Record<string, { label: string; cls: string }> = {
-  note: { label: "Note", cls: "border-ink bg-sheet" },
+  note: { label: "Note", cls: "border-line-strong bg-sunken" },
   protects: { label: "What this protects against", cls: "border-st-succeeded bg-st-succeeded-soft" },
-  cannot: { label: "What this cannot protect against", cls: "border-mark bg-sheet" },
+  cannot: { label: "What this cannot protect against", cls: "border-st-unknown bg-st-unknown-soft" },
 };
 
 const components: Components = {
@@ -40,8 +40,8 @@ const components: Components = {
     if (!m) return <blockquote>{children}</blockquote>;
     const c = CALLOUT[m[1]];
     return (
-      <aside className={cn("my-8 border-l-[3px] px-6 py-1 text-ink", c.cls)}>
-        <p className="!mb-0 pt-4 text-[13.5px] font-semibold">{c.label}</p>
+      <aside className={cn("my-7 rounded-r-[10px] border-l-2 px-5 py-1 text-fg", c.cls)}>
+        <p className="!mb-0 pt-3.5 text-[12.5px] font-semibold">{c.label}</p>
         <div className="[&>p:first-child]:hidden">{children}</div>
       </aside>
     );
@@ -71,33 +71,43 @@ export function LearnDoc() {
 
   return (
     <>
-      <motion.div aria-hidden style={{ scaleX: progress }} className="fixed inset-x-0 top-14 z-[41] h-[2px] origin-left bg-mark" />
-      <Link to="/learn" className="ink-link mb-10 inline-flex items-center gap-1.5 text-[15px] text-ink-2">
+      <motion.div aria-hidden style={{ scaleX: progress }} className="fixed inset-x-0 top-14 z-[41] h-[2px] origin-left bg-signal" />
+      <Link to="/learn" className="link-quiet mb-6 inline-flex items-center gap-1.5 text-[13px] text-fg-2">
         <ArrowLeft aria-hidden className="size-4" /> Learn
       </Link>
       {doc.isError ? (
-        <p className="t-title py-10 text-[40px]">There is no document called <span className="font-mono text-[0.6em]">{slug}</span>.</p>
+        <p className="t-title py-10">There is no document called <span className="font-mono text-[0.7em]">{slug}</span>.</p>
       ) : !doc.data ? (
-        <Skeleton className="h-[600px] max-w-3xl rounded-none bg-well" />
+        <Skeleton className="h-[600px] max-w-3xl rounded-[12px]" />
       ) : (
         <>
-        <header className="mb-14 max-w-5xl">
-          <SetHeadline key={doc.data.title} text={doc.data.title} className="t-display text-[length:calc(var(--ds)*clamp(2.75rem,6vw,5.5rem))]" />
-          <p className="mt-5 text-[15px] text-ink-2">{readMinutes(doc.data.markdown)} min read{headings.length ? `, ${headings.length} sections` : ""}</p>
+        <header className="mb-10 max-w-4xl">
+          <SetHeadline key={doc.data.title} text={doc.data.title} className="t-hero" />
+          <p className="mt-3 text-[13px] text-fg-3">{readMinutes(doc.data.markdown)} min read{headings.length ? `, ${headings.length} sections` : ""}</p>
         </header>
-        <div className="grid gap-16 lg:grid-cols-[minmax(0,1fr)_240px]">
+        <div className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_240px]">
           <article className="prose-os min-w-0">
             <ReactMarkdown remarkPlugins={[remarkGfm]} components={components}>{doc.data.markdown}</ReactMarkdown>
-            <nav aria-label="More documents" className="mt-20 flex justify-between gap-6 border-t-2 border-ink pt-6 text-[16px]">
-              {prev ? <Link to={`/learn/${prev.slug}`} className="flex items-center gap-2 no-underline"><ArrowLeft aria-hidden className="size-4" />{prev.title}</Link> : <span />}
-              {next && <Link to={`/learn/${next.slug}`} className="flex items-center gap-2 text-right no-underline">{next.title}<ArrowRight aria-hidden className="size-4" /></Link>}
+            <nav aria-label="More documents" className="mt-16 grid gap-3 border-t border-line pt-6 text-[14px] sm:grid-cols-2">
+              {prev ? (
+                <Link to={`/learn/${prev.slug}`} className="panel flex flex-col gap-1 p-4 !no-underline transition-colors duration-150 hover:border-line-strong">
+                  <span className="flex items-center gap-1.5 text-[12px] text-fg-3"><ArrowLeft aria-hidden className="size-3.5" />Previous</span>
+                  <span className="font-[600]">{prev.title}</span>
+                </Link>
+              ) : <span />}
+              {next && (
+                <Link to={`/learn/${next.slug}`} className="panel flex flex-col items-end gap-1 p-4 text-right !no-underline transition-colors duration-150 hover:border-line-strong">
+                  <span className="flex items-center gap-1.5 text-[12px] text-fg-3">Next<ArrowRight aria-hidden className="size-3.5" /></span>
+                  <span className="font-[600]">{next.title}</span>
+                </Link>
+              )}
             </nav>
           </article>
           {headings.length > 2 && (
             <aside className="hidden lg:block">
-              <nav aria-label="On this page" className="sticky top-28 text-[14px]">
-                <p className="t-head mb-3 text-[22px]">On this page</p>
-                <ol className="border-l border-rule">
+              <nav aria-label="On this page" className="sticky top-24 text-[13px]">
+                <p className="mb-3 text-[12px] font-[600] text-fg-3">On this page</p>
+                <ol className="border-l border-line">
                   {headings.map((h) => (
                     <li key={h.id}>
                       <a
@@ -108,7 +118,7 @@ export function LearnDoc() {
                           lenis.scrollTo(`#${h.id}`, { offset: -80 });
                           history.replaceState(null, "", `#${h.id}`);
                         }}
-                        className={cn("relative -ml-px block border-l-2 py-1.5 pl-4 leading-snug transition-colors duration-150", active === h.id ? "border-mark text-ink" : "border-transparent text-ink-2 hover:text-ink")}
+                        className={cn("relative -ml-px block border-l-2 py-1.5 pl-4 leading-snug transition-colors duration-150", active === h.id ? "border-signal text-fg" : "border-transparent text-fg-2 hover:text-fg")}
                       >
                         {h.text}
                       </a>
