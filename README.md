@@ -173,7 +173,7 @@ What OneShot guarantees, and under which conditions, is stated precisely in [doc
 
 ## Learning docs
 
-[`docs/`](docs/README.md) contains an overview and seven concept documents as PDFs: durable tracking, retries and classification, duplicate protection, crash recovery, reconciliation, the fake provider, and how to extend. Each explains the problem, shows diagrams including failure paths, ties the explanation to specific files and symbols, embeds real captured output, lists what the mechanism protects against and what it cannot, records the alternatives that were rejected, and ends with self-check questions. Regenerate them with `make docs` (free tooling only; see `docs/README.md`).
+[`docs/`](docs/README.md) contains a beginner's guide (`08-backend-concepts-from-zero.pdf`: every backend concept OneShot uses, from HTTP to reconciliation, in plain words with the real code), an overview and seven concept documents as PDFs: durable tracking, retries and classification, duplicate protection, crash recovery, reconciliation, the fake provider, and how to extend. Each explains the problem, shows diagrams including failure paths, ties the explanation to specific files and symbols, embeds real captured output, lists what the mechanism protects against and what it cannot, records the alternatives that were rejected, and ends with self-check questions. Regenerate them with `make docs` (free tooling only; see `docs/README.md`).
 
 ## Extending
 

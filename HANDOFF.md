@@ -17,7 +17,7 @@ All seven outcomes from the project brief are implemented, tested and documented
 | Fake provider, 9 failure modes, independent ledger | `fakeprovider/` | `tests/test_fake_provider.py`, `tests/test_invariants.py` |
 | Visible demo | `demo/`, `uv run oneshot demo` | `tests/test_demo.py` |
 
-Learning docs: `docs/src/*.md` → `docs/pdf/*.pdf` (overview + 7 concept docs + EXPERIMENTS). Also `EXPERIMENTS.md`, `ROADMAP.md`, `README.md`.
+Learning docs: `docs/src/*.md` → `docs/pdf/*.pdf` (overview + 7 concept docs + `08-backend-concepts-from-zero`, a beginner's guide from HTTP to reconciliation, + EXPERIMENTS). Also `EXPERIMENTS.md`, `ROADMAP.md`, `README.md`.
 
 ### Web console "OneShot Lab" (done; spec `docs/FRONTEND_PLAN.md`, design `docs/FRONTEND_DESIGN.md`)
 

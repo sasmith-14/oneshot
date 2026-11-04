@@ -1,5 +1,7 @@
 # OneShot learning docs
 
+**New to backends? Start with [08-backend-concepts-from-zero.pdf](pdf/08-backend-concepts-from-zero.pdf).** It teaches every concept OneShot uses, from "what is a server?" to reconciliation, in plain words with the real code, and assumes no prior backend knowledge. Then read the others for depth.
+
 | PDF | Source | Topic |
 |---|---|---|
 | [00-overview.pdf](pdf/00-overview.pdf) | [src/00-overview.md](src/00-overview.md) | The whole system end to end; guarantees; key decisions |
@@ -10,6 +12,7 @@
 | [05-reconciliation.pdf](pdf/05-reconciliation.pdf) | [src/05-…](src/05-reconciliation.md) | Comparing against the provider's ledger |
 | [06-fake-provider.pdf](pdf/06-fake-provider.pdf) | [src/06-…](src/06-fake-provider.md) | How failures are simulated |
 | [07-how-to-extend.pdf](pdf/07-how-to-extend.pdf) | [src/07-…](src/07-how-to-extend.md) | Extension recipes + worked example |
+| [08-backend-concepts-from-zero.pdf](pdf/08-backend-concepts-from-zero.pdf) | [src/08-…](src/08-backend-concepts-from-zero.md) | Beginner's path: HTTP, APIs, databases, transactions, state machines, retries, idempotency, leases, verification, reconciliation, guarantees, testing |
 | [EXPERIMENTS.pdf](pdf/EXPERIMENTS.pdf) | [../EXPERIMENTS.md](../EXPERIMENTS.md) | Hands-on experiments |
 
 ## Regenerating the PDFs
