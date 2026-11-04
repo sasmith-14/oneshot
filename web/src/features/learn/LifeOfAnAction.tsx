@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useInView } from "motion/react";
 import type { Status } from "@/lib/api";
 import { StateMachine, type Path } from "@/components/StateMachine";
+import { TabBar } from "@/components/Tabs";
+import { Story3D } from "./Story3D";
 import { EASE_OUT } from "@/lib/motion";
 
 // Scrollytelling: the diagram stays put while the story scrolls past it, and
@@ -37,7 +39,9 @@ function pathOf(step: Step): Path {
 
 export function LifeOfAnAction() {
   const [active, setActive] = useState(0);
+  const [view, setView] = useState<"3d" | "flat">("3d");
   const step = STEPS[active];
+  const label = `Diagram for step ${active + 1}: ${step.title}`;
   return (
     <div className="grid gap-x-12 lg:grid-cols-12">
       <div className="order-2 lg:order-1 lg:col-span-5">
@@ -59,9 +63,16 @@ export function LifeOfAnAction() {
               ))}
             </ol>
           </div>
-          <div className="dot-grid p-4">
-            <StateMachine current={step.current} path={pathOf(step)} focus={step.focus} label={`Diagram for step ${active + 1}: ${step.title}`} />
+          <div className="flex justify-end px-3 pt-3">
+            <TabBar id="story-view" tabs={[{ id: "3d", label: "3D" }, { id: "flat", label: "Flat" }]} value={view} onChange={setView} />
           </div>
+          {view === "3d" ? (
+            <Story3D current={step.current} path={pathOf(step)} focus={step.focus} index={active} label={label} />
+          ) : (
+            <div className="dot-grid p-4">
+              <StateMachine current={step.current} path={pathOf(step)} focus={step.focus} label={label} />
+            </div>
+          )}
         </div>
       </div>
     </div>
