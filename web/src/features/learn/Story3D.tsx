@@ -42,7 +42,7 @@ export function Story3D({ current, path, focus, index, label }: { current: Statu
   useLayoutEffect(() => {
     const el = stage.current;
     if (!el) return;
-    const ro = new ResizeObserver(([e]) => setFit(Math.max(0.42, Math.min(1, e.contentRect.width / 1020))));
+    const ro = new ResizeObserver(([e]) => setFit(Math.max(0.4, Math.min(0.95, e.contentRect.width / 1180))));
     ro.observe(el);
     return () => ro.disconnect();
   }, []);
@@ -56,11 +56,11 @@ export function Story3D({ current, path, focus, index, label }: { current: Statu
   const baseRz = useSpring(-26, spring);
   const zoom = useSpring(1, spring);
   useEffect(() => {
-    fx.set(BOARD.w / 2 + (node.x - BOARD.w / 2) * 0.45);
-    fy.set(BOARD.h / 2 + (node.y - BOARD.h / 2) * 0.4);
+    fx.set(BOARD.w / 2 + (node.x - BOARD.w / 2) * 0.22);
+    fy.set(BOARD.h / 2 + (node.y - BOARD.h / 2) * 0.25);
     baseRx.set(54 + (index % 2) * 4);
     baseRz.set(-34 + index * 3.2);
-    zoom.set(1.04 + (index % 3) * 0.03);
+    zoom.set(0.98 + (index % 3) * 0.03);
   }, [node.x, node.y, index, fx, fy, baseRx, baseRz, zoom]);
 
   // pointer: a small tilt while hovering, and a drag that orbits
@@ -105,7 +105,7 @@ export function Story3D({ current, path, focus, index, label }: { current: Statu
       {/* the room: a soft floor-light under the scene */}
       <div aria-hidden className="pointer-events-none absolute inset-0" style={{ background: "radial-gradient(60% 55% at 50% 62%, color-mix(in oklab, var(--signal) 9%, transparent), transparent 70%)" }} />
 
-      <motion.div className="absolute top-[56%] left-1/2" style={{ rotateX: rx, rotateZ: rz, scale, transformStyle: "preserve-3d" }}>
+      <motion.div className="absolute top-[50%] left-1/2" style={{ rotateX: rx, rotateZ: rz, scale, transformStyle: "preserve-3d" }}>
         <motion.div className="absolute top-0 left-0" style={{ width: BOARD.w, height: BOARD.h, x: bx, y: by, transformStyle: "preserve-3d" }}>
           <Floor path={path} focus={focus} />
           {(Object.keys(POS) as Status[]).map((s) => (
@@ -169,7 +169,7 @@ function Block({ status, current, visited, rx, rz }: { status: Status; current: 
   const north = useMotionTemplate`translateY(${-FOOT.d / 2}px) translateZ(${half}px) rotateX(90deg) translate(-50%, -50%)`;
   const east = useMotionTemplate`translateX(${FOOT.w / 2}px) translateZ(${half}px) rotateY(90deg) translate(-50%, -50%)`;
   const west = useMotionTemplate`translateX(${-FOOT.w / 2}px) translateZ(${half}px) rotateY(-90deg) translate(-50%, -50%)`;
-  const labelZ = useTransform(h, (z) => z + 16);
+  const labelZ = useTransform(h, (z) => z + 54);
   const nrz = useTransform(rz, (r) => -r);
   const nrx = useTransform(rx, (r) => -r);
   const billboard = useMotionTemplate`translateZ(${labelZ}px) rotateZ(${nrz}deg) rotateX(${nrx}deg) translate(-50%, -100%)`;
@@ -186,7 +186,7 @@ function Block({ status, current, visited, rx, rz }: { status: Status; current: 
           background: current ? `radial-gradient(closest-side, color-mix(in oklab, var(--st-${v}) 55%, transparent), transparent)` : "radial-gradient(closest-side, rgba(0,0,0,.28), transparent)",
         }}
       />
-      <motion.div className="absolute" style={{ width: FOOT.w, height: FOOT.d, transform: north, background: side2, transformOrigin: "0 0" }} />
+      <motion.div className="absolute" style={{ width: FOOT.w, height: h, transform: north, background: side2, transformOrigin: "0 0" }} />
       <motion.div className="absolute" style={{ width: FOOT.w, height: h, transform: south, background: side, transformOrigin: "0 0" }} />
       <motion.div className="absolute" style={{ width: h, height: FOOT.d, transform: east, background: side2, transformOrigin: "0 0" }} />
       <motion.div className="absolute" style={{ width: h, height: FOOT.d, transform: west, background: side, transformOrigin: "0 0" }} />
@@ -202,7 +202,7 @@ function Block({ status, current, visited, rx, rz }: { status: Status; current: 
             borderColor: lit ? `color-mix(in oklab, var(--st-${v}) 50%, transparent)` : "var(--line)",
             background: lit ? `var(--st-${v}-soft)` : "var(--raised)",
             color: lit ? `var(--st-${v}-fg)` : "var(--fg-3)",
-            opacity: lit ? 1 : 0.8,
+            opacity: lit ? 1 : 0.92,
           }}
         >
           {current && <span className="size-2 rounded-full" style={{ background: `var(--st-${v})`, boxShadow: `0 0 10px var(--st-${v})` }} />}

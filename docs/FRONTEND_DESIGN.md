@@ -76,6 +76,24 @@ The client asked for the console to feel alive, not dead. Colour and motion were
 - **Chaos colours.** Each Chaos group keeps one hue: core is blue, ambiguous outcomes are violet, duplicates are amber and process crashes are rose. Cards light up in that hue on hover, and a card with a run in progress glows orange.
 - **Reduced motion.** All of it is still under `prefers-reduced-motion`, checked in a browser: 21 running animations normally, 0 with reduced motion.
 
+## The 3D lifecycle on Learn (2026-11-04)
+
+The client asked for the Learn diagram to be more 3D and immersive. `features/learn/Story3D.tsx` builds it with CSS 3D transforms and Motion. There is no WebGL and no new dependency, so text stays crisp and the page stays light.
+
+- **Blocks:** each state is a raised block on a tilted floor. Unreached states are low, states on the route are higher, and the current state rises highest, with a pool of its colour under it.
+- **Floor:** every allowed transition is painted on the floor, dashed. The route taken so far is drawn in the signal orange, and the step's own transition glows, with current flowing along it.
+- **Packet:** a glowing packet hops along that transition, over and over.
+- **Labels** are billboards: they always face the viewer, however the camera turns.
+- **Camera:** it springs to a new angle and focus for each step as the story scrolls. The mouse tilts the scene a few degrees, dragging orbits it, and double-clicking resets.
+- **Reduced motion:** the camera jumps instead of flying, the packet rests at the end of its edge, and tilt and orbit are off.
+- **Flat view:** a **3D / Flat** toggle keeps the 2D state machine available.
+
+Verified in a browser at five story steps in dark mode and one in light, with no page errors. That review caught two geometry bugs, now fixed:
+- the back wall of each block was as tall as the block was deep;
+- the labels were too low, so the tilted label plane cut into the block.
+
+The camera follow was also softened so the whole route stays in frame.
+
 ## Tokens (`web/src/index.css`)
 
 **Neutrals.** Two neutrals (canvas and ink) with tone steps, and one accent.
