@@ -8,8 +8,15 @@
     <link rel="icon" type="image/svg+xml" href="/ui/favicon.svg" />
     <title>OneShot</title>
     <script>
-      // Paper is the default; dark only if it was chosen. Applied before first paint.
-      document.documentElement.classList.toggle("dark", localStorage.getItem("oneshot-theme") === "dark");
+      // Theme before first paint: "system" (the default) follows the OS; light or dark if chosen.
+      const mode = localStorage.getItem("oneshot-theme");
+      const dark = mode === "dark" || (mode !== "light" && matchMedia("(prefers-color-scheme: dark)").matches);
+      document.documentElement.classList.toggle("dark", dark);
+      // Palette preview: ?palette=cobalt|sage|magenta|night (paper is the default).
+      const pick = new URLSearchParams(location.search).get("palette");
+      if (pick) localStorage.setItem("oneshot-palette", pick);
+      const palette = localStorage.getItem("oneshot-palette");
+      if (palette && palette !== "paper") document.documentElement.dataset.palette = palette;
     </script>
   </head>
   <body class="paper-grain">

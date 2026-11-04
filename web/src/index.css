@@ -177,6 +177,63 @@
     --grain-blend: soft-light;
 }
 
+/* -------------------------------------------------------------------------
+   Palette previews. Each is two neutrals (ground, ink) and one accent.
+   Chosen with ?palette=<name> in the URL (remembered); ?palette=paper resets.
+   Status inks are only re-tuned where they would clash with the accent.
+   ------------------------------------------------------------------------- */
+
+/* Cobalt: cool newsprint grey, blue-black ink, a cobalt pen */
+html[data-palette="cobalt"] {
+    --paper: #ECEDEA; --sheet: #F7F8F6; --well: #E0E2DE; --ink: #0F1216; --ink-2: #4F555D; --ink-3: #8A9098; --rule: #D2D5D1; --input: #C4C8C3;
+    --mark: #2340F5; --mark-ink: #1A33CC;
+    --st-inflight: #1F7A85; --st-inflight-soft: #D3E7E9; --st-inflight-fg: #135960;
+}
+html.dark[data-palette="cobalt"] {
+    --paper: #0E1013; --sheet: #15181C; --well: #1D2126; --ink: #E7EAEE; --ink-2: #9AA1AA; --ink-3: #69707A; --rule: #2A2F36; --input: #39404A;
+    --mark: #6A80FF; --mark-ink: #94A3FF;
+    --st-inflight: #5FB7C1; --st-inflight-soft: #142629; --st-inflight-fg: #9DD3D9;
+}
+
+/* Sage: pale sage ground, forest-black ink, a signal-orange pen */
+html[data-palette="sage"] {
+    --paper: #E4E8E1; --sheet: #F0F3EE; --well: #D8DDD4; --ink: #13201A; --ink-2: #4A5850; --ink-3: #84908A; --rule: #C9D0C5; --input: #BAC3B6;
+    --mark: #EE5A0C; --mark-ink: #B4440A;
+    --st-verifying: #9C8200; --st-verifying-soft: #ECE6C4; --st-verifying-fg: #5E4F00;
+}
+html.dark[data-palette="sage"] {
+    --paper: #0F1512; --sheet: #161D19; --well: #1E2621; --ink: #E6ECE5; --ink-2: #9EAAA2; --ink-3: #6C7871; --rule: #2A332D; --input: #38433C;
+    --mark: #FF7A33; --mark-ink: #FF9A63;
+    --st-verifying: #D2BA45; --st-verifying-soft: #29260F; --st-verifying-fg: #E6D589;
+}
+
+/* Teal and magenta: cool off-white, deep teal-black ink, a magenta pen */
+html[data-palette="magenta"] {
+    --paper: #F1F1EE; --sheet: #FAFAF8; --well: #E5E6E2; --ink: #0D2528; --ink-2: #485C5F; --ink-3: #869497; --rule: #D4D9D8; --input: #C3CACA;
+    --mark: #D6136E; --mark-ink: #AE0F59;
+    --st-unknown: #4E4BB0; --st-unknown-soft: #DEDDF1; --st-unknown-fg: #36338A;
+}
+html.dark[data-palette="magenta"] {
+    --paper: #0B1718; --sheet: #112022; --well: #18292B; --ink: #E4EEEE; --ink-2: #9AB0B1; --ink-3: #66797B; --rule: #24383A; --input: #2F4648;
+    --mark: #FF4F9A; --mark-ink: #FF80B5;
+    --st-unknown: #9C9AF0; --st-unknown-soft: #1C1E36; --st-unknown-fg: #C6C5F7;
+}
+
+/* Night edition: dark-first. Charcoal ground, bone ink, a sodium-yellow pen.
+   (In this preview the theme toggle does not change it.) */
+html[data-palette="night"], html.dark[data-palette="night"] {
+    color-scheme: dark;
+    --paper: #141414; --sheet: #1C1C1C; --well: #242424; --ink: #ECE9E1; --ink-2: #A6A39B; --ink-3: #716E68; --rule: #2F2F2F; --input: #3C3C3C;
+    --mark: #FFD12E; --mark-ink: #FFDE6B;
+    --st-pending: #8F8C86; --st-pending-soft: #26251F; --st-pending-fg: #CFCBC2;
+    --st-inflight: #6E95DA; --st-inflight-soft: #1B2333; --st-inflight-fg: #A9C1EA;
+    --st-verifying: #E3893A; --st-verifying-soft: #2E2013; --st-verifying-fg: #F0B37E;
+    --st-succeeded: #6BAE83; --st-succeeded-soft: #18261D; --st-succeeded-fg: #A3D2B2;
+    --st-failed: #D9735F; --st-failed-soft: #2E1915; --st-failed-fg: #EDA899;
+    --st-unknown: #A58BDB; --st-unknown-soft: #231C32; --st-unknown-fg: #CBBBEE;
+    --grain-opacity: 0.08; --grain-blend: soft-light;
+}
+
 @layer base {
   * { @apply border-border outline-ring/50; }
   html {
@@ -274,7 +331,7 @@
   mix-blend-mode: var(--grain-blend);
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1.1 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
 }
-.dark .paper-grain::before {
+.dark .paper-grain::before, [data-palette="night"] .paper-grain::before {
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.9 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
 }
 

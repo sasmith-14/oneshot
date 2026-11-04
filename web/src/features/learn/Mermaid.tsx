@@ -3,11 +3,12 @@ import { useEffect, useId, useRef, useState } from "react";
 let loader: Promise<typeof import("mermaid").default> | null = null;
 const loadMermaid = () => (loader ??= import("mermaid").then((m) => m.default));
 
-// Mermaid needs literal colours, so the paper palette is repeated here.
-const INK = {
-  light: { background: "#F9F8F5", primaryColor: "#F9F8F5", primaryBorderColor: "#17150F", primaryTextColor: "#17150F", secondaryColor: "#E8E5DE", tertiaryColor: "#F2F0EB", lineColor: "#17150F", textColor: "#17150F", noteBkgColor: "#E8E5DE", noteBorderColor: "#8C877C", actorBkg: "#F9F8F5", actorBorder: "#17150F", signalColor: "#17150F", labelBoxBkgColor: "#F2F0EB", fontSize: "15px" },
-  dark: { background: "#1A1915", primaryColor: "#1A1915", primaryBorderColor: "#ECE7DB", primaryTextColor: "#ECE7DB", secondaryColor: "#23211C", tertiaryColor: "#12110E", lineColor: "#ECE7DB", textColor: "#ECE7DB", noteBkgColor: "#23211C", noteBorderColor: "#777164", actorBkg: "#1A1915", actorBorder: "#ECE7DB", signalColor: "#ECE7DB", labelBoxBkgColor: "#12110E", fontSize: "15px" },
-};
+// Mermaid needs literal colours, so they are read from the live CSS tokens.
+function inkColours() {
+  const css = getComputedStyle(document.documentElement);
+  const v = (name: string) => css.getPropertyValue(name).trim();
+  return { background: v("--sheet"), primaryColor: v("--sheet"), primaryBorderColor: v("--ink"), primaryTextColor: v("--ink"), secondaryColor: v("--well"), tertiaryColor: v("--paper"), lineColor: v("--ink"), textColor: v("--ink"), noteBkgColor: v("--well"), noteBorderColor: v("--ink-3"), actorBkg: v("--sheet"), actorBorder: v("--ink"), signalColor: v("--ink"), labelBoxBkgColor: v("--paper"), fontSize: "15px" };
+}
 
 /** Renders a Mermaid diagram client-side. The library is code-split and only
  * downloaded when a document with a diagram is opened. */
@@ -19,7 +20,7 @@ export function Mermaid({ code }: { code: string }) {
 
   useEffect(() => {
     const obs = new MutationObserver(() => setDark(document.documentElement.classList.contains("dark")));
-    obs.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+    obs.observe(document.documentElement, { attributes: true, attributeFilter: ["class", "data-palette"] });
     return () => obs.disconnect();
   }, []);
 
@@ -27,7 +28,7 @@ export function Mermaid({ code }: { code: string }) {
     let cancelled = false;
     loadMermaid()
       .then(async (mermaid) => {
-        mermaid.initialize({ startOnLoad: false, securityLevel: "strict", theme: "base", themeVariables: dark ? INK.dark : INK.light, fontFamily: "Schibsted Grotesk Variable, ui-sans-serif", sequence: { wrap: true } });
+        mermaid.initialize({ startOnLoad: false, securityLevel: "strict", theme: "base", themeVariables: inkColours(), fontFamily: "Schibsted Grotesk Variable, ui-sans-serif", sequence: { wrap: true } });
         const { svg } = await mermaid.render(`m${id}${dark ? "d" : "l"}`, code);
         if (!cancelled && ref.current) ref.current.innerHTML = svg;
       })
