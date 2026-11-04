@@ -1,6 +1,6 @@
 # OneShot web console: agreed plan
 
-> Status: **agreed 2026-11-03. Everything here (M1–M4) is built and tested; the visual system was redesigned in v2 and again in v3 (2026-11-04, an editorial look chosen in a second design Q&A); see `FRONTEND_DESIGN.md`.** One planned item changed: the concept-doc PDF about the UI (doc 08) was not written; the Learn page and FRONTEND_DESIGN.md cover it. This file is the shared spec for the frontend. What is built so far is tracked in HANDOFF.md; anything not listed here stays in ROADMAP.md.
+> Status: **agreed 2026-11-03. Everything here (M1–M4) is built and tested; the visual system was redesigned in v2, v3 and v4 (2026-11-04, "mission control", with full creative freedom from the client); see `FRONTEND_DESIGN.md`.** One planned item changed: the concept-doc PDF about the UI (doc 08) was not written; the Learn page and FRONTEND_DESIGN.md cover it. This file is the shared spec for the frontend. What is built so far is tracked in HANDOFF.md; anything not listed here stays in ROADMAP.md.
 
 ## Purpose
 
@@ -15,10 +15,10 @@ An interactive **lab console** that makes the invisible visible. Watch actions m
 | Layout | top navigation bar + full-width main area |
 | Pages | Actions (home) · Action detail · Chaos · Reconcile · Provider ledger · Guarantees · Learn |
 | Theme | System / Light / Dark switch; System (follow the OS) is the default |
-| Look | v1–v2: a modern developer tool. **v3:** editorial print. Stone paper, ink and a vermilion accent; Instrument Serif, Schibsted Grotesk and IBM Plex Mono (self-hosted, no CDN); square corners; no shadows |
+| Look | v1–v2: a modern developer tool. v3: editorial print. **v4 (current):** mission control. A live system map and trace views, Mona Sans and JetBrains Mono (self-hosted), neutral chrome with one orange accent; see `FRONTEND_DESIGN.md` |
 | Status colours | muted/pastel: PENDING grey · IN_FLIGHT blue · VERIFYING amber · SUCCEEDED green · FAILED red · UNKNOWN purple |
 | Density | balanced: key facts visible, details one click away |
-| Motion | v3: purposeful but rich (headlines set line by line, a condensing masthead, chapter strips, a pinned story, a custom cursor); honours `prefers-reduced-motion` |
+| Motion | rich but purposeful (packets on the system map, trace spans drawing in, headlines set on entry, a pinned story on Learn, a custom cursor); honours `prefers-reduced-motion` |
 | Explanations | inline plain-English sentence on every event (the backend's raw reason stays visible too) |
 | Responsive | desktop-first, still usable on a tablet |
 | Lab safety | chaos and process-control routes exist only when `ONESHOT_LAB=1`; otherwise 404, and the UI hides those controls with an explanation. Everything binds to 127.0.0.1 |

@@ -85,19 +85,19 @@ More hands-on experiments, each with the exact commands and expected output: **[
 
 ### Web console
 
-A React console that makes failures visible, designed as a newspaper of record for what happened on the wire. It has seven pages:
+A React console that makes failures visible, designed as mission control for actions that must happen once. It has seven pages:
 
 | Page | What it shows |
 |---|---|
-| **Live** | A front page whose headline is written from live data ("Three actions need a human."). Then *the wire*: every recent action is a token that glides between Accepted, On the wire, Checking the ledger, Settled and Needs a human as its real status changes. Then a plain-English report of each change, activity, and a filterable list. |
-| **Action** | A lifecycle diagram that draws the path the action took, a message-flow diagram built from recorded timestamps (with **Replay**), a timeline that explains every decision in plain English, OneShot's record next to the provider's ledger, and an evidence-first dialog to resolve UNKNOWN. |
-| **Chaos** | 15 one-click failure presets, in sideways chapter strips: lost responses, timeouts, crashes, duplicates and `kill -9` mid-request. Also a lab bench with real process control for the provider and worker, a custom fault form, and a live lab log. |
-| **Reconcile** | Run or dry-run reconciliation, findings with what-it-means / how-it-happens / what-to-do, a live side-by-side diff, and run history. |
-| **Ledger** | The provider's own record, with duplicates and orphans highlighted. |
+| **Live** | A live system map (agent, OneShot, worker, provider and ledger) where every status change the console observes flies as packets along the real path. A lost reply breaks mid-wire, a provider that is down greys out, and armed faults show on the node. Also counts by status, the action list, a queue of actions that need a person, and throughput. |
+| **Action** | A trace: what status it was in over time, one bar per send and ledger check, and where the provider's ledger recorded the effect, with long idle gaps compressed. Also a message sequence with **Replay**, a plain-English timeline, the two records side by side, the lifecycle route, and an evidence-first dialog to resolve UNKNOWN. |
+| **Chaos** | 15 one-click failure presets, each drawn with where on the route it strikes: lost responses, timeouts, crashes, duplicates and `kill -9` mid-request. A run updates live on its card. Also real process control, a custom fault form, and the lab log. |
+| **Reconcile** | Run or dry-run reconciliation, findings with what-it-means / how-it-happens / what-to-do, run history, and a live bipartite diff linking actions to ledger effects. |
+| **Ledger** | The provider's own record, with duplicates and orphans highlighted and payloads one click away. |
 | **Guarantees** | G1–G5, each with its condition and a live check against current data, plus the documented duplicate gaps. |
 | **Learn** | A scrollytelling walk through one action's life, and the concept docs rendered with their diagrams. |
 
-The console also has ⌘K to jump anywhere or run a preset, a System / Light / Dark theme switch (System is the default), smooth scrolling and an ink cursor. All motion respects the OS reduced-motion setting.
+The console also has ⌘K to jump anywhere or run a preset, a System / Light / Dark theme switch (System is the default), smooth scrolling and a custom cursor. All motion respects the OS reduced-motion setting.
 
 ```bash
 make web-install   # once; needs Node >= 20

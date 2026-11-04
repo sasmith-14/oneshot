@@ -1,7 +1,7 @@
 # HANDOFF
 
 > Living status file, kept current so another session or tool can resume from the repo alone.
-> Last updated: 2026-11-04 (web console v3: the editorial "paper of record" redesign).
+> Last updated: 2026-11-04 (web console v4: the "mission control" redesign).
 
 ## Current status: feature-complete v0.1
 
@@ -21,11 +21,11 @@ Learning docs: `docs/src/*.md` → `docs/pdf/*.pdf` (overview + 7 concept docs +
 
 ### Web console "OneShot Lab" (done; spec `docs/FRONTEND_PLAN.md`, design `docs/FRONTEND_DESIGN.md`)
 
-All seven pages are built: Live (a front page with a headline written from live data, the wire figure and the wire report), Action detail, Chaos (horizontal chapter strips and the lab bench), Reconcile, Ledger, Guarantees and Learn, plus the ⌘K palette. v3 is an editorial look: cool newsprint grey, blue-black ink, a cobalt accent, and Archivo with IBM Plex Mono (self-hosted). The tokens, motion inventory and the reasoning are in `docs/FRONTEND_DESIGN.md`.
+All seven pages are built (v4, "mission control"): Live (a live system map where every observed status change flies as packets along the real path, a status strip, the action list, a "needs you" queue), Action detail (a trace waterfall plus sequence, timeline and ledger views), Chaos (preset cards that show where each fault strikes and update live), Reconcile (run report, findings, history and a bipartite diff), Ledger, Guarantees and Learn, plus the ⌘K palette. Mona Sans and JetBrains Mono, neutral chrome, one orange signal accent, System / Light / Dark. The tokens, research and motion inventory are in `docs/FRONTEND_DESIGN.md`.
 
-**Stack:** React 19, Vite 8, TypeScript 7, Tailwind 4, shadcn/ui, TanStack Query (1 s polling), Motion (animations), Lenis (smooth scrolling), cmdk, Sonner, react-markdown with lazily loaded Mermaid, and Fontsource packages for the three faces.
+**Stack:** React 19, Vite 8, TypeScript 7, Tailwind 4, shadcn/ui, TanStack Query (1 s polling), Motion (animations), Lenis (smooth scrolling), cmdk, Sonner, react-markdown with lazily loaded Mermaid, and Fontsource packages for Mona Sans and JetBrains Mono.
 
-**Code layout:** `web/src/app/` holds the shell, palette, theme and smooth scrolling. `web/src/features/<page>/` holds the pages, `web/src/components/` the shared pieces, and `web/src/lib/` the tested logic: explanations, the headlines the console writes (`headline.ts`), flow, comparison and findings.
+**Code layout:** `web/src/app/` holds the shell, palette, theme and smooth scrolling. `web/src/features/<page>/` holds the pages, `web/src/components/` the shared pieces, and `web/src/lib/` the tested logic: explanations, headlines (`headline.ts`), journeys for the system map (`journey.ts`), the trace model (`trace.ts`), flow, comparison and findings.
 
 **Backend added for the console:**
 - `oneshot/lab.py`: only with `ONESHOT_LAB=1`. It holds the presets, fault arming and the process supervisor, which runs with `ONESHOT_LAB_MANAGE=1`.
@@ -72,9 +72,9 @@ Things to know when working on it:
 - Process presets (`worker-*`) take about the lease time (15 s by default) to recover; that wait is the point of the demonstration.
 - This shadcn version's `CommandDialog` does not wrap its children in cmdk's `<Command>`; `app/CommandPalette.tsx` adds it. Without it the page crashes.
 - Agent skills used for the design (15 of them in `.claude/skills/`, not committed) can be reinstalled from `skills-lock.json`; the commands are in `docs/FRONTEND_DESIGN.md`.
-- Headlines use `SetHeadline`, which reveals each line when it scrolls into view. A full-page screenshot that never scrolls will show headings below the fold as blank; scroll first. Under reduced motion they are plain text.
+- Page titles use `SetHeadline`, which reveals each line when it scrolls into view. Under reduced motion they are plain text.
 - Theme: a System / Light / Dark switch in the masthead (and ⌘K). System follows the OS and is the default; a choice is remembered in `localStorage["oneshot-theme"]` (absent means system).
-- Colours are Cobalt (chosen by the user because the first palette matched their portfolio). Type is Archivo by default; `?type=bricolage|fraunces|newsreader|instrument` previews the alternatives (remembered in `localStorage["oneshot-type"]`), and `?type=archivo` resets.
+- The system map replays status changes it *observes* between 1 s polls (`lib/journey.ts`), so several real steps can arrive as one replayed journey. It never invents an outcome.
 - npm blocks `fsevents`' install script (optional macOS file watcher). This is harmless; Vite works without it.
 
 ## Next steps (suggested, in order)

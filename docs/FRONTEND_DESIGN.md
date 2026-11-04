@@ -1,137 +1,120 @@
-# OneShot console: design system (v3, "the paper of record", Cobalt and Archivo)
+# OneShot console: design system (v4, "mission control")
 
-The v3 redesign of the web console. The page set, data and behaviour from `FRONTEND_PLAN.md` are unchanged; this file records the look, and why.
+The page set, data and behaviour from `FRONTEND_PLAN.md` are unchanged. This file records the look, the research behind it, and how it is verified.
 
-> **Revision (2026-11-04).** The first v3 palette (stone paper, ink, vermilion) matched the client's own portfolio, so they chose **Cobalt** from four previews: cool newsprint grey `#ECEDEA`, blue-black ink `#0F1216` and a cobalt accent `#2340F5` (dark: `#0E1013`, `#E7EAEE`, `#6A80FF`). IN_FLIGHT moved from blue to teal so it never reads as the accent. The client also asked for better type than Instrument Serif and Schibsted Grotesk. The default is now **Archivo** for both display and text: a variable grotesk set wide (112%) and heavy (640) for headlines, at normal width for text. Four other type systems can be previewed with `?type=bricolage|fraunces|newsreader|instrument`. Where the tables below still mention paper, vermilion or the serif, read the Cobalt and Archivo values in `web/src/index.css`; the structure, rules and motion are unchanged.
+## History
 
-## The brief, restated
+| Version | What | Why it changed |
+|---|---|---|
+| v2 | a modern developer tool with a kanban "wire" | the client found it generic |
+| v3 | an editorial "paper of record" (serif, paper, a red pen), later recoloured Cobalt with Archivo | the client did not like the look at all, and the first palette matched their portfolio |
+| **v4** | **mission control**: an observability-grade console built around a live system map and a trace view | chosen by the designer, with full creative freedom, within the client's standing inputs (below) |
 
-- **Subject:** a console for watching an execution engine handle failure: lost responses, crashes, duplicates, and the moments where it refuses to guess.
-- **Audience:** the person learning backend reliability from this project, and anyone reviewing it as portfolio work.
-- **Client's choices (from the design Q&A):**
-  - *Look and colour:* an editorial/print look; warm paper, ink and red; a serif, a grotesk and a mono.
-  - *Motion and scrolling:* purposeful but rich motion; a masthead that condenses on scroll; the pinned story on Learn; horizontal chapter strips; headlines set line by line; an "ink settle" page transition.
-  - *Page structure:* a masthead with section navigation; Live as a stacked front page (headline, wire figure, report); airy working pages.
-  - *Small things:* plain, factual headlines; fine ink line art; paper grain; a custom cursor.
-  - *Theme (revised 2026-11-04):* a three-way System / Light / Dark switch; System, which follows the OS, is the default.
+**Standing inputs from the client's earlier answers** (kept):
+- the stack: React, Vite, TypeScript, Tailwind and shadcn;
+- top navigation, desktop-first, balanced density, 2D visuals;
+- muted status colours: PENDING grey, IN_FLIGHT blue, VERIFYING amber, SUCCEEDED green, FAILED red, UNKNOWN purple;
+- plain-English explanations inline;
+- smooth animation and interactive scrolling;
+- a System / Light / Dark theme switch, with System as the default;
+- two neutral colours and one accent;
+- the ⌘K palette;
+- the custom cursor and subtle grain.
+
+## Research
+
+- **Vizceral** (Netflix's traffic visualiser) and later topology tools: animate dots along the edges of a service graph, tie the dots to real traffic rather than decoration, mark degraded links, and cap the number of animated elements.
+- **Vercel Workflows' trace viewer** (redesigned June 2026, minimap added July 2026): inspect a run from start to finish as a waterfall of spans.
+- **Workflow dashboards** (Workflow Core, agent-workflow UIs): show the taken branch highlighted and the untaken branches dimmed.
+- **Linear's 2026 refresh**: soften contrast in the chrome so data stands out ("don't compete for attention you haven't earned").
+- **The installed design skills** (below), used as checklists. `design-taste-frontend`'s app-screen chapter supplied these rules:
+  - answer one question per screen;
+  - KPIs are type, not tiles;
+  - colour goes on data, not chrome;
+  - honest zeros;
+  - tables are rules and alignment;
+  - one control for the most frequent job, one click from the first screen.
 
 ## The idea
 
-> On this console, **the provider's ledger, the record of what really happened,** becomes **a paper of record**.
+> OneShot's whole subject is a request crossing a network that can fail. So the console **shows the wire itself**.
 
-Every page is a section of that paper:
-- Live is the front page, and its headline is written from live data ("Three actions need a human.").
-- Each action has its own story page.
-- The provider's ledger is set like an accountant's book, with a double rule under the total.
-- The signature figure is **the wire**: one ink rail, five stations, and tokens that glide between them as the backend changes status.
+Three signature pieces, each driven only by real data:
 
-This idea comes from the subject itself. OneShot's whole job is keeping a trustworthy record, and the ledger is the authority.
-
-## Avoiding the generated look
-
-The `design-taste-frontend` skill lists the editorial look as the current most-generated style: a cream ground with terracotta, hairlines everywhere, and serif display used as a shortcut to "premium". The client asked for editorial, so v3 keeps it but removes each of those tells:
-
-| Tell | What v3 does instead |
-|---|---|
-| Yellow-cream ground with terracotta or rust | A low-chroma **stone** paper (`#F2F0EB`, chroma ≈ 0.006) and a true **vermilion** (`#E1361C`), not brown-orange |
-| Hairlines everywhere ("broadsheet cosplay") | Rules appear only where print uses them: a heavy rule under the masthead, 2 px rules over tables, hairlines between table rows. Surfaces are separated by a tone step (`sheet`, `well`), never by an outlined box |
-| Eyebrows, index numbers, tracked caps | None. Order is shown by position and words; labels are sentence case |
-| Monospace as a "technical" voice | Mono appears only for literal values: ids, timestamps, enum values, code |
-| Colour everywhere | Colour means state. Vermilion is the editor's pen (below); status inks appear only where a status is reported |
+1. **The system map** (`features/live/Topology.tsx`).
+   - **The path:** Agent → OneShot (API and store) → Worker → Provider → Ledger, with a send line and a return line between each pair.
+   - **Packets:** every status change seen between two polls is replayed as packets along the path it took, using `lib/journey.ts`. Its unit tests check, among other things, that a lost reply is drawn as lost and never as success.
+   - **Breaks:** a lost reply stops halfway with a ✕.
+   - **Ledger lookups** travel worker → provider → ledger and back.
+   - **Heartbeats:** each worker heartbeat sends a faint dot to the store.
+   - **Node state:** a provider that is down turns its node and edges dashed red, a silent worker says so, and armed faults show on the provider.
+   - **Engine:** a single `requestAnimationFrame` loop moves SVG circles, with no React render per frame and at most 28 packets at once.
+2. **The trace** (`features/action/Trace.tsx`, model in `lib/trace.ts`).
+   - **Rows:** a status band shows what OneShot said over time, one bar per send or ledger check is coloured by outcome, and a diamond marks where the provider's ledger recorded the effect. So a reply lost after the effect was written is visible at a glance.
+   - **Idle gaps** over 3 s are compressed and marked with their length.
+   - **Interaction:** hovering reads out the time; clicking a bar explains it in plain English.
+3. **The bipartite diff** (Reconcile): OneShot's actions on the left and the provider's effects on the right, linked by drawn curves. Duplicates fan out, orphans and missing effects break, and hovering highlights a pair.
 
 ## Tokens (`web/src/index.css`)
 
+**Neutrals.** Two neutrals (canvas and ink) with tone steps, and one accent.
+
 | Token | Light | Dark | Role |
 |---|---|---|---|
-| `paper` | `#F2F0EB` | `#12110E` | the ground |
-| `sheet` | `#F9F8F5` | `#1A1915` | raised surfaces (preset stories, diagrams, dialogs) |
-| `well` | `#E8E5DE` | `#23211C` | recessed surfaces, skeletons |
-| `ink` | `#17150F` | `#ECE7DB` | text, rules, primary buttons |
-| `ink-2` | `#57534A` | `#A8A193` | secondary text (contrast ≥ 6:1 on paper) |
-| `ink-3` | `#8C877C` | `#777164` | empty states and zero counts only |
-| `rule` | `#D6D2C8` | `#34312A` | hairlines inside tables |
-| `mark` | `#E1361C` | `#F2533A` | **the editor's pen**: the active section, the path an action took, a link under the cursor, the live mark, reading progress |
+| `canvas` | `#F4F5F7` | `#0A0B0D` | page ground |
+| `surface` | `#FFFFFF` | `#111317` | panels |
+| `sunken` | `#ECEEF1` | `#0D0F12` | wells, segmented controls |
+| `line` / `line-strong` | `#E3E6EA` / `#CDD2D9` | `#22262D` / `#323741` | borders, edges |
+| `fg` / `fg-2` / `fg-3` | `#0C0E12` / `#50565F` / `#858B95` | `#ECEEF1` / `#A0A6B0` / `#6A707B` | text tiers |
+| `signal` | `#EF5A1C` | `#FF6B2C` | **the one accent**: the live mark, focus rings, the primary "Break something" action, the path an action took, reading progress |
 
-**Status inks.** Each status has three tokens: `st-*`, `st-*-soft` and `st-*-fg`.
+**Status inks.** Each status has three tokens, `st-*`, `st-*-soft` and `st-*-fg`. They are muted, readable in both themes, and kept clear of the orange accent: VERIFYING is a yellow amber and FAILED a rose red.
 
-| Status | Ink |
-|---|---|
-| PENDING | graphite |
-| IN_FLIGHT | blue-black |
-| VERIFYING | ochre |
-| SUCCEEDED | green |
-| FAILED | oxblood, deliberately far from the vermilion so failure never reads as "the editor's mark" |
-| UNKNOWN | violet |
+**Type.**
+- **Mona Sans** (variable, with a width axis) for everything. Headlines run wider (`font-stretch` 110–112%) and heavier (640) for a confident, engineered voice. The UI base size is 14 px.
+- **JetBrains Mono** for literal values only: ids, timestamps, statuses, payloads.
+- Both are self-hosted (OFL).
 
-**Type.** Three self-hosted faces, all OFL and free:
-
-| Face | Used for | Why |
-|---|---|---|
-| **Instrument Serif** | the wordmark, page titles, headlines, big numbers | a condensed display serif that sets tight at large sizes |
-| **Schibsted Grotesk** | everything read or clicked | a variable grotesk designed for a news publisher, so it belongs in a newspaper |
-| **IBM Plex Mono** | literal values only | ids, timestamps, enum values, code |
-
-Sizes:
-- Display runs from 52 to 140 px, at `line-height` 0.82–1.0 and −0.018 em tracking.
-- Body text is 16–17 px at 1.55–1.68.
-- The standfirst is 19 px.
-- The small floor is 12.5 px, used only for mono timestamps.
-
-**Shape.** Corners are square (2–4 px) and buttons are flat. A button is either an ink fill or an ink outline, and it scales to 0.97 when pressed.
-
-## Layout
-
-```text
-Wednesday, 4 November 2026          16 actions on record          ● Live  Jump to ⌘K  ◐
-OneShot.                                         The record of every action an agent…
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Live   Chaos   Reconcile   Ledger   Guarantees   Learn          (red mark on the heavy rule)
-─────────────────────────────────────────────────────────────────────────────────────────
-Page title (serif, large)                                                  [page actions]
-Standfirst: one sentence on what this page is for.
-```
-
-- **Frame:** one 1320 px frame with equal 20/32/40 px margins and a 12-column grid inside it.
-- **Section gaps:** sections sit 96–112 px apart.
-- **Condensed bar:** when the masthead scrolls away, a slim bar slides down (transform only) with the wordmark, the sections and the tools.
-- **Colophon:** the footer closes the page with the name set at full width.
+**Shape and depth.**
+- Panels: 12 px radius; controls: 8 px; chips: 6 px.
+- Panels have a 1 px border, a hairline shadow and a faint top highlight in dark mode.
+- Pop-overs alone get a real shadow.
+- The system map and the Learn diagram sit on a dot grid.
 
 ## Motion inventory
 
-| Element | Motion | Why |
+| Element | Motion | Purpose |
 |---|---|---|
-| Headlines | set line by line: each line rises out of a mask, once, measured after fonts load (`components/SetHeadline.tsx`) | the one typographic signature; it reads like type dropping into a forme |
-| Page change | "ink settle": 280 ms opacity with a 10 px rise; exit 120 ms | continuity without delay |
-| Masthead | the slim bar slides in when the masthead leaves view | navigation is always one move away |
-| Section and tab mark | a red bar slides between items on a critically damped spring | shows where you are |
-| The wire | tokens glide between stations on a spring (shared `layoutId`), driven only by polled data | shows the status change itself |
-| Wire report | new lines slide in at the top as changes are seen between polls | the paper updating |
-| Lifecycle figure | the path taken is drawn in red (`pathLength`) | the editor marking the route |
-| Flow diagram | **Replay** steps through the recorded facts | watch a failure happen in order |
-| Chaos | horizontal chapter strips: native scroll, mouse drag, step buttons, a red progress line; snapping on touch; the vertical wheel is never hijacked | browse stories without losing the page |
-| Learn | the diagram is pinned while the story scrolls and lights each step; a red reading-progress line; a table of contents with an active marker | scrolling with a purpose |
-| Guarantees | a red line in the margin follows reading; each check's ring and glyph draw in when reached | ties the claim to the evidence |
-| Cursor | an ink dot under the pointer, and a ring on a spring that grows over anything clickable; it inverts against what it is over; mouse only, never under reduced motion; text fields keep the caret | a printed-page feel, and precise feedback |
-| Counts | numbers roll to their new value | draws the eye to a change |
+| System map | packets with short trails along real paths; the edge flashes in the packet's colour; the receiving node's ring pulses | shows each observed change as movement |
+| Trace | spans grow from the left in sequence; effects pop in; crosshair on hover | reading a run as it unfolded |
+| Status strip | proportion bars ease to new values; numbers roll | draws the eye to a change |
+| Navigation, tabs, filters, theme switch | a raised pill slides between items (shared `layoutId`, critically damped spring) | shows where you are |
+| Page change | 260 ms fade and 8 px rise | continuity |
+| Headlines | set line by line from a mask, once | the typographic signature |
+| Chaos | a card in a live run gets an accent border and shows the action's status updating in place | cause and effect on one card |
+| Learn | the diagram is pinned while the story scrolls; the active step gets an accent rule; reading progress and the active table-of-contents item | scrolling with a purpose |
+| Guarantees | a margin line follows reading; each check's ring and glyph draw in | ties the claim to the evidence |
+| Reconcile | diff curves draw in on scroll; hovering highlights a pair | linking two records |
 
 **Rules.**
-- Only `transform` and `opacity` are animated, except the link underline, which animates `background-size`.
-- UI motion is ≤ 300 ms with a strong ease-out (`cubic-bezier(0.23, 1, 0.32, 1)`).
-- Nothing enters from `scale(0)`.
-- Nothing bounces.
-- Keyboard actions (⌘K, keys 1–6) are not animated.
-- Under `prefers-reduced-motion`: headlines are plain text, there is no smooth scrolling and no custom cursor, and pulses stop.
+- Only transform and opacity are animated. The exceptions are the SVG `pathLength` draws and the packet positions.
+- Strong ease-out curves; UI motion under 300 ms; nothing bounces.
+- Keyboard actions are not animated.
+- Under `prefers-reduced-motion`:
+  - no packets fly, and the receiving node pulses instead;
+  - headlines are plain text;
+  - there is no smooth scrolling and no custom cursor.
 
-## The agent skills used
+## Agent skills used
 
-Installed in `.claude/skills/` (not committed; `skills-lock.json` records their sources and hashes), and used as checklists while building:
+Installed in `.claude/skills/` (not committed; `skills-lock.json` records their sources and hashes):
 
 | Skill | Source | Used for |
 |---|---|---|
 | `frontend-design` | anthropics/skills | committing to one direction |
-| `design-taste-frontend` | leonxlnx/taste-skill | the generated-look registry above; app-screen rules (one question per screen, KPIs as type, honest zeros) |
-| `emil-design-eng`, `animate`, `animation-performance`, `review-animations`, `break-ui` | emilkowalski/skills | motion decisions, durations and easing, transform-only motion, worst-case data |
-| `better-typography`, `better-colors`, `better-layout`, `better-accessibility`, `better-interface` | jakubkrehel/skills | type scale and wrapping, contrast, grid, focus and screen-reader names |
+| `design-taste-frontend` | leonxlnx/taste-skill | app-screen rules and the generated-look registry |
+| `emil-design-eng`, `animate`, `animation-performance`, `review-animations`, `break-ui` | emilkowalski/skills | motion decisions, the transform-only rule, frame budget |
+| `better-typography`, `better-colors`, `better-layout`, `better-accessibility`, `better-interface` | jakubkrehel/skills | type, contrast, grid, focus and screen-reader names |
 | `web-design-guidelines`, `vercel-react-best-practices`, `vercel-react-view-transitions` | vercel-labs/agent-skills | interface guidelines and React performance |
 
 Reinstall them with:
@@ -144,44 +127,36 @@ npx skills add jakubkrehel/skills --skill better-typography --skill better-color
 npx skills add leonxlnx/taste-skill --skill design-taste-frontend --agent claude-code
 ```
 
-Their scripts were read before use. Only `assets.mjs` uses the network (it searches public image archives); it was not run, because this console uses no photographs.
-
-**Where the client's choices override a skill.** `design-taste-frontend` bans serif display, more than two typefaces, hairlines and a custom cursor. The client explicitly chose a serif, three faces, a masthead with rules and a custom cursor. Those choices win; the table under "Avoiding the generated look" is how the tells were removed anyway.
-
 ## Customising
 
-- **Colours and type:** the token blocks at the top of `web/src/index.css`. Dark mode is the `.dark` block. Mermaid reads the live tokens, so diagrams follow automatically.
-- **Theme:** `app/theme.ts` (System / Light / Dark; System is stored as no choice, so it keeps following the OS) and `app/ThemeSwitch.tsx`. The pre-paint copy of the logic is in `web/index.html`.
-- **Type systems:** the `html[data-type=…]` blocks in `index.css`. Each sets the display and text faces, the display weight, width, tracking and leading, and `--ds` / `--ts`, which scale the large headlines and the section titles, because a wide grotesk needs less size than a condensed serif. Preview one with `?type=<name>` (remembered); `?type=archivo` returns to the default.
-- **Motion:** `web/src/lib/motion.ts` holds the easing curves and springs. The headline reveal timing is in `components/SetHeadline.tsx`, and the cursor in `app/Cursor.tsx`.
-- **Headlines the console writes:** `web/src/lib/headline.ts`, with tests in `headline.test.ts`.
-- **The wire's stations and captions:** `web/src/features/live/Wire.tsx`.
-- **Preset stories:** `oneshot/lab.py`.
+- **Colours:** the `:root` and `.dark` blocks in `web/src/index.css`. Mermaid reads the same tokens at render time.
+- **Type sizes:** `.t-hero`, `.t-title`, `.t-h2`, `.t-h3` and `.t-figure` in `index.css`.
+- **Motion:** `web/src/lib/motion.ts`. Packet timing and colours are at the top of `features/live/Topology.tsx`.
+- **What animates for each status change:** `web/src/lib/journey.ts`.
+- **Where each Chaos preset strikes:** `features/chaos/FaultRoute.tsx`.
+- **Headlines the console writes:** `web/src/lib/headline.ts`.
 - **Turning off the grain or the cursor:**
-  - grain: remove `class="paper-grain"` from `web/index.html`;
+  - grain: remove `class="grain"` from `web/index.html`;
   - cursor: remove `<Cursor />` from `app/Shell.tsx`.
 
 ## How it is verified
 
-- **Vitest** (`make web-test`):
-  - headline writing for every system state;
-  - explanations, flow building and the ledger comparison;
-  - finding guides;
-  - the wire's columns;
-  - the state machine matching `ALLOWED_TRANSITIONS`.
-- **Browser end-to-end tests** (`tests/test_web_e2e.py`). They run against the real API, provider and worker in headless Chromium, and any page error fails a test:
-  - a lost-response story across all three tabs;
+- **Vitest** (`make web-test`). Beyond the existing logic tests:
+  - the journeys: a happy path replayed in full, lost replies drawn as lost, every hop between neighbours;
+  - the trace model: segments, tones, the effect inside a lost send, running spans, gap compression;
+  - headline writing;
+  - the System / Light / Dark switch.
+- **Browser end-to-end tests** (`tests/test_web_e2e.py`, real API, provider and worker in headless Chromium; any page error fails a test):
+  - the trace shows the ambiguous send and the ledger check that found the effect, explained on click;
+  - then the sequence, timeline and ledger tabs;
   - resolving an UNKNOWN with evidence;
-  - a Chaos preset, then reconciliation, then the guarantees;
-  - the ⌘K palette;
+  - a Chaos preset, reconciliation, guarantees and ⌘K;
   - Learn rendering Mermaid;
   - every page under reduced motion.
-- **Interaction checks** (scripted in Playwright while building), on the chapter strips:
-  - a sideways wheel scrolls the strip and leaves the page alone;
-  - a vertical wheel over the strip scrolls the page;
-  - the step buttons and mouse drag move it.
+- **Packets:** checked in a real browser by firing a lost-response preset at the running stack and capturing frames.
 - **Screenshots reviewed:**
-  - every page in light mode;
-  - Live and an action page in dark mode;
-  - Learn and Guarantees mid-scroll (pinned story, condensed bar, cursor);
-  - Live at 390 px and Chaos at 820 px.
+  - every page in dark mode, plus Live, Chaos and Reconcile in light;
+  - an action with five ledger checks and a 38-minute resolution;
+  - Learn mid-scroll;
+  - the palette;
+  - Live at 390 px.

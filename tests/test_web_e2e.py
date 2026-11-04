@@ -84,7 +84,13 @@ def test_lost_response_story_is_visible_in_the_console(stack, page):
     page.locator("#actions").get_by_role("link", name=action_id, exact=True).click()
     page.wait_for_url(f"**/ui/actions/{action_id}")
 
-    # Flow: the lost response, the ledger write the client never heard about, the check that found it.
+    # Trace (default tab): one send whose reply was lost, then the ledger check that found the effect.
+    page.get_by_role("button", name=re.compile(r"^Send 1: AMBIGUOUS")).wait_for(timeout=5000)
+    page.get_by_role("button", name=re.compile(r"^Ledger check 1: FOUND")).click()
+    page.get_by_text("The provider's ledger contains the effect.").wait_for(timeout=5000)
+
+    # Sequence: the lost response, the ledger write the client never heard about, the check that found it.
+    page.get_by_role("tab", name="Sequence").click()
     flow = page.get_by_role("img", name="Message flow between agent, OneShot, provider and ledger")
     for text in ["no usable response", "recorded", "found: it happened"]:
         # match the visible SVG <text> labels, not the hidden <title> tooltips
