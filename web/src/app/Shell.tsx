@@ -1,12 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, NavLink, useLocation, useNavigate, useOutlet } from "react-router";
 import { AnimatePresence, motion, useInView } from "motion/react";
-import { Moon, Search, Sun } from "lucide-react";
+import { Search } from "lucide-react";
 import { Toaster } from "sonner";
 import { CommandPalette, PAGES } from "./CommandPalette";
 import { Cursor } from "./Cursor";
 import { useLenis } from "./SmoothScroll";
-import { useTheme } from "./theme";
+import { useTheme, type ThemeMode } from "./theme";
+import { ThemeSwitch } from "./ThemeSwitch";
 import { Kbd } from "@/components/Kbd";
 import { useSystemStatus } from "@/hooks/queries";
 import { EASE_OUT, RULE_SPRING } from "@/lib/motion";
@@ -15,7 +16,7 @@ import { cn } from "@/lib/utils";
 const FRAME = "mx-auto w-full max-w-[1320px] px-5 sm:px-8 lg:px-10";
 
 export function Shell() {
-  const [theme, toggleTheme] = useTheme();
+  const { mode, theme, setMode } = useTheme();
   const [paletteOpen, setPaletteOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
@@ -44,7 +45,7 @@ export function Shell() {
     return () => window.removeEventListener("keydown", onKey);
   }, [navigate]);
 
-  const tools = <Tools theme={theme} toggleTheme={toggleTheme} openPalette={() => setPaletteOpen(true)} />;
+  const tools = (where: string) => <Tools id={where} mode={mode} setMode={setMode} openPalette={() => setPaletteOpen(true)} />;
 
   return (
     <div className="flex min-h-dvh flex-col">
@@ -52,8 +53,8 @@ export function Shell() {
         Skip to content
       </a>
 
-      <Masthead ref={mastRef} section={section} tools={tools} />
-      <SlimBar visible={!mastInView} section={section} tools={tools} />
+      <Masthead ref={mastRef} section={section} tools={tools("mast")} />
+      <SlimBar visible={!mastInView} section={section} tools={tools("slim")} />
 
       <main id="main" className={cn(FRAME, "flex-1 pt-14 pb-32")}>
         <AnimatePresence mode="wait" initial={false}>
@@ -71,7 +72,7 @@ export function Shell() {
 
       <Colophon />
       <Cursor />
-      <CommandPalette open={paletteOpen} setOpen={setPaletteOpen} theme={theme} toggleTheme={toggleTheme} />
+      <CommandPalette open={paletteOpen} setOpen={setPaletteOpen} mode={mode} setMode={setMode} />
       <Toaster
         theme={theme}
         position="bottom-left"
@@ -170,22 +171,16 @@ export function Wordmark() {
   );
 }
 
-function Tools({ theme, toggleTheme, openPalette }: { theme: string; toggleTheme: () => void; openPalette: () => void }) {
+function Tools({ id, mode, setMode, openPalette }: { id: string; mode: ThemeMode; setMode: (m: ThemeMode) => void; openPalette: () => void }) {
   return (
-    <div className="flex shrink-0 items-center gap-1">
+    <div className="flex shrink-0 items-center gap-1.5">
       <LiveMark />
       <button type="button" onClick={openPalette} className="btn btn-quiet btn-sm hidden gap-2 md:inline-flex" aria-label="Jump to a page, action or preset">
         <Search aria-hidden className="size-3.5" />
         Jump to
         <Kbd>⌘K</Kbd>
       </button>
-      <button type="button" onClick={toggleTheme} aria-label={`Switch to ${theme === "dark" ? "paper" : "dark"} theme`} className="btn btn-quiet btn-sm size-8 px-0">
-        <AnimatePresence mode="wait" initial={false}>
-          <motion.span key={theme} initial={{ opacity: 0, rotate: -40, scale: 0.85 }} animate={{ opacity: 1, rotate: 0, scale: 1 }} exit={{ opacity: 0, rotate: 40, scale: 0.85 }} transition={{ duration: 0.16, ease: EASE_OUT }}>
-            {theme === "dark" ? <Sun aria-hidden className="size-4" /> : <Moon aria-hidden className="size-4" />}
-          </motion.span>
-        </AnimatePresence>
-      </button>
+      <ThemeSwitch id={id} mode={mode} setMode={setMode} />
     </div>
   );
 }

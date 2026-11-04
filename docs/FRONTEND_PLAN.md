@@ -14,7 +14,7 @@ An interactive **lab console** that makes the invisible visible. Watch actions m
 | Live data | polling every 1 s (no SSE or WebSockets); the trade-off is documented |
 | Layout | top navigation bar + full-width main area |
 | Pages | Actions (home) · Action detail · Chaos · Reconcile · Provider ledger · Guarantees · Learn |
-| Theme | light + dark with a toggle. v3: paper (light) is the default; dark is a remembered choice |
+| Theme | System / Light / Dark switch; System (follow the OS) is the default |
 | Look | v1–v2: a modern developer tool. **v3:** editorial print. Stone paper, ink and a vermilion accent; Instrument Serif, Schibsted Grotesk and IBM Plex Mono (self-hosted, no CDN); square corners; no shadows |
 | Status colours | muted/pastel: PENDING grey · IN_FLIGHT blue · VERIFYING amber · SUCCEEDED green · FAILED red · UNKNOWN purple |
 | Density | balanced: key facts visible, details one click away |

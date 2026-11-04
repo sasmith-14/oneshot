@@ -97,7 +97,7 @@ A React console that makes failures visible, designed as a newspaper of record f
 | **Guarantees** | G1–G5, each with its condition and a live check against current data, plus the documented duplicate gaps. |
 | **Learn** | A scrollytelling walk through one action's life, and the concept docs rendered with their diagrams. |
 
-The console also has ⌘K to jump anywhere or run a preset, a paper (light) theme with a dark option, smooth scrolling and an ink cursor. All motion respects the OS reduced-motion setting.
+The console also has ⌘K to jump anywhere or run a preset, a System / Light / Dark theme switch (System is the default), smooth scrolling and an ink cursor. All motion respects the OS reduced-motion setting.
 
 ```bash
 make web-install   # once; needs Node >= 20

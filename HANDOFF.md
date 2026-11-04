@@ -73,7 +73,8 @@ Things to know when working on it:
 - This shadcn version's `CommandDialog` does not wrap its children in cmdk's `<Command>`; `app/CommandPalette.tsx` adds it. Without it the page crashes.
 - Agent skills used for the design (15 of them in `.claude/skills/`, not committed) can be reinstalled from `skills-lock.json`; the commands are in `docs/FRONTEND_DESIGN.md`.
 - Headlines use `SetHeadline`, which reveals each line when it scrolls into view. A full-page screenshot that never scrolls will show headings below the fold as blank; scroll first. Under reduced motion they are plain text.
-- The theme is paper (light) by default and ignores the OS setting; dark is a remembered choice (`localStorage["oneshot-theme"]`).
+- Theme: a System / Light / Dark switch in the masthead (and ⌘K). System follows the OS and is the default; a choice is remembered in `localStorage["oneshot-theme"]` (absent means system).
+- Palette previews: `?palette=cobalt|sage|magenta|night` re-colours the console (remembered in `localStorage["oneshot-palette"]`; `?palette=paper` resets). The user is choosing a final palette because the current paper and red scheme matches their portfolio; once chosen, make it the default and delete the others.
 - npm blocks `fsevents`' install script (optional macOS file watcher). This is harmless; Vite works without it.
 
 ## Next steps (suggested, in order)

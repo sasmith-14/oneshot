@@ -10,7 +10,8 @@ The v3 redesign of the web console. The page set, data and behaviour from `FRONT
   - *Look and colour:* an editorial/print look; warm paper, ink and red; a serif, a grotesk and a mono.
   - *Motion and scrolling:* purposeful but rich motion; a masthead that condenses on scroll; the pinned story on Learn; horizontal chapter strips; headlines set line by line; an "ink settle" page transition.
   - *Page structure:* a masthead with section navigation; Live as a stacked front page (headline, wire figure, report); airy working pages.
-  - *Small things:* plain, factual headlines; fine ink line art; light by default with a dark toggle; paper grain; a custom cursor.
+  - *Small things:* plain, factual headlines; fine ink line art; paper grain; a custom cursor.
+  - *Theme (revised 2026-11-04):* a three-way System / Light / Dark switch; System, which follows the OS, is the default.
 
 ## The idea
 
@@ -147,7 +148,9 @@ Their scripts were read before use. Only `assets.mjs` uses the network (it searc
 
 ## Customising
 
-- **Colours and type:** the token blocks at the top of `web/src/index.css`. Dark mode is the `.dark` block. Mermaid needs literal colours, so `web/src/features/learn/Mermaid.tsx` repeats them.
+- **Colours and type:** the token blocks at the top of `web/src/index.css`. Dark mode is the `.dark` block. Mermaid reads the live tokens, so diagrams follow automatically.
+- **Theme:** `app/theme.ts` (System / Light / Dark; System is stored as no choice, so it keeps following the OS) and `app/ThemeSwitch.tsx`. The pre-paint copy of the logic is in `web/index.html`.
+- **Palette previews (not yet chosen):** four alternative two-neutrals-plus-one-accent palettes (`cobalt`, `sage`, `magenta`, `night`) sit under `html[data-palette=…]` in `index.css`. Pick one with `?palette=<name>` in the URL; `?palette=paper` returns to the default. `night` is dark-first and ignores the theme switch.
 - **Motion:** `web/src/lib/motion.ts` holds the easing curves and springs. The headline reveal timing is in `components/SetHeadline.tsx`, and the cursor in `app/Cursor.tsx`.
 - **Headlines the console writes:** `web/src/lib/headline.ts`, with tests in `headline.test.ts`.
 - **The wire's stations and captions:** `web/src/features/live/Wire.tsx`.

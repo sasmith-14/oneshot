@@ -2,7 +2,9 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Activity, BookOpen, FlaskConical, Moon, Scale, ScrollText, ShieldCheck, Sun, Zap } from "lucide-react";
+import { Activity, BookOpen, FlaskConical, Scale, ScrollText, ShieldCheck, Zap } from "lucide-react";
+import { THEME_MODES } from "./ThemeSwitch";
+import type { ThemeMode } from "./theme";
 import { Command, CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator, CommandShortcut } from "@/components/ui/command";
 import { StatusPill } from "@/components/StatusPill";
 import { useActions, usePresets, useSystemStatus } from "@/hooks/queries";
@@ -17,7 +19,7 @@ export const PAGES = [
   { to: "/learn", label: "Learn", icon: BookOpen, hint: "how and why it works" },
 ] as const;
 
-export function CommandPalette({ open, setOpen, theme, toggleTheme }: { open: boolean; setOpen: (v: boolean) => void; theme: string; toggleTheme: () => void }) {
+export function CommandPalette({ open, setOpen, mode, setMode }: { open: boolean; setOpen: (v: boolean) => void; mode: ThemeMode; setMode: (m: ThemeMode) => void }) {
   const navigate = useNavigate();
   const qc = useQueryClient();
   const status = useSystemStatus();
@@ -85,9 +87,11 @@ export function CommandPalette({ open, setOpen, theme, toggleTheme }: { open: bo
           <CommandItem value="run reconciliation now" onSelect={() => go(() => reconcile.mutate())}>
             <Scale aria-hidden /> Run reconciliation
           </CommandItem>
-          <CommandItem value="toggle theme dark light" onSelect={() => go(toggleTheme)}>
-            {theme === "dark" ? <Sun aria-hidden /> : <Moon aria-hidden />} Switch to {theme === "dark" ? "light" : "dark"} theme
-          </CommandItem>
+          {THEME_MODES.filter((t) => t.mode !== mode).map(({ mode: m, label, Icon }) => (
+            <CommandItem key={m} value={`theme ${label} ${m === "system" ? "follow os auto" : ""}`} onSelect={() => go(() => setMode(m))}>
+              <Icon aria-hidden /> {m === "system" ? "Use the system theme" : `Use the ${label.toLowerCase()} theme`}
+            </CommandItem>
+          ))}
         </CommandGroup>
         {presets.data && (
           <>
