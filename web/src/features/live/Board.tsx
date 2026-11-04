@@ -14,6 +14,11 @@ import { cn } from "@/lib/utils";
 
 // ------------------------------------------------------------ status strip
 
+/** Status → the suffix of its colour tokens (--st-<suffix>, -soft, -fg). */
+const VAR: Record<Status, string> = { PENDING: "pending", IN_FLIGHT: "inflight", VERIFYING: "verifying", SUCCEEDED: "succeeded", FAILED: "failed", UNKNOWN: "unknown" };
+/** Written out in full so Tailwind finds the class names. */
+const FG: Record<Status, string> = { PENDING: "text-st-pending-fg", IN_FLIGHT: "text-st-inflight-fg", VERIFYING: "text-st-verifying-fg", SUCCEEDED: "text-st-succeeded-fg", FAILED: "text-st-failed-fg", UNKNOWN: "text-st-unknown-fg" };
+
 /** Six counts in one strip. Each cell filters the action list below. */
 export function StatusStrip({ status }: { status?: SystemStatus }) {
   const [params] = useSearchParams();
@@ -38,13 +43,14 @@ export function StatusStrip({ status }: { status?: SystemStatus }) {
               i >= 3 && "sm:border-t lg:border-t-0",
             )}
           >
+            {n > 0 && <span aria-hidden className="pointer-events-none absolute inset-0 opacity-80" style={{ background: `linear-gradient(180deg, var(--st-${VAR[s]}-soft), transparent 85%)` }} />}
             {on && <motion.span layoutId="strip-on" aria-hidden className="absolute inset-x-0 top-0 h-0.5 bg-signal" transition={RULE_SPRING} />}
-            <span className="flex items-center gap-2 text-[12.5px] text-fg-2">
+            <span className="relative flex items-center gap-2 text-[12.5px] text-fg-2">
               <span className={cn("size-1.5 rounded-full", STATUS_META[s].dot)} />
               {STATUS_META[s].label}
             </span>
-            <NumberRoll value={n} className={cn("t-figure text-[26px]", n === 0 && "text-fg-3", s === "UNKNOWN" && n > 0 && "text-st-unknown-fg")} />
-            <span aria-hidden className="h-1 overflow-hidden rounded-full bg-sunken">
+            <NumberRoll value={n} className={cn("t-figure relative text-[26px]", n === 0 ? "text-fg-3" : FG[s])} />
+            <span aria-hidden className="relative h-1 overflow-hidden rounded-full bg-sunken">
               <motion.span className={cn("block h-full origin-left rounded-full", STATUS_META[s].dot)} initial={false} animate={{ scaleX: total ? n / total : 0 }} transition={{ duration: 0.6, ease: EASE_OUT }} />
             </span>
           </Link>

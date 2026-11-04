@@ -49,6 +49,11 @@ export function Shell() {
 
   return (
     <div className="flex min-h-dvh flex-col">
+      <div aria-hidden className="aurora">
+        <span />
+        <span />
+        <span />
+      </div>
       <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[90] focus:rounded-md focus:bg-fg focus:px-3 focus:py-2 focus:text-canvas">
         Skip to content
       </a>

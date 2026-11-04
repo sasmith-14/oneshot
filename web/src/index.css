@@ -83,18 +83,18 @@
 }
 
 :root {
-    --canvas: #F4F5F7;
-    --surface: #FFFFFF;
+    --canvas: #F4F5FA;
+    --surface: rgba(255, 255, 255, 0.86);
     --raised: #FFFFFF;
-    --sunken: #ECEEF1;
-    --line: #E3E6EA;
-    --line-strong: #CDD2D9;
-    --fg: #0C0E12;
-    --fg-2: #50565F;
-    --fg-3: #858B95;
-    --signal: #EF5A1C;
+    --sunken: #EDEFF5;
+    --line: #E1E4EE;
+    --line-strong: #C9CEDC;
+    --fg: #0B0D16;
+    --fg-2: #4D5466;
+    --fg-3: #828A9C;
+    --signal: #F25A1D;
     --signal-fg: #FFFFFF;
-    --signal-soft: #FDE9E0;
+    --signal-soft: #FFE9DE;
     --grid-dot: rgba(12, 14, 18, 0.09);
     --shadow-card: 0 1px 0 rgba(12, 14, 18, 0.03), 0 1px 3px rgba(12, 14, 18, 0.04);
     --shadow-pop: 0 12px 32px -8px rgba(12, 14, 18, 0.18), 0 2px 6px rgba(12, 14, 18, 0.06);
@@ -104,7 +104,7 @@
     --foreground: var(--fg);
     --card: var(--surface);
     --card-foreground: var(--fg);
-    --popover: var(--surface);
+    --popover: var(--raised);
     --popover-foreground: var(--fg);
     --primary: var(--fg);
     --primary-foreground: var(--surface);
@@ -121,62 +121,80 @@
     --radius: 8px;
 
     /* statuses: muted inks, a soft wash and a readable text tone */
-    --st-pending: #7A828F;
-    --st-pending-soft: #EEF0F3;
-    --st-pending-fg: #4A515C;
-    --st-inflight: #3A7BF0;
-    --st-inflight-soft: #E7EFFE;
-    --st-inflight-fg: #1E53B8;
-    --st-verifying: #C99A12;
-    --st-verifying-soft: #FBF3DC;
-    --st-verifying-fg: #7D5E00;
-    --st-succeeded: #1F9D63;
-    --st-succeeded-soft: #E3F5EC;
-    --st-succeeded-fg: #13693F;
-    --st-failed: #DC4466;
-    --st-failed-soft: #FCE8ED;
-    --st-failed-fg: #A3213F;
-    --st-unknown: #8059E6;
-    --st-unknown-soft: #F0EBFD;
-    --st-unknown-fg: #5A36B8;
+    --st-pending: #7C8599;
+    --st-pending-soft: #EEF0F5;
+    --st-pending-fg: #485065;
+    --st-inflight: #2F6BFF;
+    --st-inflight-soft: #E5EDFF;
+    --st-inflight-fg: #1D4FD6;
+    --st-verifying: #E0A100;
+    --st-verifying-soft: #FFF4D6;
+    --st-verifying-fg: #835C00;
+    --st-succeeded: #0EA66B;
+    --st-succeeded-soft: #DDF7EB;
+    --st-succeeded-fg: #077A4D;
+    --st-failed: #E5355C;
+    --st-failed-soft: #FFE4EA;
+    --st-failed-fg: #B4183D;
+    --st-unknown: #7B4DF2;
+    --st-unknown-soft: #EEE7FF;
+    --st-unknown-fg: #5A2FD0;
+    /* identity hues for the five parts of the system, and the ambient glow */
+    --id-agent: #0BA5C9;
+    --id-api: var(--signal);
+    --id-worker: #2F6BFF;
+    --id-provider: #D9409A;
+    --id-ledger: #0EA66B;
+    --aurora-1: rgba(242, 90, 29, 0.13);
+    --aurora-2: rgba(47, 107, 255, 0.12);
+    --aurora-3: rgba(123, 77, 242, 0.09);
 }
 
 .dark {
-    --canvas: #0A0B0D;
-    --surface: #111317;
-    --raised: #161920;
-    --sunken: #0D0F12;
-    --line: #22262D;
-    --line-strong: #323741;
-    --fg: #ECEEF1;
-    --fg-2: #A0A6B0;
-    --fg-3: #6A707B;
-    --signal: #FF6B2C;
+    --canvas: #090A11;
+    --surface: rgba(19, 21, 31, 0.86);
+    --raised: #181B27;
+    --sunken: #0E1018;
+    --line: #232738;
+    --line-strong: #343A50;
+    --fg: #EDEFF6;
+    --fg-2: #A3A9BB;
+    --fg-3: #6C7388;
+    --signal: #FF6A2B;
     --signal-fg: #0A0B0D;
-    --signal-soft: #2A170E;
+    --signal-soft: #2C150B;
     --grid-dot: rgba(236, 238, 241, 0.07);
     --shadow-card: 0 1px 0 rgba(0, 0, 0, 0.4);
     --shadow-pop: 0 16px 40px -10px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.04);
     --highlight: inset 0 1px 0 rgba(255, 255, 255, 0.035);
 
-    --st-pending: #8B93A1;
-    --st-pending-soft: #1A1D22;
-    --st-pending-fg: #C3C8D0;
-    --st-inflight: #6EA8FF;
-    --st-inflight-soft: #142035;
-    --st-inflight-fg: #A9CBFF;
-    --st-verifying: #E8C266;
-    --st-verifying-soft: #261F0E;
-    --st-verifying-fg: #F0D592;
-    --st-succeeded: #5ED39C;
-    --st-succeeded-soft: #0F2219;
-    --st-succeeded-fg: #9DE6C2;
-    --st-failed: #F37A93;
-    --st-failed-soft: #2A1218;
-    --st-failed-fg: #F8AEBE;
-    --st-unknown: #B49CFF;
-    --st-unknown-soft: #1D1730;
-    --st-unknown-fg: #D2C4FF;
+    --st-pending: #8D97AD;
+    --st-pending-soft: #1A1D29;
+    --st-pending-fg: #C6CCDA;
+    --st-inflight: #5B9DFF;
+    --st-inflight-soft: #111D38;
+    --st-inflight-fg: #A6C8FF;
+    --st-verifying: #FFC83D;
+    --st-verifying-soft: #2A2210;
+    --st-verifying-fg: #FFDD8A;
+    --st-succeeded: #3DDC97;
+    --st-succeeded-soft: #0D261C;
+    --st-succeeded-fg: #93EDC4;
+    --st-failed: #FF5C7A;
+    --st-failed-soft: #2E111A;
+    --st-failed-fg: #FFA3B5;
+    --st-unknown: #A78BFA;
+    --st-unknown-soft: #1E1733;
+    --st-unknown-fg: #CDBEFF;
+    --id-agent: #3CCFEA;
+    --id-api: var(--signal);
+    --id-worker: #5B9DFF;
+    --id-provider: #F472B6;
+    --id-ledger: #3DDC97;
+    --aurora-1: rgba(255, 106, 43, 0.17);
+    --aurora-2: rgba(91, 157, 255, 0.15);
+    --aurora-3: rgba(167, 139, 250, 0.12);
+    --shadow-card: 0 1px 0 rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.015);
 }
 
 @layer base {
@@ -220,6 +238,7 @@
 
   /* surfaces */
   .panel { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; box-shadow: var(--shadow-card), var(--highlight); }
+  .glow-signal { box-shadow: 0 0 0 1px color-mix(in oklab, var(--signal) 55%, transparent), 0 8px 28px -10px color-mix(in oklab, var(--signal) 70%, transparent); }
   .panel-head { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; padding: 0.875rem 1.125rem; border-bottom: 1px solid var(--line); }
   .well { background: var(--sunken); border: 1px solid var(--line); border-radius: 10px; }
   .dot-grid { background-image: radial-gradient(var(--grid-dot) 1px, transparent 1px); background-size: 18px 18px; }
@@ -235,7 +254,7 @@
   .btn:disabled { opacity: 0.45; cursor: not-allowed; }
   .btn-primary { background: var(--fg); color: var(--surface); }
   @media (hover: hover) and (pointer: fine) { .btn-primary:hover:not(:disabled) { background: color-mix(in oklab, var(--fg) 86%, var(--canvas)); } }
-  .btn-signal { background: var(--signal); color: var(--signal-fg); }
+  .btn-signal { background: var(--signal); color: var(--signal-fg); box-shadow: inset 0 1px 0 rgba(255,255,255,.22), 0 6px 20px -8px color-mix(in oklab, var(--signal) 80%, transparent); }
   @media (hover: hover) and (pointer: fine) { .btn-signal:hover:not(:disabled) { background: color-mix(in oklab, var(--signal) 88%, var(--fg)); } }
   .btn-outline { border: 1px solid var(--line-strong); background: var(--surface); color: var(--fg); box-shadow: var(--highlight); }
   @media (hover: hover) and (pointer: fine) { .btn-outline:hover:not(:disabled) { border-color: var(--fg-3); } }
@@ -258,6 +277,25 @@
   .link-quiet { transition: color 150ms ease; }
   @media (hover: hover) and (pointer: fine) { .link-quiet:hover { color: var(--fg); } }
 }
+
+/* ambient aurora: three soft fields of the accent colours, drifting slowly
+   behind everything. Radial gradients (no blur filter), transform-only motion,
+   and still under reduced motion. */
+.aurora { position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; }
+.aurora > span { position: absolute; border-radius: 9999px; will-change: transform; }
+.aurora > span:nth-child(1) { width: 70vw; height: 70vw; left: -18vw; top: -34vw; background: radial-gradient(closest-side, var(--aurora-1), transparent); animation: os-drift-a 34s ease-in-out infinite alternate; }
+.aurora > span:nth-child(2) { width: 64vw; height: 64vw; right: -16vw; top: -30vw; background: radial-gradient(closest-side, var(--aurora-2), transparent); animation: os-drift-b 41s ease-in-out infinite alternate; }
+.aurora > span:nth-child(3) { width: 56vw; height: 56vw; left: 24vw; top: 18vh; background: radial-gradient(closest-side, var(--aurora-3), transparent); animation: os-drift-c 47s ease-in-out infinite alternate; }
+@keyframes os-drift-a { to { transform: translate3d(10vw, 6vw, 0) scale(1.08); } }
+@keyframes os-drift-b { to { transform: translate3d(-8vw, 8vw, 0) scale(0.94); } }
+@keyframes os-drift-c { to { transform: translate3d(-10vw, -6vw, 0) scale(1.1); } }
+
+/* current on the wires: dashes flow in the direction of travel */
+@keyframes os-flow { to { stroke-dashoffset: -16; } }
+.wire-flow { stroke-dasharray: 2 14; animation: os-flow 1.1s linear infinite; }
+/* a live node breathes */
+@keyframes os-breathe { 0%, 100% { opacity: 0.35; } 50% { opacity: 0.85; } }
+.breathe { animation: os-breathe 3.2s ease-in-out infinite; }
 
 /* faint grain, so the canvas is not flat digital grey; static, composited once */
 .grain::before {
@@ -289,7 +327,7 @@ html.lenis, html.lenis body { height: auto; }
 .os-ring { animation: os-ring 1.8s var(--ease-out-strong) infinite; }
 .os-running { background-image: repeating-linear-gradient(-45deg, transparent 0 4px, rgba(255,255,255,.22) 4px 8px); animation: os-stripes 0.8s linear infinite; }
 @media (prefers-reduced-motion: reduce) {
-  .os-pulse, .os-ring, .os-running { animation: none; }
+  .os-pulse, .os-ring, .os-running, .wire-flow, .breathe, .aurora > span { animation: none !important; }
 }
 
 /* rendered docs (Learn) */

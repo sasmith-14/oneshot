@@ -68,7 +68,10 @@ export function ChaosPage() {
               .map((g) => (
                 <section key={g.id} id={g.id} aria-labelledby={`${g.id}-title`} className="mb-8">
                   <div className="mb-3">
-                    <h2 id={`${g.id}-title`} className="t-h2">{g.title}</h2>
+                    <h2 id={`${g.id}-title`} className="t-h2 flex items-center gap-2.5">
+                      <span aria-hidden className="size-2.5 rounded-[3px]" style={{ background: GROUP_HUE[g.id] ?? "var(--fg-3)", boxShadow: `0 0 12px ${GROUP_HUE[g.id] ?? "transparent"}` }} />
+                      {g.title}
+                    </h2>
                     <p className="mt-0.5 text-[13px] text-fg-2">{g.about}</p>
                   </div>
                   <motion.div layout className="grid gap-3 md:grid-cols-2">
@@ -120,11 +123,21 @@ function LabLine({ state }: { state?: LabState }) {
 
 const FINAL = ["SUCCEEDED", "FAILED", "UNKNOWN"];
 
+/** Each group of failures keeps one hue: the colour of the outcome it is about. */
+const GROUP_HUE: Record<string, string> = { core: "var(--st-inflight)", ambiguity: "var(--st-unknown)", duplicates: "var(--st-verifying)", process: "var(--st-failed)" };
+
 function PresetCard({ preset, onRun, running, disabled, last, byId }: { preset: Preset; onRun: () => void; running: boolean; disabled: boolean; last?: PresetResult; byId: Map<string, Action> }) {
   const runActions = (last?.action_ids ?? []).map((id) => byId.get(id)).filter(Boolean) as Action[];
   const settled = runActions.length > 0 && runActions.every((a) => FINAL.includes(a.status));
   return (
-    <motion.article layout transition={SPRING} className={cn("panel flex flex-col p-4 transition-[border-color,opacity] duration-200", disabled && "opacity-60", runActions.length > 0 && !settled && "border-signal/60")}>
+    <motion.article
+      layout
+      transition={SPRING}
+      whileHover={disabled ? undefined : { y: -2 }}
+      className={cn("panel group relative flex flex-col overflow-hidden p-4 transition-[border-color,opacity,box-shadow] duration-200", disabled && "opacity-60", runActions.length > 0 && !settled && "glow-signal")}
+    >
+      <span aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-px opacity-70 transition-opacity duration-200 group-hover:opacity-100" style={{ background: `linear-gradient(90deg, transparent, ${GROUP_HUE[preset.group] ?? "var(--line)"}, transparent)` }} />
+      <span aria-hidden className="pointer-events-none absolute -top-16 left-1/2 h-32 w-3/4 -translate-x-1/2 rounded-full opacity-0 transition-opacity duration-300 group-hover:opacity-100" style={{ background: `radial-gradient(closest-side, color-mix(in oklab, ${GROUP_HUE[preset.group] ?? "var(--fg-3)"} 22%, transparent), transparent)` }} />
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <h3 className="t-h3">{preset.title}</h3>

@@ -55,18 +55,39 @@ Three signature pieces, each driven only by real data:
    - **Interaction:** hovering reads out the time; clicking a bar explains it in plain English.
 3. **The bipartite diff** (Reconcile): OneShot's actions on the left and the provider's effects on the right, linked by drawn curves. Duplicates fan out, orphans and missing effects break, and hovering highlights a pair.
 
+## Making it live (revision, 2026-11-04)
+
+The client asked for the console to feel alive, not dead. Colour and motion were added only where they carry meaning or show that the system is running:
+
+- **Ambient aurora.** Three soft fields of the accent colours (orange, blue, violet) drift slowly behind the page. They are radial gradients with no blur filter and move by transform only, over 34–47 s. The panels are slightly translucent, so the glow tints them.
+- **Identity colours.** Each part of the system has its own hue:
+
+  | Part | Hue |
+  |---|---|
+  | Agent | cyan |
+  | OneShot | the signal orange |
+  | Worker | blue |
+  | Provider | pink |
+  | Ledger | green |
+
+  On the map each node has a coloured top edge, a tinted icon, and a soft glow that breathes while the node is healthy.
+- **Current on the wires.** Dashes flow along every send and return line in the direction of travel, in the colour of the part they lead to. A provider that is down stops the flow and turns its wires dashed red. Packets are larger, with a halo.
+- **Status inks are more vivid** in both themes. Counts above zero are tinted with their status colour.
+- **Chaos colours.** Each Chaos group keeps one hue: core is blue, ambiguous outcomes are violet, duplicates are amber and process crashes are rose. Cards light up in that hue on hover, and a card with a run in progress glows orange.
+- **Reduced motion.** All of it is still under `prefers-reduced-motion`, checked in a browser: 21 running animations normally, 0 with reduced motion.
+
 ## Tokens (`web/src/index.css`)
 
 **Neutrals.** Two neutrals (canvas and ink) with tone steps, and one accent.
 
 | Token | Light | Dark | Role |
 |---|---|---|---|
-| `canvas` | `#F4F5F7` | `#0A0B0D` | page ground |
+| `canvas` | `#F4F5FA` | `#090A11` (blue-black) | page ground |
 | `surface` | `#FFFFFF` | `#111317` | panels |
 | `sunken` | `#ECEEF1` | `#0D0F12` | wells, segmented controls |
 | `line` / `line-strong` | `#E3E6EA` / `#CDD2D9` | `#22262D` / `#323741` | borders, edges |
 | `fg` / `fg-2` / `fg-3` | `#0C0E12` / `#50565F` / `#858B95` | `#ECEEF1` / `#A0A6B0` / `#6A707B` | text tiers |
-| `signal` | `#EF5A1C` | `#FF6B2C` | **the one accent**: the live mark, focus rings, the primary "Break something" action, the path an action took, reading progress |
+| `signal` | `#F25A1D` | `#FF6A2B` | **the one accent**: the live mark, focus rings, the primary "Break something" action, the path an action took, reading progress |
 
 **Status inks.** Each status has three tokens, `st-*`, `st-*-soft` and `st-*-fg`. They are muted, readable in both themes, and kept clear of the orange accent: VERIFYING is a yellow amber and FAILED a rose red.
 

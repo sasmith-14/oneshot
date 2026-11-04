@@ -26,7 +26,7 @@ const COLOUR: Record<HopKind | "heartbeat", string> = {
   retry: "var(--st-pending)",
   lost: "var(--st-unknown)",
   lookup: "var(--st-verifying)",
-  heartbeat: "var(--fg-3)",
+  heartbeat: "var(--id-worker)",
 };
 
 const LABELS: Record<string, [string, string]> = {
@@ -97,7 +97,7 @@ export function Topology({ actions, status, lab, effects }: { actions?: Action[]
         const beat = hop.kind === "heartbeat";
         const len = path.getTotalLength();
         const group = document.createElementNS(SVGNS, "g");
-        const dots = [beat ? 2.5 : 4.2, 3, 2.2, 1.5].map((r, i) => {
+        const dots = [beat ? 2.8 : 5, 3.6, 2.6, 1.8].map((r, i) => {
           const c = document.createElementNS(SVGNS, "circle");
           c.setAttribute("r", String(r));
           c.style.fill = colour;
@@ -107,9 +107,9 @@ export function Topology({ actions, status, lab, effects }: { actions?: Action[]
         });
         if (!beat) {
           const halo = document.createElementNS(SVGNS, "circle");
-          halo.setAttribute("r", "10");
+          halo.setAttribute("r", "13");
           halo.style.fill = colour;
-          halo.style.opacity = "0.14";
+          halo.style.opacity = "0.2";
           group.insertBefore(halo, group.firstChild);
           dots.unshift(halo);
         }
@@ -275,6 +275,9 @@ export function Topology({ actions, status, lab, effects }: { actions?: Action[]
                           strokeDasharray={down ? "3 5" : undefined}
                           className={down ? "stroke-st-failed/50" : "stroke-line-strong"}
                         />
+                        {!down && (
+                          <path d={d} fill="none" strokeWidth={1.6} strokeLinecap="round" className="wire-flow" style={{ stroke: upper ? `var(--id-${to})` : `var(--id-${from})`, opacity: upper ? 0.75 : 0.45 }} />
+                        )}
                         <path
                           d={d}
                           ref={(el) => {
@@ -305,10 +308,14 @@ export function Topology({ actions, status, lab, effects }: { actions?: Action[]
                 aria-hidden
                 className="pointer-events-none absolute -inset-[5px] rounded-[16px] border-2 opacity-0"
               />
-              <div className={cn("relative rounded-[12px] border bg-surface p-3 shadow-[var(--shadow-card),var(--highlight)] transition-[opacity,border-color] duration-300", n.state === "down" ? "border-dashed border-st-failed/60" : "border-line", n.state === "idle" && "opacity-60")}>
+              {status && n.state !== "down" && n.state !== "idle" && (
+                <span aria-hidden className="breathe pointer-events-none absolute -inset-px rounded-[13px]" style={{ boxShadow: `0 0 0 1px color-mix(in oklab, var(--id-${n.id}) 45%, transparent), 0 10px 34px -12px var(--id-${n.id})` }} />
+              )}
+              <div className={cn("relative overflow-hidden rounded-[12px] border bg-raised p-3 shadow-[var(--shadow-card),var(--highlight)] transition-[opacity,border-color] duration-300", n.state === "down" ? "border-dashed border-st-failed/60" : "border-line", n.state === "idle" && "opacity-60")}>
+                <span aria-hidden className="absolute inset-x-0 top-0 h-[2px]" style={{ background: n.state === "down" ? "var(--st-failed)" : `var(--id-${n.id})` }} />
                 <div className="flex items-center gap-2">
-                  <span className="grid size-6 shrink-0 place-items-center rounded-[7px] border border-line bg-sunken">
-                    <n.Icon aria-hidden className="size-3.5 text-fg-2" />
+                  <span className="grid size-6 shrink-0 place-items-center rounded-[7px]" style={{ background: `color-mix(in oklab, var(--id-${n.id}) 16%, transparent)`, color: `var(--id-${n.id})` }}>
+                    <n.Icon aria-hidden className="size-3.5" />
                   </span>
                   <span className="min-w-0 truncate text-[13px] font-[600] tracking-[-0.01em]">{n.name}</span>
                   {n.state && (
